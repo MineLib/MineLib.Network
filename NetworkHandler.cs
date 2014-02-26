@@ -111,7 +111,7 @@ namespace MineLib.Network
 
                     switch (_minecraft.ServerState)
                     {
-                        case (int) ServerState.Status:
+                        case ServerState.Status:
                             if (ServerResponse.ServerStatusResponse[packetID] == null)
                             {
                                 _stream.ReadByteArray(length - 1); // -- bypass the packet
@@ -123,7 +123,7 @@ namespace MineLib.Network
 
                             break;
 
-                        case (int) ServerState.Login:
+                        case ServerState.Login:
                             if (ServerResponse.ServerLoginResponse[packetID] == null)
                             {
                                 _stream.ReadByteArray(length - 1); // -- bypass the packet
@@ -135,11 +135,11 @@ namespace MineLib.Network
                             RaisePacketHandled(this, packetl, packetID, ServerState.Login);
 
                             if (packetID == 2)
-                                _minecraft.ServerState = 1;
+                                _minecraft.ServerState = ServerState.Play;
 
                             break;
 
-                        case (int) ServerState.Play:
+                        case ServerState.Play:
                             if (ServerResponse.ServerPlayResponse[packetID] == null)
                             {
                                 _stream.ReadByteArray(length - 1); // -- bypass the packet
@@ -187,15 +187,5 @@ namespace MineLib.Network
             if (_minecraft != null)
                 _minecraft = null;
         }
-    }
-
-    public abstract class Minecraft
-    {
-        public string ServerIP;
-        public int ServerPort;
-
-        public bool Running;
-
-        public int ServerState;
     }
 }
