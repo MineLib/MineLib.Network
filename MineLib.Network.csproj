@@ -1,0 +1,190 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E7C8320E-49A4-4187-AFE3-15C814201E1E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <NoStandardLibraries>false</NoStandardLibraries>
+    <AssemblyName>ClassLibrary</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>MineLib.Network</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="LICENSE" />
+    <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Data\EntityMetadata\MetadadaShort.cs" />
+    <Compile Include="Data\EntityMetadata\MetadataByte.cs" />
+    <Compile Include="Data\EntityMetadata\MetadataDictionary.cs" />
+    <Compile Include="Data\EntityMetadata\MetadataEntry.cs" />
+    <Compile Include="Data\EntityMetadata\MetadataFloat.cs" />
+    <Compile Include="Data\EntityMetadata\MetadataInt.cs" />
+    <Compile Include="Data\EntityMetadata\MetadataSlot.cs" />
+    <Compile Include="Data\EntityMetadata\MetadataString.cs" />
+    <Compile Include="Data\EntityProperty.cs" />
+    <Compile Include="Data\EntityPropertyListItem.cs" />
+    <Compile Include="Data\MapChunkBulkMetadata.cs" />
+    <Compile Include="Data\Size.cs" />
+    <Compile Include="Data\SlotData.cs" />
+    <Compile Include="Data\Vector3.cs" />
+    <Compile Include="Enums\Animation.cs" />
+    <Compile Include="Enums\Blocks.cs" />
+    <Compile Include="Enums\ChatMode.cs" />
+    <Compile Include="Enums\ClickModen.cs" />
+    <Compile Include="Enums\ClientStatus.cs" />
+    <Compile Include="Enums\Difficulty.cs" />
+    <Compile Include="Enums\DigStatus.cs" />
+    <Compile Include="Enums\Dimension.cs" />
+    <Compile Include="Enums\Direction.cs" />
+    <Compile Include="Enums\EntityAction.cs" />
+    <Compile Include="Enums\EntityEquipmentSlot.cs" />
+    <Compile Include="Enums\EntityStatus.cs" />
+    <Compile Include="Enums\Face.cs" />
+    <Compile Include="Enums\GameMode.cs" />
+    <Compile Include="Enums\GameState.cs" />
+    <Compile Include="Enums\Mobs.cs" />
+    <Compile Include="Enums\NextState.cs" />
+    <Compile Include="Enums\Objects.cs" />
+    <Compile Include="Enums\PlayerAbilities.cs" />
+    <Compile Include="Enums\ScoreboardPosition.cs" />
+    <Compile Include="Enums\ServerState.cs" />
+    <Compile Include="Enums\TeamMode.cs" />
+    <Compile Include="Events\Events.cs" />
+    <Compile Include="NetworkHandler.cs" />
+    <Compile Include="NetworkHandler.Events.cs" />
+    <Compile Include="NetworkHandler.PacketsHandler.cs" />
+    <Compile Include="PacketsEnums.cs" />
+    <Compile Include="Packets\Client\ClientStatusPacket.cs" />
+    <Compile Include="Packets\Client\EnchantItemPacket.cs" />
+    <Compile Include="Packets\Client\EncryptionKeyResponsePacket.cs" />
+    <Compile Include="Packets\Client\EntityActionPacket.cs" />
+    <Compile Include="Packets\Client\IncrementStatisticPacket.cs" />
+    <Compile Include="Packets\Client\ItemDataPacket.cs" />
+    <Compile Include="Packets\Client\LoginStartPacket.cs" />
+    <Compile Include="Packets\Client\PlayerDiggingPacket.cs" />
+    <Compile Include="Packets\Client\PlayerLookPacket.cs" />
+    <Compile Include="Packets\Client\PlayerPacket.cs" />
+    <Compile Include="Packets\Client\PlayerPositionPacket.cs" />
+    <Compile Include="Packets\Client\SoundOrParticleEffectPacket.cs" />
+    <Compile Include="Packets\Client\SteerVehiclePacket.cs" />
+    <Compile Include="Packets\Client\UseEntityPacket.cs" />
+    <Compile Include="Packets\IPacket.cs" />
+    <Compile Include="Packets\PacketResponse.cs" />
+    <Compile Include="Packets\Server\AnimationPacket.cs" />
+    <Compile Include="Packets\Server\AttachEntityPacket.cs" />
+    <Compile Include="Packets\Server\BlockActionPacket.cs" />
+    <Compile Include="Packets\Server\BlockBreakAnimationPacket.cs" />
+    <Compile Include="Packets\Server\BlockChangePacket.cs" />
+    <Compile Include="Packets\Server\ChangeGameStatePacket.cs" />
+    <Compile Include="Packets\Server\ChatMessagePacket.cs" />
+    <Compile Include="Packets\Server\ChunkDataPacket.cs" />
+    <Compile Include="Packets\Server\CloseWindowPacket.cs" />
+    <Compile Include="Packets\Server\CollectItemPacket.cs" />
+    <Compile Include="Packets\Server\ConfirmTransactionPacket.cs" />
+    <Compile Include="Packets\Server\DestroyEntitiesPacket.cs" />
+    <Compile Include="Packets\Server\DisconnectPacket.cs" />
+    <Compile Include="Packets\Server\DisplayScoreboardPacket.cs" />
+    <Compile Include="Packets\Server\EffectPacket.cs" />
+    <Compile Include="Packets\Server\EncryptionKeyRequestPacket.cs" />
+    <Compile Include="Packets\Server\EntityEffectPacket.cs" />
+    <Compile Include="Packets\Server\EntityEquipmentPacket.cs" />
+    <Compile Include="Packets\Server\EntityHeadLookPacket.cs" />
+    <Compile Include="Packets\Server\EntityLookAndRelativeMovePacket.cs" />
+    <Compile Include="Packets\Server\EntityLookPacket.cs" />
+    <Compile Include="Packets\Server\EntityMetadataPacket.cs" />
+    <Compile Include="Packets\Server\EntityPacket.cs" />
+    <Compile Include="Packets\Server\EntityPropertiesPacket.cs" />
+    <Compile Include="Packets\Server\EntityRelativeMovePacket.cs" />
+    <Compile Include="Packets\Server\EntityStatusPacket.cs" />
+    <Compile Include="Packets\Server\EntityTeleportPacket.cs" />
+    <Compile Include="Packets\Server\EntityVelocityPacket.cs" />
+    <Compile Include="Packets\Server\ExplosionPacket.cs" />
+    <Compile Include="Packets\Server\HandshakePacket.cs" />
+    <Compile Include="Packets\Server\HeldItemChangePacket.cs" />
+    <Compile Include="Packets\Server\JoinGamePacket.cs" />
+    <Compile Include="Packets\Server\KeepAlivePacket.cs" />
+    <Compile Include="Packets\Server\LoginDisconnectPacket.cs" />
+    <Compile Include="Packets\Server\LoginSuccessPacket.cs" />
+    <Compile Include="Packets\Server\MapChunkBulkPacket.cs" />
+    <Compile Include="Packets\Server\MapsPacket.cs" />
+    <Compile Include="Packets\Server\MultiBlockChangePacket.cs" />
+    <Compile Include="Packets\Server\OpenWindowPacket.cs" />
+    <Compile Include="Packets\Server\ParticlePacket.cs" />
+    <Compile Include="Packets\Server\PingPacket.cs" />
+    <Compile Include="Packets\Server\PlayerAbilitiesPacket.cs" />
+    <Compile Include="Packets\Server\PlayerListItemPacket.cs" />
+    <Compile Include="Packets\Server\PlayerPositionAndLookPacket.cs" />
+    <Compile Include="Packets\Server\PluginMessagePacket.cs" />
+    <Compile Include="Packets\Server\RemoveEntityEffectPacket.cs" />
+    <Compile Include="Packets\Server\RespawnPacket.cs" />
+    <Compile Include="Packets\Server\ResponsePacket.cs" />
+    <Compile Include="Packets\Server\ScoreboardObjectivePacket.cs" />
+    <Compile Include="Packets\Server\SetExperiencePacket.cs" />
+    <Compile Include="Packets\Server\SetSlotPacket.cs" />
+    <Compile Include="Packets\Server\SignEditorOpenPacket.cs" />
+    <Compile Include="Packets\Server\SoundEffectPacket.cs" />
+    <Compile Include="Packets\Server\SpawnExperienceOrbPacket.cs" />
+    <Compile Include="Packets\Server\SpawnGlobalEntityPacket.cs" />
+    <Compile Include="Packets\Server\SpawnMobPacket.cs" />
+    <Compile Include="Packets\Server\SpawnObjectPacket.cs" />
+    <Compile Include="Packets\Server\SpawnPaintingPacket.cs" />
+    <Compile Include="Packets\Server\SpawnPlayerPacket.cs" />
+    <Compile Include="Packets\Server\SpawnPositionPacket.cs" />
+    <Compile Include="Packets\Server\StatisticsPacket.cs" />
+    <Compile Include="Packets\Server\TabCompletePacket.cs" />
+    <Compile Include="Packets\Server\TimeUpdatePacket.cs" />
+    <Compile Include="Packets\Server\UpdateBlockEntity.cs" />
+    <Compile Include="Packets\Server\UpdateHealthPacket.cs" />
+    <Compile Include="Packets\Server\UpdateScorePacket.cs" />
+    <Compile Include="Packets\Server\UpdateSignPacket.cs" />
+    <Compile Include="Packets\Server\UseBedPacket.cs" />
+    <Compile Include="Packets\Server\WindowItemsPacket.cs" />
+    <Compile Include="Packets\Server\WindowPropertyPacket.cs" />
+    <Compile Include="Yggdrasil.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="CWrapped\CWrapped.csproj">
+      <Project>{72894a03-4a20-4b37-aab9-b96dac4bbaae}</Project>
+      <Name>CWrapped</Name>
+    </ProjectReference>
+    <ProjectReference Include="fNbt\fNbt\fNbt.csproj">
+      <Project>{4488498d-976d-4da3-bf72-109531af0488}</Project>
+      <Name>fNbt</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSHARP.Targets" />
+  <ProjectExtensions>
+    <VisualStudio AllowExistingFolder="true" />
+  </ProjectExtensions>
+</Project>
