@@ -11,12 +11,12 @@ namespace MineLib.Network
     public partial class NetworkHandler : IDisposable
     {
         private Thread _handler;
-        private Minecraft _minecraft;
+        private IMinecraft _minecraft;
         private TcpClient _baseSock;
         private NetworkStream _baseStream;
         private Wrapped _stream;
 
-        public NetworkHandler(Minecraft client)
+        public NetworkHandler(IMinecraft client)
         {
             _minecraft = client;
         }
@@ -109,7 +109,7 @@ namespace MineLib.Network
                     Console.WriteLine("ID : 0x" + String.Format("{0:X}", packetID));
                     Console.WriteLine("Lenght: " + length);
 
-                    switch (_minecraft.ServerState)
+                    switch (_minecraft.State)
                     {
                         case ServerState.Status:
                             if (ServerResponse.ServerStatusResponse[packetID] == null)
@@ -135,7 +135,7 @@ namespace MineLib.Network
                             RaisePacketHandled(this, packetl, packetID, ServerState.Login);
 
                             if (packetID == 2)
-                                _minecraft.ServerState = ServerState.Play;
+                                _minecraft.State = ServerState.Play;
 
                             break;
 

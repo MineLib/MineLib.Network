@@ -31,20 +31,15 @@
     <RootNamespace>MineLib.Network</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <None Include="LICENSE" />
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AbstractMinecraft.cs" />
+    <Compile Include="IMinecraft.cs" />
     <Compile Include="Data\EntityMetadata\MetadadaShort.cs" />
     <Compile Include="Data\EntityMetadata\MetadataByte.cs" />
     <Compile Include="Data\EntityMetadata\MetadataDictionary.cs" />
