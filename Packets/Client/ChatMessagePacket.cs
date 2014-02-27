@@ -1,13 +1,13 @@
 using CWrapped;
 
-namespace MineLib.Network.Packets.Server
+namespace MineLib.Network.Packets.Client
 {
     public struct ChatMessagePacket : IPacket
     {
         public string Message;
 
-        public const byte PacketID = 0x02;
-        public byte Id { get { return 0x02; } }
+        public const byte PacketID = 0x01;
+        public byte Id { get { return 0x01; } }
 
         public void ReadPacket(ref Wrapped stream)
         {

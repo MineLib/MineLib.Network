@@ -1,4 +1,4 @@
-﻿namespace MineLib.Network
+﻿namespace MineLib.Network.Enums
 {
     public enum PacketsClient : byte
     {

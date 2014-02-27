@@ -1,6 +1,6 @@
 using CWrapped;
 
-namespace MineLib.Network.Packets.Server
+namespace MineLib.Network.Packets.Server.Login
 {
     public struct LoginSuccessPacket : IPacket
     {

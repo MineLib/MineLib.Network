@@ -2,22 +2,22 @@ using CWrapped;
 
 namespace MineLib.Network.Packets.Client
 {
-    public struct LoginStartPacket : IPacket
+    public struct HeldItemChangPacket : IPacket
     {
-        public string Name;
+        public short Slot;
 
-        public const byte PacketId = 0x00;
-        public byte Id { get { return 0x00; } }
+        public const byte PacketID = 0x09;
+        public byte Id { get { return 0x09; } }
 
         public void ReadPacket(ref Wrapped stream)
         {
-            Name = stream.ReadString();
+            Slot = stream.ReadShort();
         }
 
         public void WritePacket(ref Wrapped stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteString(Name);
+            stream.WriteShort(Slot);
             stream.Purge();
         }
     }

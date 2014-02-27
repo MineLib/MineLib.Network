@@ -7,8 +7,8 @@ namespace MineLib.Network.Packets.Client
         public float Yaw, Pitch;
         public bool OnGround;
 
-        public const byte PacketId = 0x0C;
-        public byte Id { get { return 0x0C; } }
+        public const byte PacketID = 0x05;
+        public byte Id { get { return 0x05; } }
 
         public void ReadPacket(ref Wrapped stream)
         {

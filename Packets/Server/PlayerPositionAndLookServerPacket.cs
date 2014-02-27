@@ -1,21 +1,23 @@
 using CWrapped;
 
-namespace MineLib.Network.Packets.Client
+namespace MineLib.Network.Packets.Server
 {
-    public struct PlayerPositionPacket : IPacket
+    public struct PlayerPositionAndLookPacket : IPacket
     {
-        public double X, FeetY, HeadY, Z;
+        public double X, Y, Z;
+        public float Yaw, Pitch;
         public bool OnGround;
 
-        public const byte PacketID = 0x04;
-        public byte Id { get { return 0x04; } }
+        public const byte PacketID = 0x08;
+        public byte Id { get { return 0x08; } }
 
         public void ReadPacket(ref Wrapped stream)
         {
             X = stream.ReadDouble();
-            FeetY = stream.ReadDouble();
-            HeadY = stream.ReadDouble();
+            Y = stream.ReadDouble();
             Z = stream.ReadDouble();
+            Yaw = stream.ReadFloat();
+            Pitch = stream.ReadFloat();
             OnGround = stream.ReadBool();
         }
 
@@ -23,9 +25,10 @@ namespace MineLib.Network.Packets.Client
         {
             stream.WriteVarInt(Id);
             stream.WriteDouble(X);
-            stream.WriteDouble(FeetY);
-            stream.WriteDouble(HeadY);
+            stream.WriteDouble(Y);
             stream.WriteDouble(Z);
+            stream.WriteFloat(Yaw);
+            stream.WriteFloat(Pitch);
             stream.WriteBool(OnGround);
             stream.Purge();
         }

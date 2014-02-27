@@ -8,7 +8,9 @@ using CWrapped;
 using MineLib.Network.Enums;
 using MineLib.Network.Packets;
 using MineLib.Network.Packets.Client;
+using MineLib.Network.Packets.Client.Login;
 using MineLib.Network.Packets.Server;
+using MineLib.Network.Packets.Server.Login;
 
 namespace MineLib.Network
 {

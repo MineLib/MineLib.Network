@@ -7,8 +7,8 @@ namespace MineLib.Network.Packets.Client
         public byte WindowId;
         public byte Enchantment;
 
-        public const byte PacketId = 0x6C;
-        public byte Id { get { return 0x6C; } }
+        public const byte PacketId = 0x11;
+        public byte Id { get { return 0x11; } }
 
         public void ReadPacket(ref Wrapped stream)
         {

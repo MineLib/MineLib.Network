@@ -1,23 +1,23 @@
 using CWrapped;
 
-namespace MineLib.Network.Packets.Server
+namespace MineLib.Network.Packets.Server.Login
 {
-    public struct KeepAlivePacket : IPacket
+    public struct LoginDisconnectPacket : IPacket
     {
-        public int KeepAlive;
+        public string Reason;
 
-        public const byte PacketID = 0x00;
+        public const byte PacketId = 0x00;
         public byte Id { get { return 0x00; } }
 
         public void ReadPacket(ref Wrapped stream)
         {
-            KeepAlive = stream.ReadInt();
+            Reason = stream.ReadString();
         }
 
         public void WritePacket(ref Wrapped stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteInt(KeepAlive);
+            stream.WriteString(Reason);
             stream.Purge();
         }
     }

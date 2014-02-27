@@ -4,17 +4,17 @@ namespace MineLib.Network.Packets.Client
 {
     public struct SteerVehiclePacket : IPacket
     {
-        public float Strafe;
+        public float Sideways;
         public float Forward;
         public bool Jump;
         public bool Unmount;
 
-        public const byte PacketId = 0x1B;
-        public byte Id { get { return 0x1B; } }
+        public const byte PacketId = 0x0C;
+        public byte Id { get { return 0x0C; } }
 
         public void ReadPacket(ref Wrapped stream)
         {
-            Strafe = stream.ReadFloat();
+            Sideways = stream.ReadFloat();
             Forward = stream.ReadFloat();
             Jump = stream.ReadBool();
             Unmount = stream.ReadBool();
@@ -23,7 +23,7 @@ namespace MineLib.Network.Packets.Client
         public void WritePacket(ref Wrapped stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteFloat(Strafe);
+            stream.WriteFloat(Sideways);
             stream.WriteFloat(Forward);
             stream.WriteBool(Jump);
             stream.WriteBool(Unmount);

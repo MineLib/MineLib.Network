@@ -1,4 +1,6 @@
-﻿using MineLib.Network.Packets.Server;
+﻿using MineLib.Network.Packets.Client;
+using MineLib.Network.Packets.Server;
+using MineLib.Network.Packets.Server.Login;
 
 namespace MineLib.Network.Packets
 {
@@ -26,18 +28,18 @@ namespace MineLib.Network.Packets
         #region Server Play Response
         public static readonly CreatePacketInstance[] ServerPlayResponse =
         {
-            () => new KeepAlivePacket(),                    // 0x00
+            () => new Server.KeepAlivePacket(),             // 0x00
             () => new JoinGamePacket(),                     // 0x01
-            () => new ChatMessagePacket(),                  // 0x02
+            () => new Server.ChatMessagePacket(),           // 0x02
             () => new TimeUpdatePacket(),                   // 0x03
             () => new EntityEquipmentPacket(),              // 0x04
             () => new SpawnPositionPacket(),                // 0x05
             () => new UpdateHealthPacket(),                 // 0x06
             () => new RespawnPacket(),                      // 0x07
-            () => new PlayerPositionAndLookPacket(),        // 0x08
+            () => new Server.PlayerPositionAndLookPacket(),        // 0x08
             () => new HeldItemChangePacket(),               // 0x09
             () => new UseBedPacket(),                       // 0x0A
-            () => new AnimationPacket(),                    // 0x0B
+            () => new Server.AnimationPacket(),             // 0x0B
             () => new SpawnPlayerPacket(),                  // 0x0C
             () => new CollectItemPacket(),                  // 0x0D
             () => new SpawnObjectPacket(),                  // 0x0E
@@ -72,24 +74,24 @@ namespace MineLib.Network.Packets
             () => new ChangeGameStatePacket(),              // 0x2B
             () => new SpawnGlobalEntityPacket(),            // 0x2C
             () => new OpenWindowPacket(),                   // 0x2D
-            () => new CloseWindowPacket(),                  // 0x2E
+            () => new Server.CloseWindowPacket(),           // 0x2E
             () => new SetSlotPacket(),                      // 0x2F
             () => new WindowItemsPacket(),                  // 0x30
             () => new WindowPropertyPacket(),               // 0x31
-            () => new ConfirmTransactionPacket(),           // 0x32
-            () => new UpdateSignPacket(),                   // 0x33
+            () => new Server.ConfirmTransactionPacket(),    // 0x32
+            () => new Server.UpdateSignPacket(),            // 0x33
             () => new MapsPacket(),                         // 0x34 
             () => new UpdateBlockEntityPacket(),            // 0x35 // Not working
             () => new SignEditorOpenPacket(),               // 0x36
             () => new StatisticsPacket(),                   // 0x37
             () => new PlayerListItemPacket(),               // 0x38
-            () => new PlayerAbilitiesPacket(),              // 0x39
-            () => new TabCompletePacket(),                  // 0x3A
+            () => new Server.PlayerAbilitiesPacket(),       // 0x39
+            () => new Server.TabCompletePacket(),           // 0x3A
             () => new ScoreboardObjectivePacket(),          // 0x3B
             () => new UpdateScorePacket(),                  // 0x3C
             () => new DisplayScoreboardPacket(),            // 0x3D
             null,//() => new TeamsPacket(),                        // 0x3E
-            () => new PluginMessagePacket(),                // 0x3F
+            () => new Server.PluginMessagePacket(),          // 0x3F
             () => new DisconnectPacket(),                    // 0x40
             null, // 0x41
             null, // 0x42
@@ -284,5 +286,6 @@ namespace MineLib.Network.Packets
             null, // 0xFF
         };
         #endregion
+
     }
 }

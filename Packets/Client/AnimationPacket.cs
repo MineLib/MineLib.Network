@@ -1,15 +1,15 @@
 using CWrapped;
 using MineLib.Network.Enums;
 
-namespace MineLib.Network.Packets.Server
+namespace MineLib.Network.Packets.Client
 {
     public struct AnimationPacket : IPacket
     {
         public int EntityID;
         public Animation Animation;
 
-        public const byte PacketID = 0x0B;
-        public byte Id { get { return 0x0B; } }
+        public const byte PacketID = 0x0A;
+        public byte Id { get { return 0x0A; } }
 
         public void ReadPacket(ref Wrapped stream)
         {
