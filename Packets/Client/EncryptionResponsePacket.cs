@@ -2,29 +2,29 @@ using CWrapped;
 
 namespace MineLib.Network.Packets.Client
 {
-    public struct EncryptionKeyResponsePacket : IPacket
+    public struct EncryptionResponsePacket : IPacket
     {
         public byte[] SharedSecret;
         public byte[] VerificationToken;
 
-        public const byte PacketId = 0xFC;
-        public byte Id { get { return 0xFC; } }
+        public const byte PacketId = 0x01;
+        public byte Id { get { return 0x01; } }
 
         public void ReadPacket(ref Wrapped stream)
         {
             var ssLength = stream.ReadShort();
-            //SharedSecret = stream.ReadUInt8Array(ssLength);
+            SharedSecret = stream.ReadByteArray(ssLength);
             var vtLength = stream.ReadShort();
-            //VerificationToken = stream.ReadUInt8Array(vtLength);
+            VerificationToken = stream.ReadByteArray(vtLength);
         }
 
         public void WritePacket(ref Wrapped stream)
         {
             stream.WriteVarInt(Id);
             stream.WriteShort((short)SharedSecret.Length);
-            //stream.writeVarIntArray(SharedSecret);
+            stream.WriteByteArray(SharedSecret);
             stream.WriteShort((short)VerificationToken.Length);
-            //stream.writeVarIntArray(VerificationToken);
+            stream.WriteByteArray(VerificationToken);
             stream.Purge();
         }
     }

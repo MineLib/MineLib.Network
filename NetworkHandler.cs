@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Threading;
 using CWrapped;
 using MineLib.Network.Enums;
 using MineLib.Network.Packets;
+using MineLib.Network.Packets.Client;
+using MineLib.Network.Packets.Server;
 
 namespace MineLib.Network
 {
@@ -134,8 +138,15 @@ namespace MineLib.Network
                             packetl.ReadPacket(ref _stream);
                             RaisePacketHandled(this, packetl, packetID, ServerState.Login);
 
+                            if (packetID == 1)
+                                EnableEncryption(packetl);
+
                             if (packetID == 2)
                                 _minecraft.State = ServerState.Play;
+                            
+
+                            if (packetID == 3) //Shit just got real.
+                            Stop();
 
                             break;
 
@@ -163,6 +174,49 @@ namespace MineLib.Network
                 return false;
             }
             return true;
+        }
+
+        private void EnableEncryption(IPacket packet)
+        {
+            // From libMC.NET
+            EncryptionRequestPacket Request = (EncryptionRequestPacket) packet;
+
+            List<byte> hashlist = new List<byte>();
+            hashlist.AddRange(System.Text.Encoding.ASCII.GetBytes(Request.ServerId));
+            hashlist.AddRange(Request.SharedKey);
+            hashlist.AddRange(Request.PublicKey);
+
+            byte[] hashData = hashlist.ToArray();
+
+            string hash = Cryptography.JavaHexDigest(hashData);
+
+            if (!Yggdrasil.VerifyName(_minecraft.AccessToken, _minecraft.SelectedProfile, hash))
+                return;
+
+            // -- AsnKeyParser is a part of the cryptography.dll, which is simply a compiled version
+            // -- of SMProxy's Cryptography.cs, with the server side parts stripped out.
+            // -- You pass it the key data and ask it to parse, and it will 
+            // -- Extract the server's public key, then parse that into RSA for us.
+
+            AsnKeyParser keyParser = new AsnKeyParser(Request.PublicKey);
+            RSAParameters dekey = keyParser.ParseRSAPublicKey();
+
+            // -- Now we create an encrypter, and encrypt the token sent to us by the server
+            // -- as well as our newly made shared key (Which can then only be decrypted with the server's private key)
+            // -- and we send it to the server.
+
+            RSACryptoServiceProvider cryptoService = new RSACryptoServiceProvider();
+            cryptoService.ImportParameters(dekey);
+
+            byte[] EncryptedSecret = cryptoService.Encrypt(Request.SharedKey, false);
+            byte[] EncryptedVerify = cryptoService.Encrypt(Request.VerificationToken, false);
+
+            _stream.InitEncryption(Request.SharedKey);
+
+            Send(new EncryptionResponsePacket {SharedSecret = EncryptedSecret, VerificationToken = EncryptedVerify});
+
+            _stream.EncEnabled = true;
+
         }
 
         public void Send(IPacket packet)

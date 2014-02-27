@@ -10,7 +10,7 @@ namespace MineLib.Network.Packets
         public static readonly CreatePacketInstance[] ServerLoginResponse =
         {
             () => new LoginDisconnectPacket(), // 0x00
-            () => new EncryptionKeyRequestPacket(), // 0x01
+            () => new EncryptionRequestPacket(), // 0x01
             () => new LoginSuccessPacket(), // 0x02
         };
         #endregion

@@ -1,11 +1,13 @@
+using System.Security.Cryptography;
 using CWrapped;
 
 namespace MineLib.Network.Packets.Server
 {
-    public struct EncryptionKeyRequestPacket : IPacket
+    public struct EncryptionRequestPacket : IPacket
     {
         public string ServerId;
         public byte[] PublicKey;
+        public byte[] SharedKey;
         public byte[] VerificationToken;
 
         public const byte PacketId = 0x01;
@@ -18,6 +20,11 @@ namespace MineLib.Network.Packets.Server
             PublicKey = stream.ReadByteArray(pkLength);
             var vtLength = stream.ReadShort();
             VerificationToken = stream.ReadByteArray(vtLength);
+
+            SharedKey = new byte[16];
+
+            RandomNumberGenerator random = RandomNumberGenerator.Create();
+            random.GetBytes(SharedKey);
         }
 
         public void WritePacket(ref Wrapped stream)

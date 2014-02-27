@@ -33,12 +33,10 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="LICENSE" />
-    <None Include="README.md" />
-  </ItemGroup>
-  <ItemGroup>
+    <Compile Include="Cryptography.cs" />
     <Compile Include="IMinecraft.cs" />
     <Compile Include="Data\EntityMetadata\MetadadaShort.cs" />
     <Compile Include="Data\EntityMetadata\MetadataByte.cs" />
@@ -80,10 +78,10 @@
     <Compile Include="NetworkHandler.cs" />
     <Compile Include="NetworkHandler.Events.cs" />
     <Compile Include="NetworkHandler.PacketsHandler.cs" />
-    <Compile Include="PacketsEnums.cs" />
+    <Compile Include="Enums\PacketsEnums.cs" />
     <Compile Include="Packets\Client\ClientStatusPacket.cs" />
     <Compile Include="Packets\Client\EnchantItemPacket.cs" />
-    <Compile Include="Packets\Client\EncryptionKeyResponsePacket.cs" />
+    <Compile Include="Packets\Client\EncryptionResponsePacket.cs" />
     <Compile Include="Packets\Client\EntityActionPacket.cs" />
     <Compile Include="Packets\Client\IncrementStatisticPacket.cs" />
     <Compile Include="Packets\Client\ItemDataPacket.cs" />
@@ -112,7 +110,7 @@
     <Compile Include="Packets\Server\DisconnectPacket.cs" />
     <Compile Include="Packets\Server\DisplayScoreboardPacket.cs" />
     <Compile Include="Packets\Server\EffectPacket.cs" />
-    <Compile Include="Packets\Server\EncryptionKeyRequestPacket.cs" />
+    <Compile Include="Packets\Server\EncryptionRequestPacket.cs" />
     <Compile Include="Packets\Server\EntityEffectPacket.cs" />
     <Compile Include="Packets\Server\EntityEquipmentPacket.cs" />
     <Compile Include="Packets\Server\EntityHeadLookPacket.cs" />

@@ -6,9 +6,11 @@ namespace MineLib.Network
     {
         string ServerIP { get; set; }
         int ServerPort { get; set; }
+        ServerState State { get; set; }
+
+        string AccessToken { get; set; }
+        string SelectedProfile { get; set; }
 
         bool Running { get; set; }
-
-        ServerState State { get; set; }
     }
 }
