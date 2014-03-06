@@ -124,8 +124,9 @@ namespace MineLib.Network
                                 continue;
                             }
 
-                            var packets = ServerResponse.ServerStatusResponse[packetID]();
-                            RaisePacketHandled(this, packets, packetID, ServerState.Status);
+                            var packetS = ServerResponse.ServerStatusResponse[packetID]();
+                            packetS.ReadPacket(ref _stream);
+                            RaisePacketHandled(this, packetS, packetID, ServerState.Status);
 
                             break;
 
@@ -136,12 +137,12 @@ namespace MineLib.Network
                                 continue;
                             }
 
-                            var packetl = ServerResponse.ServerLoginResponse[packetID]();
-                            packetl.ReadPacket(ref _stream);
-                            RaisePacketHandled(this, packetl, packetID, ServerState.Login);
+                            var packetL = ServerResponse.ServerLoginResponse[packetID]();
+                            packetL.ReadPacket(ref _stream);
+                            RaisePacketHandled(this, packetL, packetID, ServerState.Login);
 
                             if (packetID == 1)
-                                EnableEncryption(packetl);
+                                EnableEncryption(packetL);
 
                             if (packetID == 2)
                                 _minecraft.State = ServerState.Play;
@@ -159,9 +160,9 @@ namespace MineLib.Network
                                 continue;
                             }
 
-                            var packetp = ServerResponse.ServerPlayResponse[packetID]();
-                            packetp.ReadPacket(ref _stream);
-                            RaisePacketHandled(this, packetp, packetID, ServerState.Play);
+                            var packetP = ServerResponse.ServerPlayResponse[packetID]();
+                            packetP.ReadPacket(ref _stream);
+                            RaisePacketHandled(this, packetP, packetID, ServerState.Play);
 
                             break;
                     }
