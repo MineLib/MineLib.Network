@@ -1,4 +1,5 @@
 using CWrapped;
+using MineLib.Network.Enums;
 
 namespace MineLib.Network.Packets.Client
 {
@@ -8,7 +9,7 @@ namespace MineLib.Network.Packets.Client
         public byte ViewDistance;
         public byte ChatFlags;
         public bool ChatColours;
-        public byte Difficulty;
+        public Difficulty Difficulty;
         public bool ShowCape;
 
         public const byte PacketId = 0x15;
@@ -20,7 +21,7 @@ namespace MineLib.Network.Packets.Client
             ViewDistance = stream.ReadByte();
             ChatFlags = stream.ReadByte();
             ChatColours = stream.ReadBool();
-            Difficulty = stream.ReadByte();
+            Difficulty = (Difficulty)stream.ReadByte();
             ShowCape = stream.ReadBool();
         }
 
@@ -31,7 +32,7 @@ namespace MineLib.Network.Packets.Client
             stream.WriteByte(ViewDistance);
             stream.WriteByte(ChatFlags);
             stream.WriteBool(ChatColours);
-            stream.WriteByte(Difficulty);
+            stream.WriteByte((byte)Difficulty);
             stream.WriteBool(ShowCape);
             stream.Purge();
         }

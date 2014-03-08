@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Net.Sockets;
 using System.Security.Cryptography;
@@ -7,9 +8,7 @@ using System.Threading;
 using CWrapped;
 using MineLib.Network.Enums;
 using MineLib.Network.Packets;
-using MineLib.Network.Packets.Client;
 using MineLib.Network.Packets.Client.Login;
-using MineLib.Network.Packets.Server;
 using MineLib.Network.Packets.Server.Login;
 
 namespace MineLib.Network
@@ -65,7 +64,7 @@ namespace MineLib.Network
             _baseStream = _baseSock.GetStream();
             _stream = new Wrapped(_baseStream);
 
-            // Socket Created
+            // Socket Created.
 
             // -- Start network parsing.
             _handler = new Thread(Updater);
@@ -107,6 +106,7 @@ namespace MineLib.Network
 
                 while (_baseSock.Client.Available > 0)
                 {
+                    Debug.WriteLine("ololo");
                     Console.WriteLine("In While");
 
                     int length = _stream.ReadVarInt();
@@ -117,6 +117,7 @@ namespace MineLib.Network
 
                     switch (_minecraft.State)
                     {
+                        #region Status
                         case ServerState.Status:
                             if (ServerResponse.ServerStatusResponse[packetID] == null)
                             {
@@ -129,7 +130,9 @@ namespace MineLib.Network
                             RaisePacketHandled(this, packetS, packetID, ServerState.Status);
 
                             break;
+                        #endregion Status
 
+                        #region Login
                         case ServerState.Login:
                             if (ServerResponse.ServerLoginResponse[packetID] == null)
                             {
@@ -152,7 +155,9 @@ namespace MineLib.Network
                             Stop();
 
                             break;
+                        #endregion Login
 
+                        #region Play
                         case ServerState.Play:
                             if (ServerResponse.ServerPlayResponse[packetID] == null)
                             {
@@ -165,6 +170,8 @@ namespace MineLib.Network
                             RaisePacketHandled(this, packetP, packetID, ServerState.Play);
 
                             break;
+                        #endregion Play
+
                     }
                     Console.WriteLine("Out While");
                     Console.WriteLine(" ");

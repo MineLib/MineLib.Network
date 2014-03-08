@@ -7,11 +7,11 @@ namespace MineLib.Network.Packets.Server
         public int X;
         public short Y;
         public int Z;
-        public byte Action;
+        public byte Action; // Convert
         public byte[] NBTData;
 
-        public const byte PacketId = 0x0B;
-        public byte Id { get { return 0x0B; } }
+        public const byte PacketId = 0x35;
+        public byte Id { get { return 0x35; } }
 
         public void ReadPacket(ref Wrapped stream)
         {

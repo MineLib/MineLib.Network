@@ -1,10 +1,11 @@
 using CWrapped;
+using MineLib.Network.Enums;
 
 namespace MineLib.Network.Packets.Client
 {
     public struct PlayerAbilitiesPacket : IPacket
     {
-        public byte Flags;
+        public PlayerAbility Flags;
         public float FlyingSpeed, WalkingSpeed;
 
         public const byte PacketId = 0x13;
@@ -12,7 +13,7 @@ namespace MineLib.Network.Packets.Client
 
         public void ReadPacket(ref Wrapped stream)
         {
-            Flags = stream.ReadByte();
+            Flags = (PlayerAbility)stream.ReadByte();
             FlyingSpeed = stream.ReadFloat();
             WalkingSpeed = stream.ReadFloat();
         }
@@ -20,7 +21,7 @@ namespace MineLib.Network.Packets.Client
         public void WritePacket(ref Wrapped stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteByte(Flags);
+            stream.WriteByte((byte)Flags);
             stream.WriteFloat(FlyingSpeed);
             stream.WriteFloat(WalkingSpeed);
             stream.Purge();

@@ -4,6 +4,7 @@ namespace MineLib.Network.Packets.Server
 {
     public struct BlockActionPacket : IPacket
     {
+        // Use BlockAction enum.
         public int X;
         public short Y;
         public int Z;

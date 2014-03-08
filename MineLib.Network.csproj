@@ -37,6 +37,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Cryptography.cs" />
+    <Compile Include="Data\Records.cs" />
+    <Compile Include="Enums\BlockActions.cs" />
     <Compile Include="IMinecraft.cs" />
     <Compile Include="Data\EntityMetadata\MetadadaShort.cs" />
     <Compile Include="Data\EntityMetadata\MetadataByte.cs" />
@@ -55,7 +57,7 @@
     <Compile Include="Enums\Animation.cs" />
     <Compile Include="Enums\Blocks.cs" />
     <Compile Include="Enums\ChatMode.cs" />
-    <Compile Include="Enums\ClickModen.cs" />
+    <Compile Include="Enums\ClickMode.cs" />
     <Compile Include="Enums\ClientStatus.cs" />
     <Compile Include="Enums\Difficulty.cs" />
     <Compile Include="Enums\DigStatus.cs" />
@@ -70,7 +72,7 @@
     <Compile Include="Enums\Mobs.cs" />
     <Compile Include="Enums\NextState.cs" />
     <Compile Include="Enums\Objects.cs" />
-    <Compile Include="Enums\PlayerAbilities.cs" />
+    <Compile Include="Enums\PlayerAbility.cs" />
     <Compile Include="Enums\ScoreboardPosition.cs" />
     <Compile Include="Enums\ServerState.cs" />
     <Compile Include="Enums\TeamMode.cs" />
@@ -86,11 +88,13 @@
     <Compile Include="Packets\Client\Login\EncryptionResponsePacket.cs" />
     <Compile Include="Packets\Client\EntityActionPacket.cs" />
     <Compile Include="Packets\Client\Login\LoginStartPacket.cs" />
+    <Compile Include="Packets\Client\Status\PingPacket.cs" />
     <Compile Include="Packets\Client\PlayerDiggingPacket.cs" />
     <Compile Include="Packets\Client\PlayerLookPacket.cs" />
     <Compile Include="Packets\Client\PlayerPacket.cs" />
     <Compile Include="Packets\Client\PlayerPositionAndLookPacket.cs" />
     <Compile Include="Packets\Client\PlayerPositionPacket.cs" />
+    <Compile Include="Packets\Client\Status\ResponsePacket.cs" />
     <Compile Include="Packets\Client\SteerVehiclePacket.cs" />
     <Compile Include="Packets\Client\UseEntityPacket.cs" />
     <Compile Include="Packets\Client\PlayerBlockPlacementPacket.cs" />
@@ -147,14 +151,14 @@
     <Compile Include="Packets\Server\MultiBlockChangePacket.cs" />
     <Compile Include="Packets\Server\OpenWindowPacket.cs" />
     <Compile Include="Packets\Server\ParticlePacket.cs" />
-    <Compile Include="Packets\Server\PingPacket.cs" />
+    <Compile Include="Packets\Server\Status\PingPacket.cs" />
     <Compile Include="Packets\Server\PlayerAbilitiesPacket.cs" />
     <Compile Include="Packets\Server\PlayerListItemPacket.cs" />
     <Compile Include="Packets\Server\PlayerPositionAndLookServerPacket.cs" />
     <Compile Include="Packets\Server\PluginMessagePacket.cs" />
     <Compile Include="Packets\Server\RemoveEntityEffectPacket.cs" />
     <Compile Include="Packets\Server\RespawnPacket.cs" />
-    <Compile Include="Packets\Server\ResponsePacket.cs" />
+    <Compile Include="Packets\Server\Status\ResponsePacket.cs" />
     <Compile Include="Packets\Server\ScoreboardObjectivePacket.cs" />
     <Compile Include="Packets\Server\SetExperiencePacket.cs" />
     <Compile Include="Packets\Server\SetSlotPacket.cs" />
@@ -169,8 +173,9 @@
     <Compile Include="Packets\Server\SpawnPositionPacket.cs" />
     <Compile Include="Packets\Server\StatisticsPacket.cs" />
     <Compile Include="Packets\Server\TabCompletePacket.cs" />
+    <Compile Include="Packets\Server\TeamsPacket.cs" />
     <Compile Include="Packets\Server\TimeUpdatePacket.cs" />
-    <Compile Include="Packets\Server\UpdateBlockEntity.cs" />
+    <Compile Include="Packets\Server\UpdateBlockEntityPacket.cs" />
     <Compile Include="Packets\Server\UpdateHealthPacket.cs" />
     <Compile Include="Packets\Server\UpdateScorePacket.cs" />
     <Compile Include="Packets\Server\UpdateSignPacket.cs" />

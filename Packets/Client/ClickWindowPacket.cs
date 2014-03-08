@@ -12,8 +12,8 @@ namespace MineLib.Network.Packets.Client
         public byte Mode;
         public ItemStack ClickedItem;
 
-        public const byte PacketId = 0x2E;
-        public byte Id { get { return 0x2E; } }
+        public const byte PacketId = 0x0E;
+        public byte Id { get { return 0x0E; } }
 
         public void ReadPacket(ref Wrapped stream)
         {

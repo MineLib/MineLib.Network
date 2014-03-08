@@ -1,6 +1,6 @@
 ﻿namespace MineLib.Network.Enums
 {
-    public enum PlayerAbilities
+    public enum PlayerAbility
     {
         CreativeMode    = 0,
         Flying          = 1,

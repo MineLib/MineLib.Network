@@ -1,6 +1,6 @@
 using CWrapped;
 
-namespace MineLib.Network.Packets.Server
+namespace MineLib.Network.Packets.Server.Status
 {
     public struct PingPacket : IPacket
     {
