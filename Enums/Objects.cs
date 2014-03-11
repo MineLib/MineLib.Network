@@ -1,6 +1,6 @@
 ﻿namespace MineLib.Network.Enums
 {
-    public enum Objects : byte
+    public enum Objects
     {
         Boat                    = 1,
         ItemStack               = 2,

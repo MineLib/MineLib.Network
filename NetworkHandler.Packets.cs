@@ -16,6 +16,24 @@ namespace MineLib.Network
             switch (state)
             {
                 case ServerState.Login:
+
+                    #region Login
+                    switch ((PacketsServer)id)
+                    {
+                        case PacketsServer.LoginDisconnect:
+                            FireLoginDisconnect(packet);
+                            break;
+
+                        case PacketsServer.EncryptionRequest:
+                            EnableEncryption(packet); // Automatic enable encryption.
+                            break;
+
+                        case PacketsServer.LoginSuccess:
+                            FireLoginSuccess(packet);
+                            break;
+                    }
+                    #endregion Login
+
                     break;
 
                 case ServerState.Play:
@@ -283,11 +301,25 @@ namespace MineLib.Network
                             FireDisconnect(packet);
                             break;
                     }
-                    #endregion
+                    #endregion Play
 
                     break;
 
                 case ServerState.Status:
+
+                    #region Status
+                    switch ((PacketsServer)id)
+                    {
+                        case PacketsServer.Response:
+                            FireResponse(packet);
+                            break;
+
+                        case PacketsServer.Ping:
+                            FirePing(packet);
+                            break;
+                    }
+                    #endregion Status
+
                     break;
 
                 default:

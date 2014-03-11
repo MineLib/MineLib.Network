@@ -79,7 +79,7 @@
     <Compile Include="Events\Events.cs" />
     <Compile Include="NetworkHandler.cs" />
     <Compile Include="NetworkHandler.Events.cs" />
-    <Compile Include="NetworkHandler.PacketsHandler.cs" />
+    <Compile Include="NetworkHandler.Packets.cs" />
     <Compile Include="Enums\PacketsEnums.cs" />
     <Compile Include="Packets\Client\ClientStatusPacket.cs" />
     <Compile Include="Packets\Client\EnchantItemPacket.cs" />

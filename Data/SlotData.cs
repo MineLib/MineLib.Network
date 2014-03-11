@@ -2,7 +2,8 @@
 using System.IO;
 using CWrapped;
 using fNbt;
-using fNbt.Serialization;
+//using fNbt.Serialization;
+// Serialization WIP
 
 namespace MineLib.Network.Data
 {
@@ -127,7 +128,7 @@ namespace MineLib.Network.Data
             return c;
         }
 
-        [NbtIgnore]
+        //[NbtIgnore]
         public bool Empty
         {
             get { return Id == -1; }
@@ -175,7 +176,7 @@ namespace MineLib.Network.Data
 
         //[IgnoreOnNull] // Why it don't work?
         public NbtCompound Nbt { get; set; }
-        [NbtIgnore]
+        //[NbtIgnore]
         public int Index;
 
         public override string ToString()
@@ -194,7 +195,7 @@ namespace MineLib.Network.Data
             return new ItemStack(Id, Count, Metadata, Nbt);
         }
 
-        [NbtIgnore]
+        //[NbtIgnore]
         public static ItemStack EmptyStack
         {
             get

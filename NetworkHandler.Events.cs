@@ -6,6 +6,13 @@ namespace MineLib.Network
     {
         public event PacketsHandler OnPacketHandled;
 
+        public event PacketHandler FireLoginSuccess;
+        public event PacketHandler FireLoginDisconnect;
+
+        public event PacketHandler FireResponse;
+        public event PacketHandler FirePing;
+
+
         public event PacketHandler FireKeepAlive;
         public event PacketHandler FireJoinGame;
         public event PacketHandler FireChatMessage;

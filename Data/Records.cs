@@ -1,6 +1,4 @@
-﻿using CWrapped;
-
-namespace MineLib.Network.Data
+﻿namespace MineLib.Network.Data
 {
     public struct Records
     {

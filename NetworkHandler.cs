@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Net.Sockets;
 using System.Security.Cryptography;
@@ -15,7 +14,7 @@ namespace MineLib.Network
 {
     public partial class NetworkHandler : IDisposable
     {
-        private Thread _handler;
+        private Thread _listener;
         private IMinecraft _minecraft;
         private TcpClient _baseSock;
         private NetworkStream _baseStream;
@@ -67,8 +66,8 @@ namespace MineLib.Network
             // Socket Created.
 
             // -- Start network parsing.
-            _handler = new Thread(Updater);
-            _handler.Start();
+            _listener = new Thread(Updater);
+            _listener.Start();
             // Handler thread started.
         }
 
@@ -106,7 +105,6 @@ namespace MineLib.Network
 
                 while (_baseSock.Client.Available > 0)
                 {
-                    Debug.WriteLine("ololo");
                     Console.WriteLine("In While");
 
                     int length = _stream.ReadVarInt();
@@ -186,7 +184,7 @@ namespace MineLib.Network
             return true;
         }
 
-        private void EnableEncryption(IPacket packet)
+        public void EnableEncryption(IPacket packet)
         {
             // From libMC.NET
             EncryptionRequestPacket Request = (EncryptionRequestPacket) packet;
@@ -236,8 +234,8 @@ namespace MineLib.Network
 
         public void Dispose()
         {
-            if (_handler.IsAlive)
-                _handler.Abort();
+            if (_listener.IsAlive)
+                _listener.Abort();
 
             if (_baseSock != null)
                 _baseSock.Close();
@@ -251,5 +249,6 @@ namespace MineLib.Network
             if (_minecraft != null)
                 _minecraft = null;
         }
+
     }
 }
