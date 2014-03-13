@@ -5,13 +5,13 @@ namespace MineLib.Network
 {
     public partial class NetworkHandler
     {
-        private void RaisePacketHandled(object sender, IPacket packet, int id, ServerState state)
+        private void RaisePacketHandled(IPacket packet, int id, ServerState state)
         {
             if (OnPacketHandled != null)
-                OnPacketHandled(sender, packet, id, state);
+                OnPacketHandled(packet, id, state);
         }
 
-        private void RaisePacketHandledUnUsed(object sender, IPacket packet, int id, ServerState state)
+        private void RaisePacketHandledUnUsed(IPacket packet, int id, ServerState state)
         {
             switch (state)
             {
@@ -324,7 +324,7 @@ namespace MineLib.Network
 
                 default:
                     if (OnPacketHandled != null)
-                        OnPacketHandled(sender, packet, id, state);
+                        OnPacketHandled(packet, id, state);
                     break;
             }
 

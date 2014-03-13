@@ -66,7 +66,7 @@ namespace MineLib.Network
             // Socket Created.
 
             // -- Start network parsing.
-            _listener = new Thread(Updater);
+            _listener = new Thread(Updater) {Name = "PacketListener"};
             _listener.Start();
             // Handler thread started.
         }
@@ -85,7 +85,7 @@ namespace MineLib.Network
             {
                 do
                 {
-                    Thread.Sleep(100);
+                    Thread.Sleep(25);
                 } while (PacketHandler());
             }
             catch (IOException) {}
@@ -125,7 +125,7 @@ namespace MineLib.Network
 
                             var packetS = ServerResponse.ServerStatusResponse[packetID]();
                             packetS.ReadPacket(ref _stream);
-                            RaisePacketHandled(this, packetS, packetID, ServerState.Status);
+                            RaisePacketHandled(packetS, packetID, ServerState.Status);
 
                             break;
                         #endregion Status
@@ -140,7 +140,7 @@ namespace MineLib.Network
 
                             var packetL = ServerResponse.ServerLoginResponse[packetID]();
                             packetL.ReadPacket(ref _stream);
-                            RaisePacketHandled(this, packetL, packetID, ServerState.Login);
+                            RaisePacketHandled(packetL, packetID, ServerState.Login);
 
                             if (packetID == 1)
                                 EnableEncryption(packetL);
@@ -165,7 +165,7 @@ namespace MineLib.Network
 
                             var packetP = ServerResponse.ServerPlayResponse[packetID]();
                             packetP.ReadPacket(ref _stream);
-                            RaisePacketHandled(this, packetP, packetID, ServerState.Play);
+                            RaisePacketHandled(packetP, packetID, ServerState.Play);
 
                             break;
                         #endregion Play

@@ -94,7 +94,7 @@
     <Compile Include="Packets\Client\PlayerPacket.cs" />
     <Compile Include="Packets\Client\PlayerPositionAndLookPacket.cs" />
     <Compile Include="Packets\Client\PlayerPositionPacket.cs" />
-    <Compile Include="Packets\Client\Status\ResponsePacket.cs" />
+    <Compile Include="Packets\Client\Status\RequestPacket.cs" />
     <Compile Include="Packets\Client\SteerVehiclePacket.cs" />
     <Compile Include="Packets\Client\UseEntityPacket.cs" />
     <Compile Include="Packets\Client\PlayerBlockPlacementPacket.cs" />
@@ -140,7 +140,7 @@
     <Compile Include="Packets\Server\EntityTeleportPacket.cs" />
     <Compile Include="Packets\Server\EntityVelocityPacket.cs" />
     <Compile Include="Packets\Server\ExplosionPacket.cs" />
-    <Compile Include="Packets\Server\Login\HandshakePacket.cs" />
+    <Compile Include="Packets\HandshakePacket.cs" />
     <Compile Include="Packets\Server\HeldItemChangePacket.cs" />
     <Compile Include="Packets\Server\JoinGamePacket.cs" />
     <Compile Include="Packets\Client\KeepAlivePacket.cs" />

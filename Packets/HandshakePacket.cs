@@ -1,7 +1,7 @@
 ﻿using CWrapped;
 using MineLib.Network.Enums;
 
-namespace MineLib.Network.Packets.Server.Login
+namespace MineLib.Network.Packets
 {
     public struct HandshakePacket : IPacket
     {

@@ -5,7 +5,7 @@ namespace MineLib.Network
     public interface IMinecraft
     {
         string ServerIP { get; set; }
-        int ServerPort { get; set; }
+        short ServerPort { get; set; }
         ServerState State { get; set; }
 
         string AccessToken { get; set; }
