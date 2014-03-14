@@ -17,6 +17,7 @@ Supported:
 
 
 Documentation will come soon.
+See https://github.com/Aragas/MineLib.ClientWrapper for "How use dat shiet"
 
 Used repos:
 * https://github.com/umby24/libMC.NET
