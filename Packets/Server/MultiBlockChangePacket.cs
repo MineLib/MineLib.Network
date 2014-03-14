@@ -27,7 +27,7 @@ namespace MineLib.Network.Packets.Server
 
             for (int i = 0; i < RecordCount - 1; i++)
             {
-                byte[] blockData = new byte[4];
+                var blockData = new byte[4];
                 Buffer.BlockCopy(Data, (i * 4), blockData, 0, 4);
 
                 RecordsArray[i].Metadata = blockData[3] & 0xF;

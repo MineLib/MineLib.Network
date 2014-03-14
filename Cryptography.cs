@@ -10,13 +10,14 @@ using System.Security.Permissions;
 using System.Text;
 
 // From Pdelvo.Minecraft
+
 namespace MineLib.Network
 {
     //Thanks to SirCmpwn!
     public static class Cryptography
     {
         /// <summary>
-        /// Produces a Java-style SHA-1 hex digest of the given data.
+        ///     Produces a Java-style SHA-1 hex digest of the given data.
         /// </summary>
         public static string JavaHexDigest(byte[] data)
         {
@@ -33,8 +34,8 @@ namespace MineLib.Network
         }
 
         /// <summary>
-        /// Converts the given n-bit little-endian unsigned number into
-        /// lowercase hexadecimal form.
+        ///     Converts the given n-bit little-endian unsigned number into
+        ///     lowercase hexadecimal form.
         /// </summary>
         private static string GetHexString(byte[] p)
         {
@@ -45,8 +46,8 @@ namespace MineLib.Network
         }
 
         /// <summary>
-        /// Given an array that represents an n-bit little-endian signed number,
-        /// the two's compliment (negation) is produced.
+        ///     Given an array that represents an n-bit little-endian signed number,
+        ///     the two's compliment (negation) is produced.
         /// </summary>
         private static byte[] TwosCompliment(byte[] p)
         {
@@ -54,7 +55,7 @@ namespace MineLib.Network
             bool carry = true;
             for (i = p.Length - 1; i >= 0; i--)
             {
-                p[i] = (byte)~p[i];
+                p[i] = (byte) ~p[i];
                 if (carry)
                 {
                     carry = p[i] == 0xFF;
@@ -67,12 +68,12 @@ namespace MineLib.Network
 
     public static class AsnKeyBuilder
     {
-        private static readonly byte[] ZERO = new byte[] { 0 };
-        private static readonly byte[] EMPTY = new byte[] { };
+        private static readonly byte[] ZERO = {0};
+        private static readonly byte[] EMPTY = {};
 
         // PublicKeyInfo (X.509 compatible) message
         /// <summary>
-        ///   Returns the AsnMessage representing the X.509 PublicKeyInfo.
+        ///     Returns the AsnMessage representing the X.509 PublicKeyInfo.
         /// </summary>
         /// <param name="publicKey"> The DSA key to be encoded. </param>
         /// <returns> Returns the AsnType representing the X.509 PublicKeyInfo. </returns>
@@ -102,14 +103,14 @@ namespace MineLib.Network
             AsnType g = CreateIntegerPos(publicKey.G);
 
             // Sequence - DSA-Params
-            AsnType dssParams = CreateSequence(new[] { p, q, g });
+            AsnType dssParams = CreateSequence(new[] {p, q, g});
 
             // OID - packed 1.2.840.10040.4.1
             //   { 0x2A, 0x86, 0x48, 0xCE, 0x38, 0x04, 0x01 }
             AsnType oid = CreateOid("1.2.840.10040.4.1");
 
             // Sequence
-            AsnType algorithmID = CreateSequence(new[] { oid, dssParams });
+            AsnType algorithmID = CreateSequence(new[] {oid, dssParams});
 
             // Public Key Y
             AsnType y = CreateIntegerPos(publicKey.Y);
@@ -117,14 +118,14 @@ namespace MineLib.Network
 
             // Sequence 'A'
             AsnType publicKeyInfo =
-                CreateSequence(new[] { algorithmID, key });
+                CreateSequence(new[] {algorithmID, key});
 
             return new AsnMessage(publicKeyInfo.GetBytes(), "X.509");
         }
 
         // PublicKeyInfo (X.509 compatible) message
         /// <summary>
-        ///   Returns the AsnMessage representing the X.509 PublicKeyInfo.
+        ///     Returns the AsnMessage representing the X.509 PublicKeyInfo.
         /// </summary>
         /// <param name="publicKey"> The RSA key to be encoded. </param>
         /// <returns> Returns the AsnType representing the X.509 PublicKeyInfo. </returns>
@@ -151,16 +152,16 @@ namespace MineLib.Network
             //   { 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x01 }
             AsnType oid = CreateOid("1.2.840.113549.1.1.1");
             AsnType algorithmID =
-                CreateSequence(new[] { oid, CreateNull() });
+                CreateSequence(new[] {oid, CreateNull()});
 
             AsnType n = CreateIntegerPos(publicKey.Modulus);
             AsnType e = CreateIntegerPos(publicKey.Exponent);
             AsnType key = CreateBitString(
-                CreateSequence(new[] { n, e })
+                CreateSequence(new[] {n, e})
                 );
 
             AsnType publicKeyInfo =
-                CreateSequence(new[] { algorithmID, key });
+                CreateSequence(new[] {algorithmID, key});
 
             return new AsnMessage(publicKeyInfo.GetBytes(), "X.509");
         }
@@ -168,8 +169,8 @@ namespace MineLib.Network
         // PKCS #8, Section 6 (PrivateKeyInfo) message
         // !!!!!!!!!!!!!!! Unencrypted !!!!!!!!!!!!!!!
         /// <summary>
-        ///   Returns AsnMessage representing the unencrypted
-        ///   PKCS #8 PrivateKeyInfo.
+        ///     Returns AsnMessage representing the unencrypted
+        ///     PKCS #8 PrivateKeyInfo.
         /// </summary>
         /// <param name="privateKey"> The DSA key to be encoded. </param>
         /// <returns> Returns the AsnType representing the unencrypted PKCS #8 PrivateKeyInfo. </returns>
@@ -202,14 +203,14 @@ namespace MineLib.Network
             AsnType q = CreateIntegerPos(privateKey.Q);
             AsnType g = CreateIntegerPos(privateKey.G);
 
-            AsnType dssParams = CreateSequence(new[] { p, q, g });
+            AsnType dssParams = CreateSequence(new[] {p, q, g});
 
             // OID - packed 1.2.840.10040.4.1
             //   { 0x2A, 0x86, 0x48, 0xCE, 0x38, 0x04, 0x01 }
             AsnType oid = CreateOid("1.2.840.10040.4.1");
 
             // AlgorithmIdentifier
-            AsnType algorithmID = CreateSequence(new[] { oid, dssParams });
+            AsnType algorithmID = CreateSequence(new[] {oid, dssParams});
 
             // Private Key X
             AsnType x = CreateIntegerPos(privateKey.X);
@@ -217,7 +218,7 @@ namespace MineLib.Network
 
             // Sequence
             AsnType privateKeyInfo =
-                CreateSequence(new[] { version, algorithmID, key });
+                CreateSequence(new[] {version, algorithmID, key});
 
             return new AsnMessage(privateKeyInfo.GetBytes(), "PKCS#8");
         }
@@ -225,8 +226,8 @@ namespace MineLib.Network
         // PKCS #8, Section 6 (PrivateKeyInfo) message
         // !!!!!!!!!!!!!!! Unencrypted !!!!!!!!!!!!!!!
         /// <summary>
-        ///   Returns AsnMessage representing the unencrypted
-        ///   PKCS #8 PrivateKeyInfo.
+        ///     Returns AsnMessage representing the unencrypted
+        ///     PKCS #8 PrivateKeyInfo.
         /// </summary>
         /// <param name="privateKey"> The RSA key to be encoded. </param>
         /// <returns> Returns the AsnType representing the unencrypted PKCS #8 PrivateKeyInfo. </returns>
@@ -267,28 +268,28 @@ namespace MineLib.Network
             AsnType iq = CreateIntegerPos(privateKey.InverseQ);
 
             // Version - 0 (v1998)
-            AsnType version = CreateInteger(new byte[] { 0 });
+            AsnType version = CreateInteger(new byte[] {0});
 
             // octstring = OCTETSTRING(SEQUENCE(INTEGER(0)INTEGER(N)...))
             AsnType key = CreateOctetString(
-                CreateSequence(new[] { version, n, e, d, p, q, dp, dq, iq })
+                CreateSequence(new[] {version, n, e, d, p, q, dp, dq, iq})
                 );
 
             // OID - packed 1.2.840.113549.1.1.1
             //   { 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x01 }
-            AsnType algorithmID = CreateSequence(new[] { CreateOid("1.2.840.113549.1.1.1"), CreateNull() }
+            AsnType algorithmID = CreateSequence(new[] {CreateOid("1.2.840.113549.1.1.1"), CreateNull()}
                 );
 
             // PrivateKeyInfo
             AsnType privateKeyInfo =
-                CreateSequence(new[] { version, algorithmID, key });
+                CreateSequence(new[] {version, algorithmID, key});
 
             return new AsnMessage(privateKeyInfo.GetBytes(), "PKCS#8");
         }
 
         /// <summary>
-        ///   <para> An ordered collection of one or more types. Returns the AsnType representing an ASN.1 encoded sequence. </para>
-        ///   <para> If the AsnType is null, an empty sequence (length 0) is returned. </para>
+        ///     <para> An ordered collection of one or more types. Returns the AsnType representing an ASN.1 encoded sequence. </para>
+        ///     <para> If the AsnType is null, an empty sequence (length 0) is returned. </para>
         /// </summary>
         /// <param name="value"> An AsnType consisting of a single value to be encoded. </param>
         /// <returns> Returns the AsnType representing an ASN.1 encoded sequence. </returns>
@@ -316,8 +317,8 @@ namespace MineLib.Network
         }
 
         /// <summary>
-        ///   <para> An ordered collection of one or more types. Returns the AsnType representing an ASN.1 encoded sequence. </para>
-        ///   <para> If the AsnType is null, an empty sequence (length 0) is returned. </para>
+        ///     <para> An ordered collection of one or more types. Returns the AsnType representing an ASN.1 encoded sequence. </para>
+        ///     <para> If the AsnType is null, an empty sequence (length 0) is returned. </para>
         /// </summary>
         /// <param name="values"> An array of AsnType consisting of the values in the collection to be encoded. </param>
         /// <returns> Returns the AsnType representing an ASN.1 encoded Set. </returns>
@@ -345,8 +346,8 @@ namespace MineLib.Network
         }
 
         /// <summary>
-        ///   <para> An ordered collection zero, one or more types. Returns the AsnType representing an ASN.1 encoded sequence. </para>
-        ///   <para> If the AsnType value is null,an empty sequence (length 0) is returned. </para>
+        ///     <para> An ordered collection zero, one or more types. Returns the AsnType representing an ASN.1 encoded sequence. </para>
+        ///     <para> If the AsnType value is null,an empty sequence (length 0) is returned. </para>
         /// </summary>
         /// <param name="value"> An AsnType consisting of a single value to be encoded. </param>
         /// <returns> Returns the AsnType representing an ASN.1 encoded sequence. </returns>
@@ -371,8 +372,8 @@ namespace MineLib.Network
         }
 
         /// <summary>
-        ///   <para> An ordered collection zero, one or more types. Returns the AsnType representing an ASN.1 encoded sequence. </para>
-        ///   <para> If the AsnType array is null or the array is 0 length, an empty sequence (length 0) is returned. </para>
+        ///     <para> An ordered collection zero, one or more types. Returns the AsnType representing an ASN.1 encoded sequence. </para>
+        ///     <para> If the AsnType array is null or the array is 0 length, an empty sequence (length 0) is returned. </para>
         /// </summary>
         /// <param name="values"> An AsnType consisting of the values in the collection to be encoded. </param>
         /// <returns> Returns the AsnType representing an ASN.1 encoded sequence. </returns>
@@ -397,29 +398,12 @@ namespace MineLib.Network
         }
 
         /// <summary>
-        ///   <para> An ordered sequence of zero, one or more bits. Returns the AsnType representing an ASN.1 encoded bit string. </para>
-        ///   <para> If octets is null or length is 0, an empty (0 length) bit string is returned. </para>
-        /// </summary>
-        /// <param name="octets"> A MSB (big endian) byte[] representing the bit string to be encoded. </param>
-        /// <returns> Returns the AsnType representing an ASN.1 encoded bit string. </returns>
-        /// <seealso cref="CreateBitString(byte[], uint)" />
-        /// <seealso cref="CreateBitString(AsnType)" />
-        /// <seealso cref="CreateBitString(AsnType[])" />
-        /// <seealso cref="CreateBitString(string)" />
-        /// <seealso cref="CreateOctetString(byte[])" />
-        /// <seealso cref="CreateOctetString(AsnType)" />
-        /// <seealso cref="CreateOctetString(AsnType[])" />
-        /// <seealso cref="CreateOctetString(string)" />
-        internal static AsnType CreateBitString(byte[] octets)
-        {
-            // BitString: Tag 0x03 (3, Universal, Primitive)
-            return CreateBitString(octets, 0);
-        }
-
-        /// <summary>
-        ///   <para> An ordered sequence of zero, one or more bits. Returns the AsnType representing an ASN.1 encoded bit string. </para>
-        ///   <para> unusedBits is applied to the end of the bit string, not the start of the bit string. unusedBits must be less than 8 (the size of an octet). Refer to ITU X.680, Section 32. </para>
-        ///   <para> If octets is null or length is 0, an empty (0 length) bit string is returned. </para>
+        ///     <para> An ordered sequence of zero, one or more bits. Returns the AsnType representing an ASN.1 encoded bit string. </para>
+        ///     <para>
+        ///         unusedBits is applied to the end of the bit string, not the start of the bit string. unusedBits must be less
+        ///         than 8 (the size of an octet). Refer to ITU X.680, Section 32.
+        ///     </para>
+        ///     <para> If octets is null or length is 0, an empty (0 length) bit string is returned. </para>
         /// </summary>
         /// <param name="octets"> A MSB (big endian) byte[] representing the bit string to be encoded. </param>
         /// <param name="unusedBits"> The number of unused trailing binary digits in the bit string to be encoded. </param>
@@ -432,7 +416,7 @@ namespace MineLib.Network
         /// <seealso cref="CreateOctetString(AsnType)" />
         /// <seealso cref="CreateOctetString(AsnType[])" />
         /// <seealso cref="CreateOctetString(string)" />
-        internal static AsnType CreateBitString(byte[] octets, uint unusedBits)
+        internal static AsnType CreateBitString(byte[] octets, uint unusedBits = 0)
         {
             if (IsEmpty(octets))
             {
@@ -445,16 +429,16 @@ namespace MineLib.Network
                 throw new ArgumentException("Unused bits must be less than 8.");
             }
 
-            byte[] b = Concatenate(new[] { (byte)unusedBits }, octets);
+            byte[] b = Concatenate(new[] {(byte) unusedBits}, octets);
             // BitString: Tag 0x03 (3, Universal, Primitive)
             return new AsnType(0x03, b);
         }
 
         /// <summary>
-        ///   An ordered sequence of zero, one or more bits. Returns
-        ///   the AsnType representing an ASN.1 encoded bit string.
-        ///   If value is null, an empty (0 length) bit string is
-        ///   returned.
+        ///     An ordered sequence of zero, one or more bits. Returns
+        ///     the AsnType representing an ASN.1 encoded bit string.
+        ///     If value is null, an empty (0 length) bit string is
+        ///     returned.
         /// </summary>
         /// <param name="value"> An AsnType object to be encoded. </param>
         /// <returns> Returns the AsnType representing an ASN.1 encoded bit string. </returns>
@@ -478,10 +462,10 @@ namespace MineLib.Network
         }
 
         /// <summary>
-        ///   An ordered sequence of zero, one or more bits. Returns
-        ///   the AsnType representing an ASN.1 encoded bit string.
-        ///   If value is null, an empty (0 length) bit string is
-        ///   returned.
+        ///     An ordered sequence of zero, one or more bits. Returns
+        ///     the AsnType representing an ASN.1 encoded bit string.
+        ///     If value is null, an empty (0 length) bit string is
+        ///     returned.
         /// </summary>
         /// <param name="values"> An AsnType object to be encoded. </param>
         /// <returns> Returns the AsnType representing an ASN.1 encoded bit string. </returns>
@@ -505,9 +489,13 @@ namespace MineLib.Network
         }
 
         /// <summary>
-        ///   <para> An ordered sequence of zero, one or more bits. Returns the AsnType representing an ASN.1 encoded bit string. </para>
-        ///   <para> If octets is null or length is 0, an empty (0 length) bit string is returned. </para>
-        ///   <para> If conversion fails, the bit string returned is a partial bit string. The partial bit string ends at the octet before the point of failure (it does not include the octet which could not be parsed, or subsequent octets). </para>
+        ///     <para> An ordered sequence of zero, one or more bits. Returns the AsnType representing an ASN.1 encoded bit string. </para>
+        ///     <para> If octets is null or length is 0, an empty (0 length) bit string is returned. </para>
+        ///     <para>
+        ///         If conversion fails, the bit string returned is a partial bit string. The partial bit string ends at the
+        ///         octet before the point of failure (it does not include the octet which could not be parsed, or subsequent
+        ///         octets).
+        ///     </para>
         /// </summary>
         /// <param name="value"> A MSB (big endian) byte[] representing the bit string to be encoded. </param>
         /// <returns> Returns the AsnType representing an ASN.1 encoded bit string. </returns>
@@ -527,7 +515,7 @@ namespace MineLib.Network
 
             // Any unused bits?
             int lstrlen = value.Length;
-            int unusedBits = 8 - (lstrlen % 8);
+            int unusedBits = 8 - (lstrlen%8);
             if (8 == unusedBits)
             {
                 unusedBits = 0;
@@ -539,12 +527,12 @@ namespace MineLib.Network
             }
 
             // Determine number of octets
-            int loctlen = (lstrlen + 7) / 8;
+            int loctlen = (lstrlen + 7)/8;
 
             var octets = new List<byte>();
             for (int i = 0; i < loctlen; i++)
             {
-                String s = value.Substring(i * 8, 8);
+                String s = value.Substring(i*8, 8);
                 byte b = 0x00;
 
                 try
@@ -567,13 +555,13 @@ namespace MineLib.Network
             }
 
             // BitString: Tag 0x03 (3, Universal, Primitive)
-            return CreateBitString(octets.ToArray(), (uint)unusedBits);
+            return CreateBitString(octets.ToArray(), (uint) unusedBits);
         }
 
         /// <summary>
-        ///   An ordered sequence of zero, one or more octets. Returns
-        ///   the ASN.1 encoded octet string. If octets is null or length
-        ///   is 0, an empty (0 length) octet string is returned.
+        ///     An ordered sequence of zero, one or more octets. Returns
+        ///     the ASN.1 encoded octet string. If octets is null or length
+        ///     is 0, an empty (0 length) octet string is returned.
         /// </summary>
         /// <param name="value"> A MSB (big endian) byte[] representing the octet string to be encoded. </param>
         /// <returns> Returns the AsnType representing an ASN.1 encoded octet string. </returns>
@@ -597,10 +585,10 @@ namespace MineLib.Network
         }
 
         /// <summary>
-        ///   An ordered sequence of zero, one or more octets. Returns
-        ///   the byte[] representing an ASN.1 encoded octet string.
-        ///   If octets is null or length is 0, an empty (0 length)
-        ///   o ctet string is returned.
+        ///     An ordered sequence of zero, one or more octets. Returns
+        ///     the byte[] representing an ASN.1 encoded octet string.
+        ///     If octets is null or length is 0, an empty (0 length)
+        ///     o ctet string is returned.
         /// </summary>
         /// <param name="value"> An AsnType object to be encoded. </param>
         /// <returns> Returns the AsnType representing an ASN.1 encoded octet string. </returns>
@@ -623,10 +611,10 @@ namespace MineLib.Network
         }
 
         /// <summary>
-        ///   An ordered sequence of zero, one or more octets. Returns
-        ///   the byte[] representing an ASN.1 encoded octet string.
-        ///   If octets is null or length is 0, an empty (0 length)
-        ///   o ctet string is returned.
+        ///     An ordered sequence of zero, one or more octets. Returns
+        ///     the byte[] representing an ASN.1 encoded octet string.
+        ///     If octets is null or length is 0, an empty (0 length)
+        ///     o ctet string is returned.
         /// </summary>
         /// <param name="values"> An AsnType object to be encoded. </param>
         /// <returns> Returns the AsnType representing an ASN.1 encoded octet string. </returns>
@@ -650,9 +638,16 @@ namespace MineLib.Network
         }
 
         /// <summary>
-        ///   <para> An ordered sequence of zero, one or more bits. Returns the AsnType representing an ASN.1 encoded octet string. </para>
-        ///   <para> If octets is null or length is 0, an empty (0 length) octet string is returned. </para>
-        ///   <para> If conversion fails, the bit string returned is a partial bit string. The partial octet string ends at the octet before the point of failure (it does not include the octet which could not be parsed, or subsequent octets). </para>
+        ///     <para>
+        ///         An ordered sequence of zero, one or more bits. Returns the AsnType representing an ASN.1 encoded octet
+        ///         string.
+        ///     </para>
+        ///     <para> If octets is null or length is 0, an empty (0 length) octet string is returned. </para>
+        ///     <para>
+        ///         If conversion fails, the bit string returned is a partial bit string. The partial octet string ends at the
+        ///         octet before the point of failure (it does not include the octet which could not be parsed, or subsequent
+        ///         octets).
+        ///     </para>
         /// </summary>
         /// <param name="value"> A string representing the octet string to be encoded. </param>
         /// <returns> Returns the AsnType representing an ASN.1 encoded octet string. </returns>
@@ -671,12 +666,12 @@ namespace MineLib.Network
             }
 
             // Determine number of octets
-            int len = (value.Length + 255) / 256;
+            int len = (value.Length + 255)/256;
 
             var octets = new List<byte>();
             for (int i = 0; i < len; i++)
             {
-                String s = value.Substring(i * 2, 2);
+                String s = value.Substring(i*2, 2);
                 byte b = 0x00;
 
                 try
@@ -700,20 +695,23 @@ namespace MineLib.Network
         }
 
         /// <summary>
-        ///   <para> Returns the AsnType representing a ASN.1 encoded integer. The octets pass through this method are not modified. </para>
-        ///   <para> If octets is null or zero length, the method returns an AsnType equivalent to CreateInteger(byte[]{0}).. </para>
+        ///     <para>
+        ///         Returns the AsnType representing a ASN.1 encoded integer. The octets pass through this method are not
+        ///         modified.
+        ///     </para>
+        ///     <para> If octets is null or zero length, the method returns an AsnType equivalent to CreateInteger(byte[]{0}).. </para>
         /// </summary>
         /// <param name="value"> A MSB (big endian) byte[] representing the integer to be encoded. </param>
         /// <returns> Returns the AsnType representing an ASN.1 encoded integer. </returns>
         /// <example>
-        ///   ASN.1 encoded 0:
-        ///   <code>CreateInteger(null)</code>
-        ///   <code>CreateInteger(new byte[]{0x00})</code>
-        ///   <code>CreateInteger(new byte[]{0x00, 0x00})</code>
+        ///     ASN.1 encoded 0:
+        ///     <code>CreateInteger(null)</code>
+        ///     <code>CreateInteger(new byte[]{0x00})</code>
+        ///     <code>CreateInteger(new byte[]{0x00, 0x00})</code>
         /// </example>
         /// <example>
-        ///   ASN.1 encoded 1:
-        ///   <code>CreateInteger(new byte[]{0x01})</code>
+        ///     ASN.1 encoded 1:
+        ///     <code>CreateInteger(new byte[]{0x01})</code>
         /// </example>
         /// <seealso cref="CreateIntegerPos" />
         /// <seealso cref="CreateIntegerNeg" />
@@ -731,20 +729,24 @@ namespace MineLib.Network
         }
 
         /// <summary>
-        ///   <para> Returns the AsnType representing a positive ASN.1 encoded integer. If the high bit of most significant byte is set, the method prepends a 0x00 to octets before assigning the value to ensure the resulting integer is interpreted as positive in the application. </para>
-        ///   <para> If octets is null or zero length, the method returns an AsnType equivalent to CreateInteger(byte[]{0}).. </para>
+        ///     <para>
+        ///         Returns the AsnType representing a positive ASN.1 encoded integer. If the high bit of most significant byte
+        ///         is set, the method prepends a 0x00 to octets before assigning the value to ensure the resulting integer is
+        ///         interpreted as positive in the application.
+        ///     </para>
+        ///     <para> If octets is null or zero length, the method returns an AsnType equivalent to CreateInteger(byte[]{0}).. </para>
         /// </summary>
         /// <param name="value"> A MSB (big endian) byte[] representing the integer to be encoded. </param>
         /// <returns> Returns the AsnType representing an ASN.1 encoded positive integer. </returns>
         /// <example>
-        ///   ASN.1 encoded 0:
-        ///   <code>CreateIntegerPos(null)</code>
-        ///   <code>CreateIntegerPos(new byte[]{0x00})</code>
-        ///   <code>CreateIntegerPos(new byte[]{0x00, 0x00})</code>
+        ///     ASN.1 encoded 0:
+        ///     <code>CreateIntegerPos(null)</code>
+        ///     <code>CreateIntegerPos(new byte[]{0x00})</code>
+        ///     <code>CreateIntegerPos(new byte[]{0x00, 0x00})</code>
         /// </example>
         /// <example>
-        ///   ASN.1 encoded 1:
-        ///   <code>CreateInteger(new byte[]{0x01})</code>
+        ///     ASN.1 encoded 1:
+        ///     <code>CreateInteger(new byte[]{0x01})</code>
         /// </example>
         /// <seealso cref="CreateInteger" />
         /// <seealso cref="CreateIntegerNeg" />
@@ -776,39 +778,45 @@ namespace MineLib.Network
         }
 
         /// <summary>
-        ///   <para> Returns the negative ASN.1 encoded integer. If the high bit of most significant byte is set, the integer is already considered negative. </para>
-        ///   <para> If the high bit of most significant byte is <bold>not</bold> set, the integer will be 2's complimented to form a negative integer. </para>
-        ///   <para> If octets is null or zero length, the method returns an AsnType equivalent to CreateInteger(byte[]{0}).. </para>
+        ///     <para>
+        ///         Returns the negative ASN.1 encoded integer. If the high bit of most significant byte is set, the integer is
+        ///         already considered negative.
+        ///     </para>
+        ///     <para>
+        ///         If the high bit of most significant byte is <bold>not</bold> set, the integer will be 2's complimented to
+        ///         form a negative integer.
+        ///     </para>
+        ///     <para> If octets is null or zero length, the method returns an AsnType equivalent to CreateInteger(byte[]{0}).. </para>
         /// </summary>
         /// <param name="value"> A MSB (big endian) byte[] representing the integer to be encoded. </param>
         /// <returns> Returns the negative ASN.1 encoded integer. </returns>
         /// <example>
-        ///   ASN.1 encoded 0:
-        ///   <code>CreateIntegerNeg(null)</code>
-        ///   <code>CreateIntegerNeg(new byte[]{0x00})</code>
-        ///   <code>CreateIntegerNeg(new byte[]{0x00, 0x00})</code>
+        ///     ASN.1 encoded 0:
+        ///     <code>CreateIntegerNeg(null)</code>
+        ///     <code>CreateIntegerNeg(new byte[]{0x00})</code>
+        ///     <code>CreateIntegerNeg(new byte[]{0x00, 0x00})</code>
         /// </example>
         /// <example>
-        ///   ASN.1 encoded -1 (2's compliment 0xFF):
-        ///   <code>CreateIntegerNeg(new byte[]{0x01})</code>
+        ///     ASN.1 encoded -1 (2's compliment 0xFF):
+        ///     <code>CreateIntegerNeg(new byte[]{0x01})</code>
         /// </example>
         /// <example>
-        ///   ASN.1 encoded -2 (2's compliment 0xFE):
-        ///   <code>CreateIntegerNeg(new byte[]{0x02})</code>
+        ///     ASN.1 encoded -2 (2's compliment 0xFE):
+        ///     <code>CreateIntegerNeg(new byte[]{0x02})</code>
         /// </example>
         /// <example>
-        ///   ASN.1 encoded -1:
-        ///   <code>CreateIntegerNeg(new byte[]{0xFF})</code>
-        ///   <code>CreateIntegerNeg(new byte[]{0xFF,0xFF})</code>
-        ///   Note: already negative since the high bit is set.
+        ///     ASN.1 encoded -1:
+        ///     <code>CreateIntegerNeg(new byte[]{0xFF})</code>
+        ///     <code>CreateIntegerNeg(new byte[]{0xFF,0xFF})</code>
+        ///     Note: already negative since the high bit is set.
         /// </example>
         /// <example>
-        ///   ASN.1 encoded -255 (2's compliment 0xFF, 0x01):
-        ///   <code>CreateIntegerNeg(new byte[]{0x00,0xFF})</code>
+        ///     ASN.1 encoded -255 (2's compliment 0xFF, 0x01):
+        ///     <code>CreateIntegerNeg(new byte[]{0x00,0xFF})</code>
         /// </example>
         /// <example>
-        ///   ASN.1 encoded -255 (2's compliment 0xFF, 0xFF, 0x01):
-        ///   <code>CreateIntegerNeg(new byte[]{0x00,0x00,0xFF})</code>
+        ///     ASN.1 encoded -255 (2's compliment 0xFF, 0xFF, 0x01):
+        ///     <code>CreateIntegerNeg(new byte[]{0x00,0x00,0xFF})</code>
         /// </example>
         /// <seealso cref="CreateInteger" />
         /// <seealso cref="CreateIntegerPos" />
@@ -835,7 +843,7 @@ namespace MineLib.Network
 
             // Is this integer already negative?
             if (value[0] >= 0x80)
-            // Pass through with no modifications
+                // Pass through with no modifications
             {
                 return CreateInteger(value);
             }
@@ -848,17 +856,17 @@ namespace MineLib.Network
         }
 
         /// <summary>
-        ///   Returns the AsnType representing an ASN.1 encoded null.
+        ///     Returns the AsnType representing an ASN.1 encoded null.
         /// </summary>
         /// <returns> Returns the AsnType representing an ASN.1 encoded null. </returns>
         internal static AsnType CreateNull()
         {
-            return new AsnType(0x05, new byte[] { 0x00 });
+            return new AsnType(0x05, new byte[] {0x00});
         }
 
         /// <summary>
-        ///   Removes leading 0x00 octets from the byte[] octets. This
-        ///   method may return an empty byte array (0 length).
+        ///     Removes leading 0x00 octets from the byte[] octets. This
+        ///     method may return an empty byte array (0 length).
         /// </summary>
         /// <param name="octets"> An array of octets to trim. </param>
         /// <returns> A byte[] with leading 0x00 octets removed. </returns>
@@ -866,7 +874,7 @@ namespace MineLib.Network
         {
             if (IsEmpty(octets) || IsZero(octets))
             {
-                return new byte[] { };
+                return new byte[] {};
             }
 
             byte[] d = Duplicate(octets);
@@ -898,8 +906,8 @@ namespace MineLib.Network
         }
 
         /// <summary>
-        ///   Removes trailing 0x00 octets from the byte[] octets. This
-        ///   method may return an empty byte array (0 length).
+        ///     Removes trailing 0x00 octets from the byte[] octets. This
+        ///     method may return an empty byte array (0 length).
         /// </summary>
         /// <param name="octets"> An array of octets to trim. </param>
         /// <returns> A byte[] with trailing 0x00 octets removed. </returns>
@@ -922,17 +930,17 @@ namespace MineLib.Network
         }
 
         /// <summary>
-        ///   Returns the AsnType representing an ASN.1 encoded OID.
-        ///   If conversion fails, the result is a partial conversion
-        ///   up to the point of failure. If the oid string is null or
-        ///   not well formed, an empty byte[] is returned.
+        ///     Returns the AsnType representing an ASN.1 encoded OID.
+        ///     If conversion fails, the result is a partial conversion
+        ///     up to the point of failure. If the oid string is null or
+        ///     not well formed, an empty byte[] is returned.
         /// </summary>
         /// <param name="value"> The string representing the object identifier to be encoded. </param>
         /// <returns> Returns the AsnType representing an ASN.1 encoded object identifier. </returns>
         /// <example>
-        ///   The following assigns the encoded AsnType
-        ///   for a RSA key to oid:
-        ///   <code>AsnType oid = CreateOid("1.2.840.113549.1.1.1")</code>
+        ///     The following assigns the encoded AsnType
+        ///     for a RSA key to oid:
+        ///     <code>AsnType oid = CreateOid("1.2.840.113549.1.1.1")</code>
         /// </example>
         /// <seealso cref="CreateOid(byte[])" />
         internal static AsnType CreateOid(String value)
@@ -941,7 +949,7 @@ namespace MineLib.Network
             if (IsEmpty(value))
                 return null;
 
-            String[] tokens = value.Split(new[] { ' ', '.' });
+            String[] tokens = value.Split(new[] {' ', '.'});
 
             // Punt?
             if (IsEmpty(tokens))
@@ -988,13 +996,13 @@ namespace MineLib.Network
             // The list has at least 1 item...    
             if (arcs.Count >= 1)
             {
-                a = arcs[0] * 40;
+                a = arcs[0]*40;
             }
             if (arcs.Count >= 2)
             {
                 a += arcs[1];
             }
-            octets.Add((byte)(a));
+            octets.Add((byte) (a));
 
             // Add remaining arcs (subidentifiers)
             for (int i = 2; i < arcs.Count; i++)
@@ -1012,7 +1020,7 @@ namespace MineLib.Network
                     // Each entry is formed from the low 7 bits (0x7F).
                     // Set high bit of all entries (0x80) per X.680. We
                     // will unset the high bit of the final byte later.
-                    temp.Add((byte)(0x80 | (arc & 0x7F)));
+                    temp.Add((byte) (0x80 | (arc & 0x7F)));
                     arc >>= 7;
                 } while (0 != arc);
 
@@ -1022,7 +1030,7 @@ namespace MineLib.Network
 
                 // Unset high bit of byte t[0]
                 // t[0] will be LSB after the array is reversed.
-                t[0] = (byte)(0x7F & t[0]);
+                t[0] = (byte) (0x7F & t[0]);
 
                 // MSB first...
                 Array.Reverse(t);
@@ -1038,17 +1046,17 @@ namespace MineLib.Network
         }
 
         /// <summary>
-        ///   Returns the AsnType representing an ASN.1 encoded OID.
-        ///   If conversion fails, the result is a partial conversion
-        ///   (up to the point of failure). If octets is null, an
-        ///   empty byte[] is returned.
+        ///     Returns the AsnType representing an ASN.1 encoded OID.
+        ///     If conversion fails, the result is a partial conversion
+        ///     (up to the point of failure). If octets is null, an
+        ///     empty byte[] is returned.
         /// </summary>
         /// <param name="value"> The packed byte[] representing the object identifier to be encoded. </param>
         /// <returns> Returns the AsnType representing an ASN.1 encoded object identifier. </returns>
         /// <example>
-        ///   The following assigns the encoded AsnType for a RSA
-        ///   key to oid:
-        ///   <code>// Packed 1.2.840.113549.1.1.1
+        ///     The following assigns the encoded AsnType for a RSA
+        ///     key to oid:
+        ///     <code>// Packed 1.2.840.113549.1.1.1
         ///     byte[] rsa = new byte[] { 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x01 };
         ///     AsnType = CreateOid(rsa)</code>
         /// </example>
@@ -1078,7 +1086,7 @@ namespace MineLib.Network
             for (int i = c.Length - 1; i >= 0; i--)
             {
                 // Compliment
-                c[i] = (byte)~c[i];
+                c[i] = (byte) ~c[i];
             }
 
             return c;
@@ -1104,13 +1112,13 @@ namespace MineLib.Network
             for (int i = d.Length - 1; i >= 0; i--)
             {
                 // Compliment
-                d[i] = (byte)~d[i];
+                d[i] = (byte) ~d[i];
 
                 // Add
                 int j = d[i] + carry;
 
                 // Write Back
-                d[i] = (byte)(j & 0xFF);
+                d[i] = (byte) (j & 0xFF);
 
                 // Determine Next Carry
                 if (0x100 == (j & 0x100))
@@ -1146,7 +1154,7 @@ namespace MineLib.Network
         {
             // Nothing in, nothing out
             if (IsEmpty(values))
-                return new byte[] { };
+                return new byte[] {};
 
             int length = 0;
             foreach (AsnType t in values)
@@ -1176,17 +1184,17 @@ namespace MineLib.Network
 
         private static byte[] Concatenate(byte[] first, byte[] second)
         {
-            return Concatenate(new[] { first, second });
+            return Concatenate(new[] {first, second});
         }
 
         private static byte[] Concatenate(byte[][] values)
         {
             // Nothing in, nothing out
             if (IsEmpty(values))
-                return new byte[] { };
+                return new byte[] {};
 
             int length = 0;
-            foreach (byte[] b in values)
+            foreach (var b in values)
             {
                 if (null != b)
                 {
@@ -1197,7 +1205,7 @@ namespace MineLib.Network
             var cated = new byte[length];
 
             int current = 0;
-            foreach (byte[] b in values)
+            foreach (var b in values)
             {
                 if (null != b)
                 {
@@ -1253,12 +1261,7 @@ namespace MineLib.Network
 
         private static bool IsEmpty(String s)
         {
-            if (null == s || 0 == s.Length)
-            {
-                return true;
-            }
-
-            return false;
+            return string.IsNullOrEmpty(s);
         }
 
         private static bool IsEmpty(String[] strings)
@@ -1310,21 +1313,21 @@ namespace MineLib.Network
             public AsnType(byte tag, byte octet)
             {
                 m_raw = false;
-                m_tag = new[] { tag };
-                m_octets = new[] { octet };
+                m_tag = new[] {tag};
+                m_octets = new[] {octet};
             }
 
             public AsnType(byte tag, byte[] octets)
             {
                 m_raw = false;
-                m_tag = new[] { tag };
+                m_tag = new[] {tag};
                 m_octets = octets;
             }
 
             public AsnType(byte tag, byte[] length, byte[] octets)
             {
                 m_raw = true;
-                m_tag = new[] { tag };
+                m_tag = new[] {tag};
                 m_length = length;
                 m_octets = octets;
             }
@@ -1380,7 +1383,7 @@ namespace MineLib.Network
                 if (m_raw)
                 {
                     return Concatenate(
-                        new[] { m_tag, m_length, m_octets }
+                        new[] {m_tag, m_length, m_octets}
                         );
                 }
 
@@ -1391,12 +1394,12 @@ namespace MineLib.Network
                 if (0x05 == m_tag[0])
                 {
                     return Concatenate(
-                        new[] { m_tag, m_octets }
+                        new[] {m_tag, m_octets}
                         );
                 }
 
                 return Concatenate(
-                    new[] { m_tag, m_length, m_octets }
+                    new[] {m_tag, m_length, m_octets}
                     );
             }
 
@@ -1422,27 +1425,27 @@ namespace MineLib.Network
                 if (m_octets.Length < 0x80)
                 {
                     length = new byte[1];
-                    length[0] = (byte)m_octets.Length;
+                    length[0] = (byte) m_octets.Length;
                 }
-                // 0x80 < length <= 0xFF
+                    // 0x80 < length <= 0xFF
                 else if (m_octets.Length <= 0xFF)
                 {
                     length = new byte[2];
                     length[0] = 0x81;
-                    length[1] = (byte)((m_octets.Length & 0xFF));
+                    length[1] = (byte) ((m_octets.Length & 0xFF));
                 }
 
                     //
-                // We should almost never see these...
-                //
+                    // We should almost never see these...
+                    //
 
                     // 0xFF < length <= 0xFFFF
                 else if (m_octets.Length <= 0xFFFF)
                 {
                     length = new byte[3];
                     length[0] = 0x82;
-                    length[1] = (byte)((m_octets.Length & 0xFF00) >> 8);
-                    length[2] = (byte)((m_octets.Length & 0xFF));
+                    length[1] = (byte) ((m_octets.Length & 0xFF00) >> 8);
+                    length[2] = (byte) ((m_octets.Length & 0xFF));
                 }
 
                     // 0xFFFF < length <= 0xFFFFFF
@@ -1450,19 +1453,19 @@ namespace MineLib.Network
                 {
                     length = new byte[4];
                     length[0] = 0x83;
-                    length[1] = (byte)((m_octets.Length & 0xFF0000) >> 16);
-                    length[2] = (byte)((m_octets.Length & 0xFF00) >> 8);
-                    length[3] = (byte)((m_octets.Length & 0xFF));
+                    length[1] = (byte) ((m_octets.Length & 0xFF0000) >> 16);
+                    length[2] = (byte) ((m_octets.Length & 0xFF00) >> 8);
+                    length[3] = (byte) ((m_octets.Length & 0xFF));
                 }
-                // 0xFFFFFF < length <= 0xFFFFFFFF
+                    // 0xFFFFFF < length <= 0xFFFFFFFF
                 else
                 {
                     length = new byte[5];
                     length[0] = 0x84;
-                    length[1] = (byte)((m_octets.Length & 0xFF000000) >> 24);
-                    length[2] = (byte)((m_octets.Length & 0xFF0000) >> 16);
-                    length[3] = (byte)((m_octets.Length & 0xFF00) >> 8);
-                    length[4] = (byte)((m_octets.Length & 0xFF));
+                    length[1] = (byte) ((m_octets.Length & 0xFF000000) >> 24);
+                    length[2] = (byte) ((m_octets.Length & 0xFF0000) >> 16);
+                    length[3] = (byte) ((m_octets.Length & 0xFF00) >> 8);
+                    length[4] = (byte) ((m_octets.Length & 0xFF));
                 }
 
                 m_length = length;
@@ -1472,10 +1475,10 @@ namespace MineLib.Network
             {
                 // Nothing in, nothing out
                 if (IsEmpty(values))
-                    return new byte[] { };
+                    return new byte[] {};
 
                 int length = 0;
-                foreach (byte[] b in values)
+                foreach (var b in values)
                 {
                     if (null != b) length += b.Length;
                 }
@@ -1483,7 +1486,7 @@ namespace MineLib.Network
                 var cated = new byte[length];
 
                 int current = 0;
-                foreach (byte[] b in values)
+                foreach (var b in values)
                 {
                     if (null != b)
                     {
@@ -1528,7 +1531,7 @@ namespace MineLib.Network
         {
             if (null == m_octets)
             {
-                return new byte[] { };
+                return new byte[] {};
             }
 
             return m_octets;
@@ -1551,7 +1554,7 @@ namespace MineLib.Network
             {
                 var info = new FileInfo(pathname);
 
-                parser = new AsnParser(reader.ReadBytes((int)info.Length));
+                parser = new AsnParser(reader.ReadBytes((int) info.Length));
             }
         }
 
@@ -1614,8 +1617,8 @@ namespace MineLib.Network
             {
                 var sb = new StringBuilder("Incorrect Sequence Size. ");
                 sb.AppendFormat("Specified: {0}, Remaining: {1}",
-                                length.ToString(CultureInfo.InvariantCulture),
-                                parser.RemainingBytes().ToString(CultureInfo.InvariantCulture));
+                    length.ToString(CultureInfo.InvariantCulture),
+                    parser.RemainingBytes().ToString(CultureInfo.InvariantCulture));
                 throw new BerDecodeException(sb.ToString(), position);
             }
 
@@ -1628,8 +1631,8 @@ namespace MineLib.Network
             {
                 var sb = new StringBuilder("Incorrect AlgorithmIdentifier Size. ");
                 sb.AppendFormat("Specified: {0}, Remaining: {1}",
-                                length.ToString(CultureInfo.InvariantCulture),
-                                parser.RemainingBytes().ToString(CultureInfo.InvariantCulture));
+                    length.ToString(CultureInfo.InvariantCulture),
+                    parser.RemainingBytes().ToString(CultureInfo.InvariantCulture));
                 throw new BerDecodeException(sb.ToString(), position);
             }
 
@@ -1637,7 +1640,7 @@ namespace MineLib.Network
             position = parser.CurrentPosition();
             // Grab the OID
             value = parser.NextOID();
-            byte[] oid = { 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x01 };
+            byte[] oid = {0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x01};
             if (!EqualOid(value, oid))
             {
                 throw new BerDecodeException("Expected OID 1.2.840.113549.1.1.1", position);
@@ -1664,8 +1667,8 @@ namespace MineLib.Network
             {
                 var sb = new StringBuilder("Incorrect PublicKey Size. ");
                 sb.AppendFormat("Specified: {0}, Remaining: {1}",
-                                length.ToString(CultureInfo.InvariantCulture),
-                                (parser.RemainingBytes()).ToString(CultureInfo.InvariantCulture));
+                    length.ToString(CultureInfo.InvariantCulture),
+                    (parser.RemainingBytes()).ToString(CultureInfo.InvariantCulture));
                 throw new BerDecodeException(sb.ToString(), position);
             }
 
@@ -1678,8 +1681,8 @@ namespace MineLib.Network
             {
                 var sb = new StringBuilder("Incorrect RSAPublicKey Size. ");
                 sb.AppendFormat("Specified: {0}, Remaining: {1}",
-                                length.ToString(CultureInfo.InvariantCulture),
-                                parser.RemainingBytes().ToString(CultureInfo.InvariantCulture));
+                    length.ToString(CultureInfo.InvariantCulture),
+                    parser.RemainingBytes().ToString(CultureInfo.InvariantCulture));
                 throw new BerDecodeException(sb.ToString(), position);
             }
 
@@ -1710,8 +1713,8 @@ namespace MineLib.Network
             {
                 var sb = new StringBuilder("Incorrect Sequence Size. ");
                 sb.AppendFormat("Specified: {0}, Remaining: {1}",
-                                length.ToString(CultureInfo.InvariantCulture),
-                                parser.RemainingBytes().ToString(CultureInfo.InvariantCulture));
+                    length.ToString(CultureInfo.InvariantCulture),
+                    parser.RemainingBytes().ToString(CultureInfo.InvariantCulture));
                 throw new BerDecodeException(sb.ToString(), position);
             }
 
@@ -1723,7 +1726,7 @@ namespace MineLib.Network
             {
                 var sb = new StringBuilder("Incorrect PrivateKeyInfo Version. ");
                 var v = new BigInteger(value);
-                sb.AppendFormat("Expected: 0, Specified: {0}", v.ToString());
+                sb.AppendFormat("Expected: 0, Specified: {0}", v);
                 throw new BerDecodeException(sb.ToString(), position);
             }
 
@@ -1736,8 +1739,8 @@ namespace MineLib.Network
             {
                 var sb = new StringBuilder("Incorrect AlgorithmIdentifier Size. ");
                 sb.AppendFormat("Specified: {0}, Remaining: {1}",
-                                length.ToString(CultureInfo.InvariantCulture),
-                                parser.RemainingBytes().ToString(CultureInfo.InvariantCulture));
+                    length.ToString(CultureInfo.InvariantCulture),
+                    parser.RemainingBytes().ToString(CultureInfo.InvariantCulture));
                 throw new BerDecodeException(sb.ToString(), position);
             }
 
@@ -1746,7 +1749,7 @@ namespace MineLib.Network
 
             // Grab the OID
             value = parser.NextOID();
-            byte[] oid = { 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x01 };
+            byte[] oid = {0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x01};
             if (!EqualOid(value, oid))
             {
                 throw new BerDecodeException("Expected OID 1.2.840.113549.1.1.1", position);
@@ -1773,8 +1776,8 @@ namespace MineLib.Network
             {
                 var sb = new StringBuilder("Incorrect PrivateKey Size. ");
                 sb.AppendFormat("Specified: {0}, Remaining: {1}",
-                                length.ToString(CultureInfo.InvariantCulture),
-                                parser.RemainingBytes().ToString(CultureInfo.InvariantCulture));
+                    length.ToString(CultureInfo.InvariantCulture),
+                    parser.RemainingBytes().ToString(CultureInfo.InvariantCulture));
                 throw new BerDecodeException(sb.ToString(), position);
             }
 
@@ -1787,8 +1790,8 @@ namespace MineLib.Network
             {
                 var sb = new StringBuilder("Incorrect RSAPrivateKey Size. ");
                 sb.AppendFormat("Specified: {0}, Remaining: {1}",
-                                length.ToString(CultureInfo.InvariantCulture),
-                                parser.RemainingBytes().ToString(CultureInfo.InvariantCulture));
+                    length.ToString(CultureInfo.InvariantCulture),
+                    parser.RemainingBytes().ToString(CultureInfo.InvariantCulture));
                 throw new BerDecodeException(sb.ToString(), position);
             }
 
@@ -1800,7 +1803,7 @@ namespace MineLib.Network
             {
                 var sb = new StringBuilder("Incorrect RSAPrivateKey Version. ");
                 var v = new BigInteger(value);
-                sb.AppendFormat("Expected: 0, Specified: {0}", v.ToString());
+                sb.AppendFormat("Expected: 0, Specified: {0}", v);
                 throw new BerDecodeException(sb.ToString(), position);
             }
 
@@ -1836,8 +1839,8 @@ namespace MineLib.Network
             {
                 var sb = new StringBuilder("Incorrect Sequence Size. ");
                 sb.AppendFormat("Specified: {0}, Remaining: {1}",
-                                length.ToString(CultureInfo.InvariantCulture),
-                                parser.RemainingBytes().ToString(CultureInfo.InvariantCulture));
+                    length.ToString(CultureInfo.InvariantCulture),
+                    parser.RemainingBytes().ToString(CultureInfo.InvariantCulture));
                 throw new BerDecodeException(sb.ToString(), position);
             }
 
@@ -1850,8 +1853,8 @@ namespace MineLib.Network
             {
                 var sb = new StringBuilder("Incorrect AlgorithmIdentifier Size. ");
                 sb.AppendFormat("Specified: {0}, Remaining: {1}",
-                                length.ToString(CultureInfo.InvariantCulture),
-                                parser.RemainingBytes().ToString(CultureInfo.InvariantCulture));
+                    length.ToString(CultureInfo.InvariantCulture),
+                    parser.RemainingBytes().ToString(CultureInfo.InvariantCulture));
                 throw new BerDecodeException(sb.ToString(), position);
             }
 
@@ -1860,7 +1863,7 @@ namespace MineLib.Network
 
             // Grab the OID
             value = parser.NextOID();
-            byte[] oid = { 0x2a, 0x86, 0x48, 0xce, 0x38, 0x04, 0x01 };
+            byte[] oid = {0x2a, 0x86, 0x48, 0xce, 0x38, 0x04, 0x01};
             if (!EqualOid(value, oid))
             {
                 throw new BerDecodeException("Expected OID 1.2.840.10040.4.1", position);
@@ -1876,8 +1879,8 @@ namespace MineLib.Network
             {
                 var sb = new StringBuilder("Incorrect DSS-Params Size. ");
                 sb.AppendFormat("Specified: {0}, Remaining: {1}",
-                                length.ToString(CultureInfo.InvariantCulture),
-                                parser.RemainingBytes().ToString(CultureInfo.InvariantCulture));
+                    length.ToString(CultureInfo.InvariantCulture),
+                    parser.RemainingBytes().ToString(CultureInfo.InvariantCulture));
                 throw new BerDecodeException(sb.ToString(), position);
             }
 
@@ -1915,8 +1918,8 @@ namespace MineLib.Network
             {
                 var sb = new StringBuilder("Incorrect Sequence Size. ");
                 sb.AppendFormat("Specified: {0}, Remaining: {1}",
-                                length.ToString(CultureInfo.InvariantCulture),
-                                parser.RemainingBytes().ToString(CultureInfo.InvariantCulture));
+                    length.ToString(CultureInfo.InvariantCulture),
+                    parser.RemainingBytes().ToString(CultureInfo.InvariantCulture));
                 throw new BerDecodeException(sb.ToString(), position);
             }
 
@@ -1938,8 +1941,8 @@ namespace MineLib.Network
             {
                 var sb = new StringBuilder("Incorrect AlgorithmIdentifier Size. ");
                 sb.AppendFormat("Specified: {0}, Remaining: {1}",
-                                length.ToString(CultureInfo.InvariantCulture),
-                                parser.RemainingBytes().ToString(CultureInfo.InvariantCulture));
+                    length.ToString(CultureInfo.InvariantCulture),
+                    parser.RemainingBytes().ToString(CultureInfo.InvariantCulture));
                 throw new BerDecodeException(sb.ToString(), position);
             }
 
@@ -1947,7 +1950,7 @@ namespace MineLib.Network
             position = parser.CurrentPosition();
             // Grab the OID
             value = parser.NextOID();
-            byte[] oid = { 0x2a, 0x86, 0x48, 0xce, 0x38, 0x04, 0x01 };
+            byte[] oid = {0x2a, 0x86, 0x48, 0xce, 0x38, 0x04, 0x01};
             if (!EqualOid(value, oid))
             {
                 throw new BerDecodeException("Expected OID 1.2.840.10040.4.1", position);
@@ -1962,8 +1965,8 @@ namespace MineLib.Network
             {
                 var sb = new StringBuilder("Incorrect DSS-Params Size. ");
                 sb.AppendFormat("Specified: {0}, Remaining: {1}",
-                                length.ToString(CultureInfo.InvariantCulture),
-                                parser.RemainingBytes().ToString(CultureInfo.InvariantCulture));
+                    length.ToString(CultureInfo.InvariantCulture),
+                    parser.RemainingBytes().ToString(CultureInfo.InvariantCulture));
                 throw new BerDecodeException(sb.ToString(), position);
             }
 
@@ -2028,7 +2031,7 @@ namespace MineLib.Network
                 {
                     var sb = new StringBuilder("Invalid Length Encoding. ");
                     sb.AppendFormat("Length uses {0} octets",
-                                    i.ToString(CultureInfo.InvariantCulture));
+                        i.ToString(CultureInfo.InvariantCulture));
                     throw new BerDecodeException(sb.ToString(), position);
                 }
 
@@ -2061,8 +2064,8 @@ namespace MineLib.Network
                 {
                     var sb = new StringBuilder("Incorrect Size. ");
                     sb.AppendFormat("Specified: {0}, Remaining: {1}",
-                                    length.ToString(CultureInfo.InvariantCulture),
-                                    RemainingBytes().ToString(CultureInfo.InvariantCulture));
+                        length.ToString(CultureInfo.InvariantCulture),
+                        RemainingBytes().ToString(CultureInfo.InvariantCulture));
                     throw new BerDecodeException(sb.ToString(), position);
                 }
 
@@ -2083,8 +2086,8 @@ namespace MineLib.Network
             {
                 var sb = new StringBuilder("Incorrect Size. ");
                 sb.AppendFormat("Specified: {0}, Remaining: {1}",
-                                1.ToString(CultureInfo.InvariantCulture),
-                                RemainingBytes().ToString(CultureInfo.InvariantCulture));
+                    1.ToString(CultureInfo.InvariantCulture),
+                    RemainingBytes().ToString(CultureInfo.InvariantCulture));
                 throw new BerDecodeException(sb.ToString(), position);
             }
 
@@ -2101,8 +2104,8 @@ namespace MineLib.Network
             {
                 var sb = new StringBuilder("Incorrect Size. ");
                 sb.AppendFormat("Specified: {0}, Remaining: {1}",
-                                octetCount.ToString(CultureInfo.InvariantCulture),
-                                RemainingBytes().ToString(CultureInfo.InvariantCulture));
+                    octetCount.ToString(CultureInfo.InvariantCulture),
+                    RemainingBytes().ToString(CultureInfo.InvariantCulture));
                 throw new BerDecodeException(sb.ToString(), position);
             }
 
@@ -2175,7 +2178,7 @@ namespace MineLib.Network
                 {
                     var sb = new StringBuilder("Expected Sequence. ");
                     sb.AppendFormat("Specified Identifier: {0}",
-                                    b.ToString(CultureInfo.InvariantCulture));
+                        b.ToString(CultureInfo.InvariantCulture));
                     throw new BerDecodeException(sb.ToString(), position);
                 }
 
@@ -2184,8 +2187,8 @@ namespace MineLib.Network
                 {
                     var sb = new StringBuilder("Incorrect Sequence Size. ");
                     sb.AppendFormat("Specified: {0}, Remaining: {1}",
-                                    length.ToString(CultureInfo.InvariantCulture),
-                                    RemainingBytes().ToString(CultureInfo.InvariantCulture));
+                        length.ToString(CultureInfo.InvariantCulture),
+                        RemainingBytes().ToString(CultureInfo.InvariantCulture));
                     throw new BerDecodeException(sb.ToString(), position);
                 }
 
@@ -2222,8 +2225,8 @@ namespace MineLib.Network
                 {
                     var sb = new StringBuilder("Incorrect Octet String Size. ");
                     sb.AppendFormat("Specified: {0}, Remaining: {1}",
-                                    length.ToString(CultureInfo.InvariantCulture),
-                                    RemainingBytes().ToString(CultureInfo.InvariantCulture));
+                        length.ToString(CultureInfo.InvariantCulture),
+                        RemainingBytes().ToString(CultureInfo.InvariantCulture));
                     throw new BerDecodeException(sb.ToString(), position);
                 }
 
@@ -2301,8 +2304,8 @@ namespace MineLib.Network
                 {
                     var sb = new StringBuilder("Incorrect Integer Size. ");
                     sb.AppendFormat("Specified: {0}, Remaining: {1}",
-                                    length.ToString(CultureInfo.InvariantCulture),
-                                    RemainingBytes().ToString(CultureInfo.InvariantCulture));
+                        length.ToString(CultureInfo.InvariantCulture),
+                        RemainingBytes().ToString(CultureInfo.InvariantCulture));
                     throw new BerDecodeException(sb.ToString(), position);
                 }
 
@@ -2326,7 +2329,7 @@ namespace MineLib.Network
                 {
                     var sb = new StringBuilder("Expected Object Identifier. ");
                     sb.AppendFormat("Specified Identifier: {0}",
-                                    b.ToString(CultureInfo.InvariantCulture));
+                        b.ToString(CultureInfo.InvariantCulture));
                     throw new BerDecodeException(sb.ToString(), position);
                 }
 
@@ -2335,8 +2338,8 @@ namespace MineLib.Network
                 {
                     var sb = new StringBuilder("Incorrect Object Identifier Size. ");
                     sb.AppendFormat("Specified: {0}, Remaining: {1}",
-                                    length.ToString(CultureInfo.InvariantCulture),
-                                    RemainingBytes().ToString(CultureInfo.InvariantCulture));
+                        length.ToString(CultureInfo.InvariantCulture),
+                        RemainingBytes().ToString(CultureInfo.InvariantCulture));
                     throw new BerDecodeException(sb.ToString(), position);
                 }
 
@@ -2359,7 +2362,7 @@ namespace MineLib.Network
     }
 
     [Serializable]
-    public sealed class BerDecodeException : Exception, ISerializable
+    public sealed class BerDecodeException : Exception
     {
         private readonly int m_position;
 
@@ -2407,7 +2410,7 @@ namespace MineLib.Network
                 var sb = new StringBuilder(base.Message);
 
                 sb.AppendFormat(" (Position {0}){1}",
-                                m_position, Environment.NewLine);
+                    m_position, Environment.NewLine);
 
                 return sb.ToString();
             }

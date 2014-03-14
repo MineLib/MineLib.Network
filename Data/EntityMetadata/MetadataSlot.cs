@@ -48,7 +48,7 @@ namespace MineLib.Network.Data.EntityMetadata
                 {
                     var file = new NbtFile(Value.Nbt);
                     byte[] data = file.SaveToBuffer(NbtCompression.GZip);
-                    stream.WriteShort((short)data.Length);
+                    stream.WriteShort((short) data.Length);
                     stream.WriteByteArray(data);
                 }
                 else

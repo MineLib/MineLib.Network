@@ -25,11 +25,13 @@ namespace MineLib.Network.Packets.Server
             MetaInformation = new MapChunkBulkMetadata[ChunkColumnCount];
             for (int i = 0; i < ChunkColumnCount; i++)
             {
-                var metadata = new MapChunkBulkMetadata();
-                metadata.ChunkX = stream.ReadInt();
-                metadata.ChunkZ = stream.ReadInt();
-                metadata.PrimaryBitMap = stream.ReadShort();
-                metadata.AddBitMap = stream.ReadShort();
+                var metadata = new MapChunkBulkMetadata
+                {
+                    ChunkX = stream.ReadInt(),
+                    ChunkZ = stream.ReadInt(),
+                    PrimaryBitMap = stream.ReadShort(),
+                    AddBitMap = stream.ReadShort()
+                };
                 MetaInformation[i] = metadata;
             }
 

@@ -46,7 +46,7 @@ namespace MineLib.Network.Data.EntityMetadata
         protected byte GetKey(byte index)
         {
             Index = index; // Cheat to get this for ToString
-            return (byte)((Identifier << 5) | (index & 0x1F));
+            return (byte) ((Identifier << 5) | (index & 0x1F));
         }
 
         public override string ToString()

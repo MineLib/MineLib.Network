@@ -68,7 +68,7 @@ namespace MineLib.Network.Data
 
         public static ItemStack FromStream(ref Wrapped stream)
         {
-            var slot = ItemStack.EmptyStack;
+            var slot = EmptyStack;
             slot.Id = stream.ReadShort();
             if (slot.Empty)
                 return slot;
@@ -106,7 +106,7 @@ namespace MineLib.Network.Data
 
         public static ItemStack FromNbt(NbtCompound compound)
         {
-            var s = ItemStack.EmptyStack;
+            var s = EmptyStack;
             s.Id = compound.Get<NbtShort>("id").Value;
             s.Metadata = compound.Get<NbtShort>("Damage").Value;
             s.Count = (sbyte)compound.Get<NbtByte>("Count").Value;
@@ -118,11 +118,13 @@ namespace MineLib.Network.Data
 
         public NbtCompound ToNbt()
         {
-            var c = new NbtCompound();
-            c.Add(new NbtShort("id", Id));
-            c.Add(new NbtShort("Damage", Metadata));
-            c.Add(new NbtByte("Count", (byte)Count));
-            c.Add(new NbtByte("Slot", (byte)Index));
+            var c = new NbtCompound
+            {
+                new NbtShort("id", Id),
+                new NbtShort("Damage", Metadata),
+                new NbtByte("Count", (byte) Count),
+                new NbtByte("Slot", (byte) Index)
+            };
             if (Nbt != null)
                 c.Add(new NbtCompound("tag"));
             return c;
@@ -186,7 +188,7 @@ namespace MineLib.Network.Data
             string result = "ID: " + Id;
             if (Count != 1) result += "; Count: " + Count;
             if (Metadata != 0) result += "; Metadata: " + Metadata;
-            if (Nbt != null) result += Environment.NewLine + Nbt.ToString();
+            if (Nbt != null) result += Environment.NewLine + Nbt;
             return "(" + result + ")";
         }
 
@@ -206,7 +208,7 @@ namespace MineLib.Network.Data
 
         public bool CanMerge(ItemStack other)
         {
-            if (this.Empty || other.Empty)
+            if (Empty || other.Empty)
                 return true;
             return _Id == other._Id && _Metadata == other._Metadata && Equals(Nbt, other.Nbt);
         }

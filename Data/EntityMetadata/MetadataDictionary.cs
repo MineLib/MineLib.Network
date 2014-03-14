@@ -5,7 +5,7 @@ using CWrapped;
 namespace MineLib.Network.Data.EntityMetadata
 {
     /// <summary>
-    /// Used to send metadata with entities
+    ///     Used to send metadata with entities
     /// </summary>
     public class MetadataDictionary
     {
@@ -51,8 +51,8 @@ namespace MineLib.Network.Data.EntityMetadata
                 byte item = stream.ReadByte();
                 if (item == 127) break;
 
-                var index = (byte)(item & 31);
-                var type = (byte)((item & 224) >> 5);
+                var index = (byte) (item & 31);
+                var type = (byte) ((item & 224) >> 5);
                 //var type = (byte)((item & 0xE0) >> 5);
 
                 MetadataEntry entry = EntryTypes[type]();

@@ -18,7 +18,8 @@ namespace MineLib.Network
                 case ServerState.Login:
 
                     #region Login
-                    switch ((PacketsServer)id)
+
+                    switch ((PacketsServer) id)
                     {
                         case PacketsServer.LoginDisconnect:
                             FireLoginDisconnect(packet);
@@ -32,6 +33,7 @@ namespace MineLib.Network
                             FireLoginSuccess(packet);
                             break;
                     }
+
                     #endregion Login
 
                     break;
@@ -39,7 +41,8 @@ namespace MineLib.Network
                 case ServerState.Play:
 
                     #region Play
-                    switch ((PacketsServer)id)
+
+                    switch ((PacketsServer) id)
                     {
                         case PacketsServer.KeepAlive:
                             FireKeepAlive(packet);
@@ -301,6 +304,7 @@ namespace MineLib.Network
                             FireDisconnect(packet);
                             break;
                     }
+
                     #endregion Play
 
                     break;
@@ -308,7 +312,8 @@ namespace MineLib.Network
                 case ServerState.Status:
 
                     #region Status
-                    switch ((PacketsServer)id)
+
+                    switch ((PacketsServer) id)
                     {
                         case PacketsServer.Response:
                             FireResponse(packet);
@@ -318,6 +323,7 @@ namespace MineLib.Network
                             FirePing(packet);
                             break;
                     }
+
                     #endregion Status
 
                     break;
@@ -327,8 +333,6 @@ namespace MineLib.Network
                         OnPacketHandled(packet, id, state);
                     break;
             }
-
         }
-
     }
 }

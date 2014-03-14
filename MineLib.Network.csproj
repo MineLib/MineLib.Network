@@ -33,11 +33,13 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Cryptography.cs" />
     <Compile Include="Data\Records.cs" />
+    <Compile Include="Data\ServerInfo.cs" />
     <Compile Include="Enums\BlockActions.cs" />
     <Compile Include="IMinecraft.cs" />
     <Compile Include="Data\EntityMetadata\MetadadaShort.cs" />
@@ -182,6 +184,9 @@
     <Compile Include="Packets\Server\UseBedPacket.cs" />
     <Compile Include="Packets\Server\WindowItemsPacket.cs" />
     <Compile Include="Packets\Server\WindowPropertyPacket.cs" />
+    <Compile Include="BaseClients\StatusClient.cs" />
+    <Compile Include="BaseClients\StatusClient.Events.cs" />
+    <Compile Include="BaseClients\StatusClient.Packets.cs" />
     <Compile Include="Yggdrasil.cs" />
   </ItemGroup>
   <ItemGroup>

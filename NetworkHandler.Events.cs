@@ -78,6 +78,5 @@ namespace MineLib.Network
         public event PacketHandler FireTeams;
         public event PacketHandler FirePluginMessage;
         public event PacketHandler FireDisconnect;
-
     }
 }

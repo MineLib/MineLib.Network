@@ -18,7 +18,7 @@ namespace MineLib.Network
     public static class Yggdrasil
     {
         /// <summary>
-        /// Allows to login to a premium Minecraft account using the Yggdrasil authentication scheme.
+        ///     Allows to login to a premium Minecraft account using the Yggdrasil authentication scheme.
         /// </summary>
         /// <param name="username">Login</param>
         /// <param name="password">Password</param>
@@ -31,50 +31,52 @@ namespace MineLib.Network
         {
             try
             {
-                WebClient wClient = new WebClient();
+                var wClient = new WebClient();
                 wClient.Headers.Add("Content-Type: application/json");
                 string json_request = "{\"agent\": { \"name\": \"Minecraft\", \"version\": 1 }, \"username\": \"" +
                                       username + "\", \"password\": \"" + password + "\" }";
                 string result = wClient.UploadString("https://authserver.mojang.com/authenticate", json_request);
 
                 if (result.Contains("availableProfiles\":[]}"))
-                {
                     return YggdrasilStatus.NotPremium;
-                }
 
-                {
-                    string[] temp = result.Split(new string[] { "accessToken\":\"" }, StringSplitOptions.RemoveEmptyEntries);
-                    if (temp.Length >= 2) { accessToken = temp[1].Split('"')[0]; }
-                    temp = result.Split(new string[] { "clientToken\":\"" }, StringSplitOptions.RemoveEmptyEntries);
-                    if (temp.Length >= 2) { clientToken = temp[1].Split('"')[0]; }
-                    temp = result.Split(new string[] { "name\":\"" }, StringSplitOptions.RemoveEmptyEntries);
-                    if (temp.Length >= 2) { username = temp[1].Split('"')[0]; }
-                    temp = result.Split(new string[] { "availableProfiles\":[{\"id\":\"" }, StringSplitOptions.RemoveEmptyEntries);
-                    if (temp.Length >= 2) { uuid = temp[1].Split('"')[0]; }
-                }
+
+                string[] temp = result.Split(new[] {"accessToken\":\""}, StringSplitOptions.RemoveEmptyEntries);
+                if (temp.Length >= 2)
+                    accessToken = temp[1].Split('"')[0];
+
+                temp = result.Split(new[] {"clientToken\":\""}, StringSplitOptions.RemoveEmptyEntries);
+                if (temp.Length >= 2)
+                    clientToken = temp[1].Split('"')[0];
+
+                temp = result.Split(new[] {"name\":\""}, StringSplitOptions.RemoveEmptyEntries);
+                if (temp.Length >= 2)
+                    username = temp[1].Split('"')[0];
+
+                temp = result.Split(new[] {"availableProfiles\":[{\"id\":\""}, StringSplitOptions.RemoveEmptyEntries);
+                if (temp.Length >= 2)
+                    uuid = temp[1].Split('"')[0];
+
 
                 return YggdrasilStatus.Success;
             }
             catch (WebException e)
             {
-                if (e.Status == WebExceptionStatus.ProtocolError)
-                {
-                    HttpWebResponse response = (HttpWebResponse)e.Response;
-                    if ((int)response.StatusCode == 403)
-                    {
-                        using (StreamReader sr = new StreamReader(response.GetResponseStream()))
-                        {
-                            string result = sr.ReadToEnd();
-                            if (result.Contains("UserMigratedException"))
-                            {
-                                return YggdrasilStatus.AccountMigrated;
-                            }
-                            return YggdrasilStatus.WrongPassword;
-                        }
-                    }
+                if (e.Status != WebExceptionStatus.ProtocolError) 
+                    return YggdrasilStatus.Error;
+
+                var response = (HttpWebResponse) e.Response;
+                if ((int) response.StatusCode != 403) 
                     return YggdrasilStatus.Blocked;
+
+                using (var sr = new StreamReader(response.GetResponseStream()))
+                {
+                    string result = sr.ReadToEnd();
+                    if (result.Contains("UserMigratedException"))
+                        return YggdrasilStatus.AccountMigrated;
+                    
+                    return YggdrasilStatus.WrongPassword;
                 }
-                return YggdrasilStatus.Error;
             }
         }
 
@@ -82,74 +84,74 @@ namespace MineLib.Network
         {
             try
             {
-                WebClient wClient = new WebClient();
+                var wClient = new WebClient();
                 wClient.Headers.Add("Content-Type: application/json");
                 string json = "{\"accessToken\": \"" + accesstoken + "\",\"clientToken\": \"" + clienttoken + "\"}";
                 string result = wClient.UploadString("https://authserver.mojang.com/refresh", json);
 
-                {
-                    string[] temp = result.Split(new string[] { "accessToken\":\"" }, StringSplitOptions.RemoveEmptyEntries);
-                    if (temp.Length >= 2) { accesstoken = temp[1].Split('"')[0]; }
-                    temp = result.Split(new string[] { "clientToken\":\"" }, StringSplitOptions.RemoveEmptyEntries);
-                    if (temp.Length >= 2) { clienttoken = temp[1].Split('"')[0]; }
-                }
+
+                string[] temp = result.Split(new[] {"accessToken\":\""}, StringSplitOptions.RemoveEmptyEntries);
+                if (temp.Length >= 2)
+                    accesstoken = temp[1].Split('"')[0];
+
+                temp = result.Split(new[] {"clientToken\":\""}, StringSplitOptions.RemoveEmptyEntries);
+                if (temp.Length >= 2)
+                    clienttoken = temp[1].Split('"')[0];
+
+
 
                 return YggdrasilStatus.Success;
             }
             catch (WebException e)
             {
-                if (e.Status == WebExceptionStatus.ProtocolError)
-                {
-                    HttpWebResponse response = (HttpWebResponse)e.Response;
-                    if ((int)response.StatusCode == 403)
-                    {
-                        using (StreamReader sr = new StreamReader(response.GetResponseStream()))
-                        {
-                            string result = sr.ReadToEnd();
-                            if (result.Contains("ForbiddenOperationException"))
-                            {
-                                return YggdrasilStatus.InvalidToken;
-                            }
-                            return YggdrasilStatus.Error;
-                        }
-                    }
-                    return YggdrasilStatus.Blocked;
-                }
-                return YggdrasilStatus.Error;
-            }
+                if (e.Status != WebExceptionStatus.ProtocolError) 
+                    return YggdrasilStatus.Error;
 
+                var response = (HttpWebResponse) e.Response;
+                if ((int) response.StatusCode != 403) 
+                    return YggdrasilStatus.Blocked;
+
+                using (var sr = new StreamReader(response.GetResponseStream()))
+                {
+                    string result = sr.ReadToEnd();
+                    if (result.Contains("ForbiddenOperationException"))
+                        return YggdrasilStatus.InvalidToken;
+                            
+                    return YggdrasilStatus.Error;
+                }
+            }
         }
 
         public static bool VerifyName(string accessToken, string selectedProfile, string serverHash)
         {
             try
             {
-                WebClient wClient = new WebClient();
+                var wClient = new WebClient();
                 wClient.Headers.Add("Content-Type: application/json");
                 string json = "{\"accessToken\": \"" + accessToken + "\",\"selectedProfile\": \"" + selectedProfile +
                               "\",\"serverId\": \"" + serverHash + "\"}";
                 string result = wClient.UploadString("https://sessionserver.mojang.com/session/minecraft/join", json);
 
-                {
-                    // dunno what to do, can't find answer
-                }
 
                 return true;
             }
-            catch (WebException) { return false; }
+            catch (WebException)
+            {
+                return false;
+            }
         }
 
         public static bool VerifySession(string accessToken)
         {
             try
             {
-                WebClient wClient = new WebClient();
+                var wClient = new WebClient();
                 wClient.Headers.Add("Content-Type: application/json");
 
                 string json = "{\"accessToken\": \"" + accessToken + "\"}";
                 string result = wClient.UploadString("https://authserver.mojang.com/validate", json);
 
-                string[] temp = result.Split(new string[] { "accessToken\":\"" },
+                string[] temp = result.Split(new[] {"accessToken\":\""},
                     StringSplitOptions.RemoveEmptyEntries);
                 if (temp.Length >= 2)
                     accessToken = temp[1].Split('"')[0];
@@ -157,8 +159,10 @@ namespace MineLib.Network
 
                 return true;
             }
-            catch (WebException) { return false; }
+            catch (WebException)
+            {
+                return false;
+            }
         }
-
     }
 }
