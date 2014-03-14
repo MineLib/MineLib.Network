@@ -8,6 +8,14 @@ My implementation of How-it-should-be.
 All server and clients packets for 1.7.4 are supported.
 Only logic here - automatically enable encryption. You don't need to manually handle with that.
 
+You can use Events based packet handling (use RaisePacketHandledUnUsed() in NetworkHandler.Packets.cs) or handle dat stuff manually (use OnPacketHandled for that).
+
+Supported:
+* Yggdrasil
+* Online && Pirate mode
+* Nah, i think all basic stuff is supported
+
+
 Documentation will come soon.
 
 Used repos:
