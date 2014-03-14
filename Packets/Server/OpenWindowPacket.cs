@@ -11,8 +11,8 @@ namespace MineLib.Network.Packets.Server
         public bool UseProvidedTitle;
         public int? EntityID;
 
-        public const byte PacketId = 0x2D;
-        public byte Id { get { return 0x2D; } }
+        public const byte PacketID = 0x2D;
+        public byte Id { get { return PacketID; } }
 
         public void ReadPacket(ref Wrapped stream)
         {

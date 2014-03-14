@@ -34,7 +34,7 @@ namespace MineLib.Network.BaseClients
         #endregion Variables
 
         private readonly NetworkHandler _handler;
-        private bool ConnectionClosed;
+        private bool _connectionClosed;
 
         public StatusClient(string ip, short port)
         {
@@ -54,7 +54,7 @@ namespace MineLib.Network.BaseClients
 
         public ResponseData GetServerInfo(int protocolVersion)
         {
-            if (ConnectionClosed) throw new Exception("Initialize new StatusClient");
+            if (_connectionClosed) throw new Exception("Initialize new StatusClient");
 
             bool Ready = false;
 
@@ -82,7 +82,7 @@ namespace MineLib.Network.BaseClients
 
         public ServerInfo GetInfo(int protocolVersion)
         {
-            if (ConnectionClosed) throw new Exception("Initialize new StatusClient");
+            if (_connectionClosed) throw new Exception("Initialize new StatusClient");
 
             bool Ready = false;
 
@@ -103,7 +103,7 @@ namespace MineLib.Network.BaseClients
 
         public int GetPing(int protocolVersion)
         {
-            if (ConnectionClosed) throw new Exception("Initialize new StatusClient");
+            if (_connectionClosed) throw new Exception("Initialize new StatusClient");
 
             bool Ready = false;
 
@@ -232,7 +232,7 @@ namespace MineLib.Network.BaseClients
             if (_handler != null)
                 _handler.Stop();
 
-            ConnectionClosed = true;
+            _connectionClosed = true;
         }
 
         public void Dispose()

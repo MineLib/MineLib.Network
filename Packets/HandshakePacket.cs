@@ -11,7 +11,7 @@ namespace MineLib.Network.Packets
         public NextState NextState;
 
         public const byte PacketId = 0x00;
-        public byte Id { get { return 0x00; } }
+        public byte Id { get { return PacketId; } }
 
         public void ReadPacket(ref Wrapped stream)
         {

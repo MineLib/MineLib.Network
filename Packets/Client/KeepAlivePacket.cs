@@ -7,7 +7,7 @@ namespace MineLib.Network.Packets.Client
         public int KeepAlive;
 
         public const byte PacketID = 0x00;
-        public byte Id { get { return 0x00; } }
+        public byte Id { get { return PacketID; } }
 
         public void ReadPacket(ref Wrapped stream)
         {

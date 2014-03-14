@@ -8,9 +8,9 @@ namespace MineLib.Network.Packets.Server
         public byte WindowId;
         public short Slot;
         public ItemStack SlotData;
-    
-        public const byte PacketId = 0x2F;
-        public byte Id { get { return 0x2F; } }
+
+        public const byte PacketID = 0x2F;
+        public byte Id { get { return PacketID; } }
     
         public void ReadPacket(ref Wrapped stream)
         {

@@ -11,8 +11,8 @@ namespace MineLib.Network.Packets.Server
         public byte[] Trim;
         public MapChunkBulkMetadata[] MetaInformation;
 
-        public const byte PacketId = 0x26;
-        public byte Id { get { return 0x26; } }
+        public const byte PacketID = 0x26;
+        public byte Id { get { return PacketID; } }
 
         public void ReadPacket(ref Wrapped stream)
         {

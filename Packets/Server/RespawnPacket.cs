@@ -11,7 +11,7 @@ namespace MineLib.Network.Packets.Server
         public string LevelType;
     
         public const byte PacketId = 0x07;
-        public byte Id { get { return 0x07; } }
+        public byte Id { get { return PacketId; } }
     
         public void ReadPacket(ref Wrapped stream)
         {

@@ -9,8 +9,8 @@ namespace MineLib.Network.Packets.Client
         public bool Jump;
         public bool Unmount;
 
-        public const byte PacketId = 0x0C;
-        public byte Id { get { return 0x0C; } }
+        public const byte PacketID = 0x0C;
+        public byte Id { get { return PacketID; } }
 
         public void ReadPacket(ref Wrapped stream)
         {

@@ -7,8 +7,8 @@ namespace MineLib.Network.Packets.Server
         public int Count;
         public string Text;
 
-        public const byte PacketId = 0x3A;
-        public byte Id { get { return 0x3A; } }
+        public const byte PacketID = 0x3A;
+        public byte Id { get { return PacketID; } }
 
         public void ReadPacket(ref Wrapped stream)
         {

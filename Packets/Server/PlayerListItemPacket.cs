@@ -8,8 +8,8 @@ namespace MineLib.Network.Packets.Server
         public bool Online;
         public short Ping;
 
-        public const byte PacketId = 0x38;
-        public byte Id { get { return 0x38; } }
+        public const byte PacketID = 0x38;
+        public byte Id { get { return PacketID; } }
 
         public void ReadPacket(ref Wrapped stream)
         {

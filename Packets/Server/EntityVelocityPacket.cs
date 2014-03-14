@@ -7,8 +7,8 @@ namespace MineLib.Network.Packets.Server
         public int EntityID;
         public short VelocityX, VelocityY, VelocityZ;
 
-        public const byte PacketId = 0x12;
-        public byte Id { get { return 0x12; } }
+        public const byte PacketID = 0x12;
+        public byte Id { get { return PacketID; } }
 
         public void ReadPacket(ref Wrapped stream)
         {

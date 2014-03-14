@@ -6,8 +6,8 @@ namespace MineLib.Network.Packets.Client.Login
     {
         public string Name;
 
-        public const byte PacketId = 0x00;
-        public byte Id { get { return 0x00; } }
+        public const byte PacketID = 0x00;
+        public byte Id { get { return PacketID; } }
 
         public void ReadPacket(ref Wrapped stream)
         {

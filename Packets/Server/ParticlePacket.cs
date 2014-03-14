@@ -10,8 +10,8 @@ namespace MineLib.Network.Packets.Server
         public float ParticleData;
         public int NumberOfParticles;
 
-        public const byte PacketId = 0x2A;
-        public byte Id { get { return 0x2A; } }
+        public const byte PacketID = 0x2A;
+        public byte Id { get { return PacketID; } }
 
         public void ReadPacket(ref Wrapped stream)
         {

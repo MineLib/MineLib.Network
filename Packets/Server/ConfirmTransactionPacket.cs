@@ -8,8 +8,8 @@ namespace MineLib.Network.Packets.Server
         public short ActionNumber;
         public bool Accepted;
 
-        public const byte PacketId = 0x32;
-        public byte Id { get { return 0x32; } }
+        public const byte PacketID = 0x32;
+        public byte Id { get { return PacketID; } }
 
         public void ReadPacket(ref Wrapped stream)
         {

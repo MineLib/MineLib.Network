@@ -9,8 +9,8 @@ namespace MineLib.Network.Packets.Client
         public EntityAction Action;
         public int JumpBoost;
 
-        public const byte PacketId = 0x0B;
-        public byte Id { get { return 0x0B; } }
+        public const byte PacketID = 0x0B;
+        public byte Id { get { return PacketID; } }
 
         public void ReadPacket(ref Wrapped stream)
         {

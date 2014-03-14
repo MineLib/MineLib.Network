@@ -12,9 +12,9 @@ namespace MineLib.Network.Packets.Server
         public byte Pitch, HeadPitch, Yaw;
         public short VelocityX, VelocityY, VelocityZ;
         public MetadataDictionary Metadata;
-    
-        public const byte PacketId = 0x0F;
-        public byte Id { get { return 0x0F; } }
+
+        public const byte PacketID = 0x0F;
+        public byte Id { get { return PacketID; } }
     
         public void ReadPacket(ref Wrapped stream)
         {

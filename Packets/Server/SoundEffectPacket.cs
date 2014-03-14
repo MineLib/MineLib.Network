@@ -9,8 +9,8 @@ namespace MineLib.Network.Packets.Server
         public float Volume;
         public byte Pitch;
 
-        public const byte PacketId = 0x29;
-        public byte Id { get { return 0x29; } }
+        public const byte PacketID = 0x29;
+        public byte Id { get { return PacketID; } }
 
         public void ReadPacket(ref Wrapped stream)
         {

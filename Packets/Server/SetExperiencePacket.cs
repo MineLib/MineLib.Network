@@ -8,8 +8,8 @@ namespace MineLib.Network.Packets.Server
         public short Level;
         public short TotalExperience;
 
-        public const byte PacketId = 0x1F;
-        public byte Id { get { return 0x1F; } }
+        public const byte PacketID = 0x1F;
+        public byte Id { get { return PacketID; } }
 
         public void ReadPacket(ref Wrapped stream)
         {

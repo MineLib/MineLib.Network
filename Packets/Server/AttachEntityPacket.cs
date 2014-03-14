@@ -7,8 +7,8 @@ namespace MineLib.Network.Packets.Server
         public int EntityID, VehicleID;
         public bool Leash;
 
-        public const byte PacketId = 0x1B;
-        public byte Id { get { return 0x1B; } }
+        public const byte PacketID = 0x1B;
+        public byte Id { get { return PacketID; } }
 
         public void ReadPacket(ref Wrapped stream)
         {

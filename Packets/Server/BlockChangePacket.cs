@@ -10,8 +10,8 @@ namespace MineLib.Network.Packets.Server
         public int BlockID;
         public byte BlockMetadata;
 
-        public const byte PacketId = 0x23;
-        public byte Id { get { return 0x23; } }
+        public const byte PacketID = 0x23;
+        public byte Id { get { return PacketID; } }
 
         public void ReadPacket(ref Wrapped stream)
         {

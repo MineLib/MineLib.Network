@@ -8,8 +8,8 @@ namespace MineLib.Network.Packets.Server
         public short Food;
         public float FoodSaturation;
 
-        public const byte PacketId = 0x06;
-        public byte Id { get { return 0x06; } }
+        public const byte PacketID = 0x06;
+        public byte Id { get { return PacketID; } }
 
         public void ReadPacket(ref Wrapped stream)
         {

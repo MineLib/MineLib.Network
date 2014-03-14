@@ -7,9 +7,9 @@ namespace MineLib.Network.Packets.Server
     {
         public GameStateReason Reason;
         public float Value; // Was GameMode
-    
-        public const byte PacketId = 0x2B;
-        public byte Id { get { return 0x2B; } }
+
+        public const byte PacketID = 0x2B;
+        public byte Id { get { return PacketID; } }
     
         public void ReadPacket(ref Wrapped stream)
         {

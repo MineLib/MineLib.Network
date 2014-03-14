@@ -7,8 +7,8 @@ namespace MineLib.Network.Packets.Client.Login
         public byte[] SharedSecret;
         public byte[] VerificationToken;
 
-        public const byte PacketId = 0x01;
-        public byte Id { get { return 0x01; } }
+        public const byte PacketID = 0x01;
+        public byte Id { get { return PacketID; } }
 
         public void ReadPacket(ref Wrapped stream)
         {

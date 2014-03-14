@@ -7,8 +7,8 @@ namespace MineLib.Network.Packets.Client
         public string Channel;
         public byte[] Data;
 
-        public const byte PacketId = 0x17;
-        public byte Id { get { return 0x17; } }
+        public const byte PacketID = 0x17;
+        public byte Id { get { return PacketID; } }
 
         public void ReadPacket(ref Wrapped stream)
         {

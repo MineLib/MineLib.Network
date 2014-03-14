@@ -8,8 +8,8 @@ namespace MineLib.Network.Packets.Server
         public sbyte DeltaX, DeltaY, DeltaZ;
         public byte Yaw, Pitch;
 
-        public const byte PacketId = 0x17;
-        public byte Id { get { return 0x17; } }
+        public const byte PacketID = 0x17;
+        public byte Id { get { return PacketID; } }
 
         public void ReadPacket(ref Wrapped stream)
         {

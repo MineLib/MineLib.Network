@@ -9,7 +9,7 @@ namespace MineLib.Network.Packets.Client
         public Animation Animation;
 
         public const byte PacketID = 0x0A;
-        public byte Id { get { return 0x0A; } }
+        public byte Id { get { return PacketID; } }
 
         public void ReadPacket(ref Wrapped stream)
         {

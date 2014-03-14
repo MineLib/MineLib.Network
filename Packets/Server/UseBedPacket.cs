@@ -9,8 +9,8 @@ namespace MineLib.Network.Packets.Server
         public byte Y;
         public int Z;
 
-        public const byte PacketId = 0x0A;
-        public byte Id { get { return 0x0A; } }
+        public const byte PacketID = 0x0A;
+        public byte Id { get { return PacketID; } }
 
         public void ReadPacket(ref Wrapped stream)
         {

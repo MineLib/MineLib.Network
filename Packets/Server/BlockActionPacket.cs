@@ -12,8 +12,8 @@ namespace MineLib.Network.Packets.Server
         public byte Byte2;
         public int BlockType;
 
-        public const byte PacketId = 0x24;
-        public byte Id { get { return 0x24; } }
+        public const byte PacketID = 0x24;
+        public byte Id { get { return PacketID; } }
 
         public void ReadPacket(ref Wrapped stream)
         {

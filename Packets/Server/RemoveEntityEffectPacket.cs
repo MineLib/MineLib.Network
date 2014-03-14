@@ -8,7 +8,7 @@ namespace MineLib.Network.Packets.Server
         public byte EffectID;
 
         public const byte PacketId = 0x1E;
-        public byte Id { get { return 0x1E; } }
+        public byte Id { get { return PacketId; } }
 
         public void ReadPacket(ref Wrapped stream)
         {

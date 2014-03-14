@@ -14,8 +14,8 @@ namespace MineLib.Network.Packets.Server
         public short PlayerCount;
         public string[] Players;
 
-        public const byte PacketId = 0x3E;
-        public byte Id { get { return 0x3E; } }
+        public const byte PacketID = 0x3E;
+        public byte Id { get { return PacketID; } }
 
         public void ReadPacket(ref Wrapped stream)
         {

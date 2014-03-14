@@ -14,7 +14,7 @@ namespace MineLib.Network.Packets.Client
         public byte CursorX, CursorY, CursorZ;
 
         public const byte PacketID = 0x08;
-        public byte Id { get { return 0x08; } }
+        public byte Id { get { return PacketID; } }
 
         public void ReadPacket(ref Wrapped stream)
         {

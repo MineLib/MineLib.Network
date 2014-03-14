@@ -8,8 +8,8 @@ namespace MineLib.Network.Packets.Client
         public PlayerAbility Flags;
         public float FlyingSpeed, WalkingSpeed;
 
-        public const byte PacketId = 0x13;
-        public byte Id { get { return 0x13; } }
+        public const byte PacketID = 0x13;
+        public byte Id { get { return PacketID; } }
 
         public void ReadPacket(ref Wrapped stream)
         {

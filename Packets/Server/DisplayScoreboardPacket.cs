@@ -8,8 +8,8 @@ namespace MineLib.Network.Packets.Server
         public ScoreboardPosition Position;
         public string ScoreName;
 
-        public const byte PacketId = 0x3D;
-        public byte Id { get { return 0x3D; } }
+        public const byte PacketID = 0x3D;
+        public byte Id { get { return PacketID; } }
 
         public void ReadPacket(ref Wrapped stream)
         {

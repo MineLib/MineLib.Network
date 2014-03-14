@@ -9,9 +9,9 @@ namespace MineLib.Network.Packets.Server
         public int EntityID;
         public EntityEquipmentSlot Slot;
         public ItemStack Item;
-    
-        public const byte PacketId = 0x04;
-        public byte Id { get { return 0x04; } }
+
+        public const byte PacketID = 0x04;
+        public byte Id { get { return PacketID; } }
     
         public void ReadPacket(ref Wrapped stream)
         {

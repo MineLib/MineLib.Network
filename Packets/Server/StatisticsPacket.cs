@@ -8,8 +8,8 @@ namespace MineLib.Network.Packets.Server
         public string[] StatisticsName;
         public int[] Value;
 
-        public const byte PacketId = 0x37;
-        public byte Id { get { return 0x37; } }
+        public const byte PacketID = 0x37;
+        public byte Id { get { return PacketID; } }
 
         public void ReadPacket(ref Wrapped stream)
         {

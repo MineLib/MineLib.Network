@@ -9,8 +9,8 @@ namespace MineLib.Network.Packets.Server
         public string ScoreName;
         public int? Value;
 
-        public const byte PacketId = 0x3C;
-        public byte Id { get { return 0x3C; } }
+        public const byte PacketID = 0x3C;
+        public byte Id { get { return PacketID; } }
 
         public void ReadPacket(ref Wrapped stream)
         {

@@ -8,8 +8,8 @@ namespace MineLib.Network.Packets.Server
         public int X, Y, Z;
         public byte DestroyStage;
 
-        public const byte PacketId = 0x25;
-        public byte Id { get { return 0x25; } }
+        public const byte PacketID = 0x25;
+        public byte Id { get { return PacketID; } }
 
         public void ReadPacket(ref Wrapped stream)
         {
