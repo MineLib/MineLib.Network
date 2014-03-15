@@ -230,7 +230,7 @@ namespace MineLib.Network
         /// <param name="selectedProfile"></param>
         /// <param name="serverHash"></param>
         /// <returns></returns>
-        public static bool VerifyName(string accessToken, string selectedProfile, string serverHash)
+        public static bool ClientAuth(string accessToken, string selectedProfile, string serverHash)
         {
             try
             {
@@ -245,8 +245,7 @@ namespace MineLib.Network
                         ServerID = serverHash
                     });
 
-                var response = JsonConvert.DeserializeObject<Response>(
-                    wClient.UploadString("https://sessionserver.mojang.com/session/minecraft/join", json_request));
+                wClient.UploadString("https://sessionserver.mojang.com/session/minecraft/join", json_request);
 
                 return true;
             }

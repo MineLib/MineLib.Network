@@ -143,16 +143,6 @@ namespace MineLib.Network
                             packetL.ReadPacket(ref _stream);
                             RaisePacketHandled(packetL, packetID, ServerState.Login);
 
-                            if (packetID == 1)
-                                EnableEncryption(packetL);
-
-                            if (packetID == 2)
-                                _minecraft.State = ServerState.Play;
-
-
-                            if (packetID == 3) //Shit just got real.
-                                Stop();
-
                             break;
 
                             #endregion Login
@@ -201,7 +191,7 @@ namespace MineLib.Network
 
             string hash = Cryptography.JavaHexDigest(hashData);
 
-            if (!Yggdrasil.VerifyName(_minecraft.AccessToken, _minecraft.SelectedProfile, hash))
+            if (!Yggdrasil.ClientAuth(_minecraft.AccessToken, _minecraft.SelectedProfile, hash))
                 return;
 
             // -- AsnKeyParser is a part of the cryptography.dll, which is simply a compiled version
