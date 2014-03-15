@@ -41,7 +41,6 @@
   <ItemGroup>
     <Compile Include="Cryptography.cs" />
     <Compile Include="Data\Records.cs" />
-    <Compile Include="Data\ServerInfo.cs" />
     <Compile Include="Enums\BlockActions.cs" />
     <Compile Include="IMinecraft.cs" />
     <Compile Include="Data\EntityMetadata\MetadadaShort.cs" />

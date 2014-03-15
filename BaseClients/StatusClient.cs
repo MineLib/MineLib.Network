@@ -1,14 +1,57 @@
 ﻿using System;
-using System.Drawing;
-using System.IO;
-using MineLib.Network.Data;
 using MineLib.Network.Enums;
 using MineLib.Network.Packets;
 using MineLib.Network.Packets.Client.Status;
 using MineLib.Network.Packets.Server.Status;
+using Newtonsoft.Json;
 
 namespace MineLib.Network.BaseClients
 {
+    public struct Sample
+    {
+        [JsonProperty("name")]
+        public string Name;
+
+        [JsonProperty("id")]
+        public string ID;
+    }
+
+    public struct Players
+    {
+        [JsonProperty("max")]
+        public int Max;
+
+        [JsonProperty("online")]
+        public int Online;
+
+        [JsonProperty("sample")]
+        public Sample[] Sample;
+    }
+
+    public struct ServerVersion
+    {
+        [JsonProperty("name")]
+        public string Name;
+
+        [JsonProperty("protocol")]
+        public int Protocol;
+    }
+
+    public struct ServerInfo
+    {
+        [JsonProperty("description")]
+        public string Description;
+
+        [JsonProperty("players")]
+        public Players Players;
+
+        [JsonProperty("version")]
+        public ServerVersion Version;
+
+        [JsonProperty("favicon")]
+        public string Favicon;
+    }
+
     public struct ResponseData
     {
         public ServerInfo Info;
@@ -61,7 +104,7 @@ namespace MineLib.Network.BaseClients
 
             var Info = new ServerInfo();
 
-            FireResponsePacket += packet => ParseResponse(packet, ref Info);
+            FireResponsePacket += packet => Info = ParseResponse(packet);
 
             FirePingPacket += packet =>
             {
@@ -88,7 +131,7 @@ namespace MineLib.Network.BaseClients
 
             FireResponsePacket += packet =>
             {
-                ParseResponse(packet, ref Info);
+                Info = ParseResponse(packet);
                 Ready = true;
             };
 
@@ -153,70 +196,11 @@ namespace MineLib.Network.BaseClients
             SendPacket(new Packets.Client.Status.PingPacket {Time = ping});
         }
 
-        private void ParseResponse(IPacket packet, ref ServerInfo info)
+        private ServerInfo ParseResponse(IPacket packet)
         {
-            // Very dirty, yep.
-
             var response = (ResponsePacket)packet;
-            string Text = response.Response;
 
-            string description = "";
-            string max = "";
-            string online = "";
-            string name = "";
-            string protocol = "";
-            string favicon = "";
-            Image FIcon = null;
-
-            string[] temp = Text.Split(new[] {"description\":\""}, StringSplitOptions.RemoveEmptyEntries);
-            if (temp.Length >= 2)
-                description = temp[1].Split('"')[0];
-            
-
-            temp = Text.Split(new[] {"max\":"}, StringSplitOptions.RemoveEmptyEntries);
-            if (temp.Length >= 2)
-                max = temp[1].Split(',')[0].Split('}')[0];
-            
-
-            temp = Text.Split(new[] {"online\":"}, StringSplitOptions.RemoveEmptyEntries);
-            if (temp.Length >= 2)
-                online = temp[1].Split(',')[0].Split('}')[0];
-            
-
-            temp = Text.Split(new[] {"name\":\""}, StringSplitOptions.RemoveEmptyEntries);
-            if (temp.Length >= 2)
-                name = temp[1].Split('"')[0];
-            
-
-            temp = Text.Split(new[] {"protocol\":"}, StringSplitOptions.RemoveEmptyEntries);
-            if (temp.Length >= 2)
-                protocol = temp[1].Split('}')[0];
-            
-
-            temp = Text.Split(new[] {"favicon\":"}, StringSplitOptions.RemoveEmptyEntries);
-            if (temp.Length >= 2)
-                favicon = temp[1].Split(',')[1].Replace("\\u003d", "=").Split('\"')[0];
-            
-
-            // Big problems with base64 decoding.
-            try
-            {
-                byte[] data = Convert.FromBase64String(favicon);
-
-                using (var ms = new MemoryStream(data))
-                {
-                    FIcon = Image.FromStream(ms);
-                }
-            }
-            catch (Exception) {}
-
-            info = new ServerInfo
-            {
-                Description = description,
-                Players = new Players {Max = Int32.Parse(max), Online = Int32.Parse(online)},
-                Version = new ServerVersion {Name = name, Protocol = Int32.Parse(protocol)},
-                Favicon = FIcon
-            };
+            return JsonConvert.DeserializeObject<ServerInfo>(response.Response);
         }
 
         private void SendPacket(IPacket packet)
