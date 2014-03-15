@@ -29,8 +29,6 @@ namespace MineLib.Network.BaseClients
 
         public string SelectedProfile { get; set; }
 
-        public bool Running { get; set; }
-
         #endregion Variables
 
         private readonly NetworkHandler _handler;

@@ -10,7 +10,5 @@ namespace MineLib.Network
 
         string AccessToken { get; set; }
         string SelectedProfile { get; set; }
-
-        bool Running { get; set; }
     }
 }

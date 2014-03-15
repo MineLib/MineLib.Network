@@ -55,8 +55,6 @@ namespace MineLib.Network
             }
             catch (Exception) { return; } // Failed to connect: e.Message.
 
-            _minecraft.Running = true;
-
             // Connected to server.
 
             // -- Create our Wrapped socket.

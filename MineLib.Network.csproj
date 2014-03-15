@@ -6,9 +6,11 @@
     <ProjectGuid>{E7C8320E-49A4-4187-AFE3-15C814201E1E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <NoStandardLibraries>false</NoStandardLibraries>
-    <AssemblyName>ClassLibrary</AssemblyName>
+    <AssemblyName>MineLib.Network</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -187,6 +189,7 @@
     <Compile Include="BaseClients\StatusClient.cs" />
     <Compile Include="BaseClients\StatusClient.Events.cs" />
     <Compile Include="BaseClients\StatusClient.Packets.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Yggdrasil.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -197,6 +200,10 @@
     <ProjectReference Include="fNbt\fNbt\fNbt.csproj">
       <Project>{4488498d-976d-4da3-bf72-109531af0488}</Project>
       <Name>fNbt</Name>
+    </ProjectReference>
+    <ProjectReference Include="Newtonsoft.Json\Src\Newtonsoft.Json\Newtonsoft.Json.Net40.csproj">
+      <Project>{a9ae40ff-1a21-414a-9fe7-3be13644cc6d}</Project>
+      <Name>Newtonsoft.Json.Net40</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSHARP.Targets" />
