@@ -15,6 +15,8 @@ namespace MineLib.Network
 {
     public partial class NetworkHandler : IDisposable
     {
+        public bool Connected {get { return _baseSock.Connected; }}
+
         private TcpClient _baseSock;
         private NetworkStream _baseStream;
         private Thread _listener;
