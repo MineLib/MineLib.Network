@@ -98,7 +98,7 @@ namespace MineLib.Network
             public string ClientToken { get; set; }
         }
 
-        private struct JsonVerifyName
+        private struct JsonClientAuth
         {
             [JsonProperty("accessToken")]
             public string AccessToken { get; set; }
@@ -238,7 +238,7 @@ namespace MineLib.Network
                 wClient.Headers.Add("Content-Type: application/json");
 
                 var json_request =
-                    JsonConvert.SerializeObject(new JsonVerifyName
+                    JsonConvert.SerializeObject(new JsonClientAuth
                     {
                         AccessToken = accessToken,
                         SelectedProfile = selectedProfile,

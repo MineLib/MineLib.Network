@@ -115,7 +115,7 @@ namespace MineLib.Network
 
                     switch (_minecraft.State)
                     {
-                            #region Status
+                        #region Status
 
                         case ServerState.Status:
                             if (ServerResponse.ServerStatusResponse[packetID] == null)
@@ -124,15 +124,17 @@ namespace MineLib.Network
                                 continue;
                             }
 
-                            IPacket packetS = ServerResponse.ServerStatusResponse[packetID]();
-                            packetS.ReadPacket(ref _stream);
-                            RaisePacketHandled(packetS, packetID, ServerState.Status);
+                            HandlePacket(_stream.ReadByteArray(length - 1), packetID, ServerState.Status);
+
+                            //IPacket packetS = ServerResponse.ServerStatusResponse[packetID]();
+                            //packetS.ReadPacket(ref _stream);
+                            //RaisePacketHandled(packetS, packetID, ServerState.Status);
 
                             break;
 
-                            #endregion Status
+                        #endregion Status
 
-                            #region Login
+                        #region Login
 
                         case ServerState.Login:
                             if (ServerResponse.ServerLoginResponse[packetID] == null)
@@ -149,7 +151,7 @@ namespace MineLib.Network
 
                             #endregion Login
 
-                            #region Play
+                        #region Play
 
                         case ServerState.Play:
                             if (ServerResponse.ServerPlayResponse[packetID] == null)
@@ -158,13 +160,11 @@ namespace MineLib.Network
                                 continue;
                             }
 
-                            IPacket packetP = ServerResponse.ServerPlayResponse[packetID]();
-                            packetP.ReadPacket(ref _stream);
-                            RaisePacketHandled(packetP, packetID, ServerState.Play);
+                            HandlePacket(_stream.ReadByteArray(length - 1), packetID, ServerState.Play);
 
                             break;
 
-                            #endregion Play
+                        #endregion Play
                     }
                     Console.WriteLine("Out While");
                     Console.WriteLine(" ");
@@ -179,15 +179,39 @@ namespace MineLib.Network
             return true;
         }
 
+        private void HandlePacket(byte[] data, int packetID, ServerState state)
+        {
+            var stream = new MemoryStream(data);
+            var Wrapped = new Wrapped(stream);
+
+            switch (state)
+            {
+                  case  ServerState.Status:
+                    IPacket packetS = ServerResponse.ServerStatusResponse[packetID]();
+                    packetS.ReadPacket(ref Wrapped);
+                    RaisePacketHandled(packetS, packetID, ServerState.Status);
+
+                    break;
+
+                  case ServerState.Play:
+                    IPacket packetP = ServerResponse.ServerPlayResponse[packetID]();
+                    packetP.ReadPacket(ref Wrapped);
+                    RaisePacketHandled(packetP, packetID, ServerState.Play);
+
+                    break;
+            }
+
+        }
+
         public void EnableEncryption(IPacket packet)
         {
             // From libMC.NET
-            var Request = (EncryptionRequestPacket) packet;
+            var request = (EncryptionRequestPacket) packet;
 
             var hashlist = new List<byte>();
-            hashlist.AddRange(Encoding.ASCII.GetBytes(Request.ServerId));
-            hashlist.AddRange(Request.SharedKey);
-            hashlist.AddRange(Request.PublicKey);
+            hashlist.AddRange(Encoding.ASCII.GetBytes(request.ServerId));
+            hashlist.AddRange(request.SharedKey);
+            hashlist.AddRange(request.PublicKey);
 
             byte[] hashData = hashlist.ToArray();
 
@@ -201,7 +225,7 @@ namespace MineLib.Network
             // -- You pass it the key data and ask it to parse, and it will 
             // -- Extract the server's public key, then parse that into RSA for us.
 
-            var keyParser = new AsnKeyParser(Request.PublicKey);
+            var keyParser = new AsnKeyParser(request.PublicKey);
             RSAParameters dekey = keyParser.ParseRSAPublicKey();
 
             // -- Now we create an encrypter, and encrypt the token sent to us by the server
@@ -211,10 +235,10 @@ namespace MineLib.Network
             var cryptoService = new RSACryptoServiceProvider();
             cryptoService.ImportParameters(dekey);
 
-            byte[] EncryptedSecret = cryptoService.Encrypt(Request.SharedKey, false);
-            byte[] EncryptedVerify = cryptoService.Encrypt(Request.VerificationToken, false);
+            byte[] EncryptedSecret = cryptoService.Encrypt(request.SharedKey, false);
+            byte[] EncryptedVerify = cryptoService.Encrypt(request.VerificationToken, false);
 
-            _stream.InitEncryption(Request.SharedKey);
+            _stream.InitEncryption(request.SharedKey);
 
             Send(new EncryptionResponsePacket {SharedSecret = EncryptedSecret, VerificationToken = EncryptedVerify});
 
