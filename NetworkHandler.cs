@@ -115,32 +115,29 @@ namespace MineLib.Network
 
                     switch (_minecraft.State)
                     {
-                        #region Status
+                            #region Status
 
                         case ServerState.Status:
                             if (ServerResponse.ServerStatusResponse[packetID] == null)
                             {
                                 _stream.ReadByteArray(length - 1); // -- bypass the packet
-                                continue;
+                                break;
                             }
 
                             HandlePacket(_stream.ReadByteArray(length - 1), packetID, ServerState.Status);
 
-                            //IPacket packetS = ServerResponse.ServerStatusResponse[packetID]();
-                            //packetS.ReadPacket(ref _stream);
-                            //RaisePacketHandled(packetS, packetID, ServerState.Status);
-
                             break;
 
-                        #endregion Status
+                            #endregion Status
 
-                        #region Login
+                            #region Login
 
+                            // We handle it right here.
                         case ServerState.Login:
                             if (ServerResponse.ServerLoginResponse[packetID] == null)
                             {
                                 _stream.ReadByteArray(length - 1); // -- bypass the packet
-                                continue;
+                                break;
                             }
 
                             IPacket packetL = ServerResponse.ServerLoginResponse[packetID]();
@@ -151,20 +148,20 @@ namespace MineLib.Network
 
                             #endregion Login
 
-                        #region Play
+                            #region Play
 
                         case ServerState.Play:
                             if (ServerResponse.ServerPlayResponse[packetID] == null)
                             {
                                 _stream.ReadByteArray(length - 1); // -- bypass the packet
-                                continue;
+                                break;
                             }
 
                             HandlePacket(_stream.ReadByteArray(length - 1), packetID, ServerState.Play);
 
                             break;
 
-                        #endregion Play
+                            #endregion Play
                     }
                     Console.WriteLine("Out While");
                     Console.WriteLine(" ");
@@ -220,27 +217,23 @@ namespace MineLib.Network
             if (!Yggdrasil.ClientAuth(_minecraft.AccessToken, _minecraft.SelectedProfile, hash))
                 return;
 
-            // -- AsnKeyParser is a part of the cryptography.dll, which is simply a compiled version
-            // -- of SMProxy's Cryptography.cs, with the server side parts stripped out.
             // -- You pass it the key data and ask it to parse, and it will 
             // -- Extract the server's public key, then parse that into RSA for us.
-
             var keyParser = new AsnKeyParser(request.PublicKey);
             RSAParameters dekey = keyParser.ParseRSAPublicKey();
 
             // -- Now we create an encrypter, and encrypt the token sent to us by the server
             // -- as well as our newly made shared key (Which can then only be decrypted with the server's private key)
             // -- and we send it to the server.
-
             var cryptoService = new RSACryptoServiceProvider();
             cryptoService.ImportParameters(dekey);
 
-            byte[] EncryptedSecret = cryptoService.Encrypt(request.SharedKey, false);
-            byte[] EncryptedVerify = cryptoService.Encrypt(request.VerificationToken, false);
+            byte[] encryptedSecret = cryptoService.Encrypt(request.SharedKey, false);
+            byte[] encryptedVerify = cryptoService.Encrypt(request.VerificationToken, false);
 
             _stream.InitEncryption(request.SharedKey);
 
-            Send(new EncryptionResponsePacket {SharedSecret = EncryptedSecret, VerificationToken = EncryptedVerify});
+            Send(new EncryptionResponsePacket {SharedSecret = encryptedSecret, VerificationToken = encryptedVerify});
 
             _stream.EncEnabled = true;
         }

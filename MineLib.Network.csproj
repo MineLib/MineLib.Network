@@ -188,6 +188,7 @@
     <Compile Include="BaseClients\StatusClient.Packets.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Yggdrasil.cs" />
+    <Compile Include="Yggdrasil.Json.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="CWrapped\CWrapped.csproj">

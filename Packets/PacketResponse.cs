@@ -66,7 +66,7 @@ namespace MineLib.Network.Packets
             () => new BlockChangePacket(),                  // 0x23
             () => new BlockActionPacket(),                  // 0x24
             () => new BlockBreakAnimationPacket(),          // 0x25
-            () => new MapChunkBulkPacket(),                 // 0x26
+            null, //() => new MapChunkBulkPacket(),                 // 0x26
             () => new ExplosionPacket(),                    // 0x27
             () => new EffectPacket(),                       // 0x28
             () => new SoundEffectPacket(),                  // 0x29
@@ -81,7 +81,7 @@ namespace MineLib.Network.Packets
             () => new ConfirmTransactionPacket(),           // 0x32
             () => new UpdateSignPacket(),                   // 0x33
             () => new MapsPacket(),                         // 0x34 
-            () => new UpdateBlockEntityPacket(),            // 0x35
+            null, //() => new UpdateBlockEntityPacket(),            // 0x35
             () => new SignEditorOpenPacket(),               // 0x36
             () => new StatisticsPacket(),                   // 0x37
             () => new PlayerListItemPacket(),               // 0x38

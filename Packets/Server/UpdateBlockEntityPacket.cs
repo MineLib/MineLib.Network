@@ -21,7 +21,8 @@ namespace MineLib.Network.Packets.Server
             Action = stream.ReadByte();
             int length = stream.ReadShort();
 
-            NBTData = stream.ReadByteArray(length);
+            if (length>0)
+                NBTData = stream.ReadByteArray(length);
         }
 
         public void WritePacket(ref Wrapped stream)
