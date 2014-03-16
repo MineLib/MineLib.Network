@@ -17,7 +17,7 @@ namespace MineLib.Network.Packets.Server
     
         public void ReadPacket(ref Wrapped stream)
         {
-            EntityID = stream.ReadShort();
+            EntityID = stream.ReadVarInt();
             PlayerUUID = stream.ReadString();
             PlayerName = stream.ReadString();
             X = stream.ReadInt();

@@ -12,7 +12,7 @@ namespace MineLib.Network.Packets.Server
 
         public void ReadPacket(ref Wrapped stream)
         {
-            ItemDamage = stream.ReadInt();
+            ItemDamage = stream.ReadVarInt();
             var length = stream.ReadShort();
             Data = stream.ReadByteArray(length);
         }
@@ -20,7 +20,7 @@ namespace MineLib.Network.Packets.Server
         public void WritePacket(ref Wrapped stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteInt(ItemDamage);
+            stream.WriteVarInt(ItemDamage);
             stream.WriteShort((short)Data.Length);
             stream.WriteByteArray(Data);
             stream.Purge();
