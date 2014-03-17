@@ -86,7 +86,6 @@ namespace MineLib.Network
             {
                 do
                 {
-                    Thread.Sleep(25);
                 } while (PacketHandler());
             }
             catch (IOException) {}
@@ -180,20 +179,27 @@ namespace MineLib.Network
         private void HandlePacket(byte[] data, int packetID, ServerState state)
         {
             var stream = new MemoryStream(data);
-            var Wrapped = new Wrapped(stream);
+            var wrapped = new Wrapped(stream);
 
             switch (state)
             {
+                case ServerState.Login: // We don't parse here Login, but others may do that here.
+                    IPacket packetL = ServerResponse.ServerStatusResponse[packetID]();
+                    packetL.ReadPacket(ref wrapped);
+                    RaisePacketHandled(packetL, packetID, ServerState.Status);
+
+                    break;
+
                   case  ServerState.Status:
                     IPacket packetS = ServerResponse.ServerStatusResponse[packetID]();
-                    packetS.ReadPacket(ref Wrapped);
+                    packetS.ReadPacket(ref wrapped);
                     RaisePacketHandled(packetS, packetID, ServerState.Status);
 
                     break;
 
                   case ServerState.Play:
                     IPacket packetP = ServerResponse.ServerPlayResponse[packetID]();
-                    packetP.ReadPacket(ref Wrapped);
+                    packetP.ReadPacket(ref wrapped);
                     RaisePacketHandled(packetP, packetID, ServerState.Play);
 
                     break;
