@@ -1,6 +1,7 @@
-using CWrapped;
+using MineLib.Network.IO;
 using MineLib.Network.Data;
 using MineLib.Network.Enums;
+
 
 namespace MineLib.Network.Packets.Client
 {

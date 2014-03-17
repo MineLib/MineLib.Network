@@ -5,11 +5,12 @@ using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
-using CWrapped;
+using MineLib.Network.IO;
 using MineLib.Network.Enums;
 using MineLib.Network.Packets;
 using MineLib.Network.Packets.Client.Login;
 using MineLib.Network.Packets.Server.Login;
+
 
 namespace MineLib.Network
 {

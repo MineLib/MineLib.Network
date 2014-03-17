@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using CWrapped;
+using MineLib.Network.IO;
+
 
 namespace MineLib.Network.Data.EntityMetadata
 {

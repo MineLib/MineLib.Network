@@ -187,14 +187,12 @@
     <Compile Include="BaseClients\StatusClient.Events.cs" />
     <Compile Include="BaseClients\StatusClient.Packets.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="IO\AesStream.cs" />
+    <Compile Include="IO\Wrapped.cs" />
     <Compile Include="Yggdrasil.cs" />
     <Compile Include="Yggdrasil.Json.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="CWrapped\CWrapped.csproj">
-      <Project>{72894a03-4a20-4b37-aab9-b96dac4bbaae}</Project>
-      <Name>CWrapped</Name>
-    </ProjectReference>
     <ProjectReference Include="fNbt\fNbt\fNbt.csproj">
       <Project>{4488498d-976d-4da3-bf72-109531af0488}</Project>
       <Name>fNbt</Name>

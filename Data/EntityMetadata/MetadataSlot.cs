@@ -1,5 +1,6 @@
-﻿using CWrapped;
+﻿using MineLib.Network.IO;
 using fNbt;
+
 
 namespace MineLib.Network.Data.EntityMetadata
 {

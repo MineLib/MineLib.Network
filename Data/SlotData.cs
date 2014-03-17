@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
-using CWrapped;
+using MineLib.Network.IO;
 using fNbt;
+
+
 //using fNbt.Serialization;
 // Serialization WIP
 
