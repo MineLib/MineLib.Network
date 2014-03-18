@@ -17,17 +17,12 @@ namespace MineLib.Network
     public partial class NetworkHandler : IDisposable
     {
         public bool Connected {get { return _baseSock.Connected; }}
-        private readonly List<IPacket> packets = new List<IPacket>();
 
         private TcpClient _baseSock;
         private NetworkStream _baseStream;
         private Thread _listener;
-        private Thread _sender;
         private IMinecraft _minecraft;
         private Wrapped _stream;
-
-        // Not using Queue because .Net 2.0
-        private readonly List<IPacket> _packetsToSend = new List<IPacket>();
 
         public NetworkHandler(IMinecraft client)
         {
@@ -72,11 +67,8 @@ namespace MineLib.Network
             // Socket Created.
 
             // -- Start network parsing.
-            _listener = new Thread(ReceiveUpdater) {Name = "PacketListener"};
+            _listener = new Thread(Updater) {Name = "PacketListener"};
             _listener.Start();
-
-            _sender = new Thread(SendUpdater) {Name = "PacketSender"};
-            _sender.Start();
             // Handler thread started.
         }
 
@@ -88,36 +80,23 @@ namespace MineLib.Network
             Dispose();
         }
 
-        private void ReceiveUpdater()
+        private void Updater()
         {
             try
             {
                 do
                 {
-                } while (PacketReceiver());
+                } while (PacketHandler());
             }
             catch (IOException) {}
             catch (SocketException) {}
             catch (ObjectDisposedException) {}
         }
 
-        private void SendUpdater()
-        {
-            try
-            {
-                do
-                {
-                } while (PacketSender());
-            }
-            catch (IOException) { }
-            catch (SocketException) { }
-            catch (ObjectDisposedException) { }
-        }
-
         /// <summary>
         ///     Creates an instance of each new packet, so it can be parsed.
         /// </summary>
-        private bool PacketReceiver()
+        private bool PacketHandler()
         {
             try
             {
@@ -126,8 +105,13 @@ namespace MineLib.Network
 
                 while (_baseSock.Client.Available > 0)
                 {
+                    Console.WriteLine("In While");
+
                     int length = _stream.ReadVarInt();
                     int packetID = _stream.ReadVarInt();
+
+                    Console.WriteLine("ID : 0x" + String.Format("{0:X}", packetID));
+                    Console.WriteLine("Lenght: " + length);
 
                     switch (_minecraft.State)
                     {
@@ -179,7 +163,8 @@ namespace MineLib.Network
 
                             #endregion Play
                     }
-
+                    Console.WriteLine("Out While");
+                    Console.WriteLine(" ");
                 }
             }
             catch (SocketException)
@@ -187,24 +172,6 @@ namespace MineLib.Network
                 Console.WriteLine("Error");
                 //Stop();
                 return false;
-            }
-            return true;
-        }
-
-        private bool PacketSender()
-        {
-            if (_packetsToSend.Count == 0)
-                return true;
-
-            while (_packetsToSend.Count > 0)
-            {
-                IPacket packet = _packetsToSend[0];
-                _packetsToSend.RemoveAt(0);
-                if (packet != null)
-                {
-                    packets.Add(packet);
-                    packet.WritePacket(ref _stream);
-                }
             }
             return true;
         }
@@ -280,19 +247,13 @@ namespace MineLib.Network
 
         public void Send(IPacket packet)
         {
-            if (packet != null)
-                _packetsToSend.Add(packet);
-            else
-                throw new Exception("Packet is null");
+            packet.WritePacket(ref _stream);
         }
 
         public void Dispose()
         {
             if (_listener.IsAlive)
                 _listener.Abort();
-
-            if (_sender.IsAlive)
-                _sender.Abort();
 
             if (_baseSock != null)
                 _baseSock.Close();
