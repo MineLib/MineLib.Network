@@ -68,7 +68,7 @@ namespace MineLib.Network.Data
             }
         }
 
-        public static ItemStack FromStream(ref Wrapped stream)
+        public static ItemStack FromStream(ref PacketByteReader stream)
         {
             var slot = EmptyStack;
             slot.Id = stream.ReadShort();
@@ -87,7 +87,7 @@ namespace MineLib.Network.Data
             return slot;
         }
 
-        public void WriteTo(ref Wrapped stream)
+        public void WriteTo(ref PacketStream stream)
         {
             stream.WriteShort(Id);
             if (Empty)

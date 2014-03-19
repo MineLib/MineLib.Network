@@ -17,12 +17,17 @@ namespace MineLib.Network
     public partial class NetworkHandler : IDisposable
     {
         public bool Connected {get { return _baseSock.Connected; }}
+<<<<<<< origin/master
+=======
+        private readonly List<IPacket> packets = new List<IPacket>(); // Debugging
+>>>>>>> local
 
         private TcpClient _baseSock;
         private NetworkStream _baseStream;
         private Thread _listener;
         private IMinecraft _minecraft;
-        private Wrapped _stream;
+        private PacketStream _stream;
+        private PacketByteReader _preader;
 
         public NetworkHandler(IMinecraft client)
         {
@@ -62,7 +67,7 @@ namespace MineLib.Network
 
             // -- Create our Wrapped socket.
             _baseStream = _baseSock.GetStream();
-            _stream = new Wrapped(_baseStream);
+            _stream = new PacketStream(_baseStream);
 
             // Socket Created.
 
@@ -82,6 +87,7 @@ namespace MineLib.Network
 
         private void Updater()
         {
+            _preader = new PacketByteReader(new MemoryStream());
             try
             {
                 do
@@ -110,6 +116,7 @@ namespace MineLib.Network
                     int length = _stream.ReadVarInt();
                     int packetID = _stream.ReadVarInt();
 
+<<<<<<< origin/master
                     Console.WriteLine("ID : 0x" + String.Format("{0:X}", packetID));
                     Console.WriteLine("Lenght: " + length);
 
@@ -165,6 +172,10 @@ namespace MineLib.Network
                     }
                     Console.WriteLine("Out While");
                     Console.WriteLine(" ");
+=======
+                    HandlePacket(packetID, _stream.ReadByteArray(length - 1));
+
+>>>>>>> local
                 }
             }
             catch (SocketException)
@@ -176,38 +187,84 @@ namespace MineLib.Network
             return true;
         }
 
+<<<<<<< origin/master
         private void HandlePacket(byte[] data, int packetID, ServerState state)
+=======
+        private bool PacketSender()
         {
-            var stream = new MemoryStream(data);
-            var wrapped = new Wrapped(stream);
+            if (_packetsToSend.Count == 0)
+                return true;
 
-            switch (state)
+            while (_packetsToSend.Count > 0)
             {
-                case ServerState.Login: // We don't parse here Login, but others may do that here.
-                    IPacket packetL = ServerResponse.ServerStatusResponse[packetID]();
-                    packetL.ReadPacket(ref wrapped);
-                    RaisePacketHandled(packetL, packetID, ServerState.Status);
+                IPacket packet = _packetsToSend[0];
+                _packetsToSend.RemoveAt(0);
 
-                    break;
+                if (packet == null) 
+                    continue;
 
-                  case  ServerState.Status:
+                packets.Add(packet);
+                packet.WritePacket(ref _stream);
+
+            }
+            return true;
+        }
+
+        private void HandlePacket(int packetID, byte[] data)
+>>>>>>> local
+        {
+            _preader.SetNewData(data);
+
+            switch (_minecraft.State)
+            {
+                    #region Status
+
+                case ServerState.Status:
+                    if (ServerResponse.ServerStatusResponse[packetID] == null)
+                        break;
+
                     IPacket packetS = ServerResponse.ServerStatusResponse[packetID]();
-                    packetS.ReadPacket(ref wrapped);
+                    packetS.ReadPacket(_preader);
                     RaisePacketHandled(packetS, packetID, ServerState.Status);
 
                     break;
 
-                  case ServerState.Play:
+                    #endregion Status
+
+                    #region Login
+
+                case ServerState.Login:
+                    if (ServerResponse.ServerLoginResponse[packetID] == null)
+                        break;
+
+                    IPacket packetL = ServerResponse.ServerLoginResponse[packetID]();
+                    packetL.ReadPacket(_preader);
+                    RaisePacketHandled(packetL, packetID, ServerState.Login);
+
+                    if (packetID == 1)
+                        EnableEncryption(packetL);
+
+                    break;
+
+                    #endregion Login
+
+                    #region Play
+
+                case ServerState.Play:
+                    if (ServerResponse.ServerPlayResponse[packetID] == null)
+                        break;
+
                     IPacket packetP = ServerResponse.ServerPlayResponse[packetID]();
-                    packetP.ReadPacket(ref wrapped);
+                    packetP.ReadPacket(_preader);
                     RaisePacketHandled(packetP, packetID, ServerState.Play);
 
                     break;
-            }
 
+                    #endregion Play
+            }
         }
 
-        public void EnableEncryption(IPacket packet)
+        private void EnableEncryption(IPacket packet)
         {
             // From libMC.NET
             var request = (EncryptionRequestPacket) packet;
@@ -240,14 +297,25 @@ namespace MineLib.Network
 
             _stream.InitEncryption(request.SharedKey);
 
-            Send(new EncryptionResponsePacket {SharedSecret = encryptedSecret, VerificationToken = encryptedVerify});
+            // Directly send packet because i have troubles with synchronizing "make EncEnabled after sending this packet".
+            var packetToSend = new EncryptionResponsePacket
+            {
+                SharedSecret = encryptedSecret,
+                VerificationToken = encryptedVerify
+            };
+
+            packetToSend.WritePacket(ref _stream);
 
             _stream.EncEnabled = true;
         }
 
         public void Send(IPacket packet)
         {
+<<<<<<< origin/master
             packet.WritePacket(ref _stream);
+=======
+            _packetsToSend.Add(packet);
+>>>>>>> local
         }
 
         public void Dispose()

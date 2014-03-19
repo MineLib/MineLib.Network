@@ -16,7 +16,7 @@ namespace MineLib.Network.Packets.Server
         public const byte PacketID = 0x01;
         public byte Id { get { return PacketID; } }
     
-        public void ReadPacket(ref Wrapped stream)
+        public void ReadPacket(PacketByteReader stream)
         {
             EntityID = stream.ReadInt();
             GameMode = (GameMode)stream.ReadByte();
@@ -26,7 +26,7 @@ namespace MineLib.Network.Packets.Server
             LevelType = stream.ReadString();
         }
     
-        public void WritePacket(ref Wrapped stream)
+        public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
             stream.WriteInt(EntityID);

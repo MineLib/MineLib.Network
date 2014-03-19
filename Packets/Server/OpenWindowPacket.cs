@@ -15,7 +15,7 @@ namespace MineLib.Network.Packets.Server
         public const byte PacketID = 0x2D;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(ref Wrapped stream)
+        public void ReadPacket(PacketByteReader stream)
         {
             WindowID = stream.ReadByte();
             InventoryType = stream.ReadByte();
@@ -26,7 +26,7 @@ namespace MineLib.Network.Packets.Server
                 EntityID = stream.ReadInt();
         }
 
-        public void WritePacket(ref Wrapped stream)
+        public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
             stream.WriteByte(WindowID);

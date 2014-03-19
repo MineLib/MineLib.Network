@@ -14,7 +14,7 @@ namespace MineLib.Network.Packets.Server
         public const byte PacketId = 0x07;
         public byte Id { get { return PacketId; } }
     
-        public void ReadPacket(ref Wrapped stream)
+        public void ReadPacket(PacketByteReader stream)
         {
             Dimension = (Dimension)stream.ReadInt();
             Difficulty = (Difficulty)stream.ReadByte();
@@ -22,7 +22,7 @@ namespace MineLib.Network.Packets.Server
             LevelType = stream.ReadString();
         }
     
-        public void WritePacket(ref Wrapped stream)
+        public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
             stream.WriteVarInt((int)Dimension);

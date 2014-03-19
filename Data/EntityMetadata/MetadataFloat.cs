@@ -31,12 +31,12 @@ namespace MineLib.Network.Data.EntityMetadata
             return new MetadataFloat(value);
         }
 
-        public override void FromStream(ref Wrapped stream)
+        public override void FromStream(ref PacketByteReader stream)
         {
             Value = stream.ReadFloat();
         }
 
-        public override void WriteTo(ref Wrapped stream, byte index)
+        public override void WriteTo(ref PacketStream stream, byte index)
         {
             stream.WriteByte(GetKey(index));
             stream.WriteFloat(Value);

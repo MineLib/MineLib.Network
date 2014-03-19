@@ -13,14 +13,14 @@ namespace MineLib.Network.Packets.Server
         public const byte PacketID = 0x2F;
         public byte Id { get { return PacketID; } }
     
-        public void ReadPacket(ref Wrapped stream)
+        public void ReadPacket(PacketByteReader stream)
         {
             WindowId = stream.ReadByte();
             Slot = stream.ReadShort();
             SlotData = ItemStack.FromStream(ref stream);
         }
     
-        public void WritePacket(ref Wrapped stream)
+        public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
             stream.WriteByte(WindowId);

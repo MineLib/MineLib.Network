@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -78,6 +79,8 @@
     <Compile Include="Enums\ServerState.cs" />
     <Compile Include="Enums\TeamMode.cs" />
     <Compile Include="Events\Events.cs" />
+    <Compile Include="IO\PacketByteReader.cs" />
+    <Compile Include="IO\PacketStream.Stream.cs" />
     <Compile Include="NetworkHandler.cs" />
     <Compile Include="NetworkHandler.Events.cs" />
     <Compile Include="NetworkHandler.Packets.cs" />
@@ -188,7 +191,7 @@
     <Compile Include="BaseClients\StatusClient.Packets.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IO\AesStream.cs" />
-    <Compile Include="IO\Wrapped.cs" />
+    <Compile Include="IO\PacketStream.cs" />
     <Compile Include="Yggdrasil.cs" />
     <Compile Include="Yggdrasil.Json.cs" />
   </ItemGroup>

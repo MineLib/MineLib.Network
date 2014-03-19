@@ -11,14 +11,14 @@ namespace MineLib.Network.Packets.Server
         public const byte PacketID = 0x34;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(ref Wrapped stream)
+        public void ReadPacket(PacketByteReader stream)
         {
             ItemDamage = stream.ReadVarInt();
             var length = stream.ReadShort();
             Data = stream.ReadByteArray(length);
         }
 
-        public void WritePacket(ref Wrapped stream)
+        public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
             stream.WriteVarInt(ItemDamage);

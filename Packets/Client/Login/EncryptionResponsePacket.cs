@@ -11,7 +11,7 @@ namespace MineLib.Network.Packets.Client.Login
         public const byte PacketID = 0x01;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(ref Wrapped stream)
+        public void ReadPacket(PacketByteReader stream)
         {
             var ssLength = stream.ReadShort();
             SharedSecret = stream.ReadByteArray(ssLength);
@@ -19,7 +19,7 @@ namespace MineLib.Network.Packets.Client.Login
             VerificationToken = stream.ReadByteArray(vtLength);
         }
 
-        public void WritePacket(ref Wrapped stream)
+        public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
             stream.WriteShort((short)SharedSecret.Length);

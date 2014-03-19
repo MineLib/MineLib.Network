@@ -15,7 +15,7 @@ namespace MineLib.Network.Packets.Client
         public const byte PacketID = 0x07;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(ref Wrapped stream)
+        public void ReadPacket(PacketByteReader stream)
         {
             Status = (DigStatus)stream.ReadByte();
             X = stream.ReadInt();
@@ -24,7 +24,7 @@ namespace MineLib.Network.Packets.Client
             Face = stream.ReadByte();
         }
 
-        public void WritePacket(ref Wrapped stream)
+        public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
             stream.WriteByte((byte)Status);

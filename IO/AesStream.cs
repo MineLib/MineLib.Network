@@ -49,7 +49,7 @@ namespace MineLib.Network.IO
             return Cipher;
         }
 
-        public new void Dispose()
+        public void Dispose()
         {
             if (DecryptStream != null)
                 DecryptStream.Dispose();

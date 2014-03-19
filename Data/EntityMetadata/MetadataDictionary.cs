@@ -44,7 +44,7 @@ namespace MineLib.Network.Data.EntityMetadata
             set { entries[index] = value; }
         }
 
-        public static MetadataDictionary FromStream(ref Wrapped stream)
+        public static MetadataDictionary FromStream(ref PacketByteReader stream)
         {
             var value = new MetadataDictionary();
             while (true)
@@ -65,7 +65,7 @@ namespace MineLib.Network.Data.EntityMetadata
             return value;
         }
 
-        public void WriteTo(ref Wrapped stream)
+        public void WriteTo(ref PacketStream stream)
         {
             foreach (var entry in entries)
                 entry.Value.WriteTo(ref stream, entry.Key);

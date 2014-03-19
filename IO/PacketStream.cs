@@ -4,17 +4,16 @@ using System.Text;
 
 namespace MineLib.Network.IO
 {
-    // No implementing Stream here. We make a new Wrapped at every packet handling.
     // -- Credits to umby24 for encryption support, as taken from CWrapped.
-    public class Wrapped : IDisposable
+    public partial class PacketStream : IDisposable
     {
         // -- Credits to SirCmpwn for encryption support, as taken from SMProxy.
-        private readonly Stream _stream;
+        private Stream _stream;
         private AesStream _crypto;
         public bool EncEnabled;
         private byte[] _buffer;
 
-        public Wrapped(Stream stream)
+        public PacketStream(Stream stream)
         {
             _stream = stream;
         }
@@ -25,14 +24,6 @@ namespace MineLib.Network.IO
         }
 
         // -- Strings
-
-        public string ReadString()
-        {
-            int length = ReadVarInt();
-            byte[] stringBytes = ReadByteArray(length);
-
-            return Encoding.UTF8.GetString(stringBytes);
-        }
 
         public void WriteString(string value)
         {
@@ -47,14 +38,6 @@ namespace MineLib.Network.IO
 
         // -- Shorts
 
-        public short ReadShort()
-        {
-            byte[] bytes = ReadByteArray(2);
-            Array.Reverse(bytes);
-
-            return BitConverter.ToInt16(bytes, 0);
-        }
-
         public void WriteShort(short value)
         {
             byte[] bytes = BitConverter.GetBytes(value);
@@ -64,14 +47,6 @@ namespace MineLib.Network.IO
         }
 
         // -- Integer
-
-        public int ReadInt()
-        {
-            byte[] bytes = ReadByteArray(4);
-            Array.Reverse(bytes);
-
-            return BitConverter.ToInt32(bytes, 0);
-        }
 
         public void WriteInt(int value)
         {
@@ -133,14 +108,6 @@ namespace MineLib.Network.IO
 
         // -- Long
 
-        public long ReadLong()
-        {
-            byte[] bytes = ReadByteArray(8);
-            Array.Reverse(bytes);
-
-            return BitConverter.ToInt64(bytes, 0);
-        }
-
         public void WriteLong(long value)
         {
             byte[] bytes = BitConverter.GetBytes(value);
@@ -150,14 +117,6 @@ namespace MineLib.Network.IO
         }
 
         // -- Doubles
-
-        public double ReadDouble()
-        {
-            byte[] bytes = ReadByteArray(8);
-            Array.Reverse(bytes);
-
-            return BitConverter.ToDouble(bytes, 0);
-        }
 
         public void WriteDouble(double value)
         {
@@ -169,14 +128,6 @@ namespace MineLib.Network.IO
 
         // -- Floats
 
-        public float ReadFloat()
-        {
-            byte[] bytes = ReadByteArray(4);
-            Array.Reverse(bytes);
-
-            return BitConverter.ToSingle(bytes, 0);
-        }
-
         public void WriteFloat(float value)
         {
             byte[] bytes = BitConverter.GetBytes(value);
@@ -187,12 +138,12 @@ namespace MineLib.Network.IO
 
         // -- Bytes
 
-        public byte ReadByte()
+        public new byte ReadByte()
         {
             return ReadSingleByte();
         }
 
-        public void WriteByte(byte value)
+        public new void WriteByte(byte value)
         {
             try
             {
@@ -206,23 +157,11 @@ namespace MineLib.Network.IO
 
         // -- SByte
 
-        public sbyte ReadSByte()
-        {
-            try
-            {
-                return Convert.ToSByte(ReadSingleByte());
-            }
-            catch
-            {
-                return 0;
-            }
-        }
-
         public void WriteSByte(sbyte value)
         {
             try
             {
-                SendSingleByte(Convert.ToByte(value));
+                SendSingleByte(unchecked((byte)value));
             }
             catch
             {
@@ -231,18 +170,6 @@ namespace MineLib.Network.IO
         }
 
         // -- Bool
-
-        public bool ReadBool()
-        {
-            try
-            {
-                return Convert.ToBoolean(ReadSingleByte());
-            }
-            catch
-            {
-                return false;
-            }
-        }
 
         public void WriteBool(bool value)
         {
@@ -258,18 +185,6 @@ namespace MineLib.Network.IO
 
         // -- IntegerArray
 
-        public int[] ReadIntArray(int value)
-        {
-            int[] myInts = new int[value];
-
-            for (int i = 0; i < value; i++)
-            {
-                myInts[i] = ReadInt();
-            }
-
-            return myInts;
-        }
-
         public void WriteIntArray(int[] value)
         {
             int length = value.Length;
@@ -282,18 +197,6 @@ namespace MineLib.Network.IO
 
         // -- StringArray
 
-        public string[] ReadStringArray(int value)
-        {
-            string[] myStrings = new string[value];
-
-            for (int i = 0; i < value; i++)
-            {
-                myStrings[i] = ReadString();
-            }
-
-            return myStrings;
-        }
-
         public void WriteStringArray(string[] value)
         {
             int length = value.Length;
@@ -305,18 +208,6 @@ namespace MineLib.Network.IO
         }
 
         // -- VarIntArray
-
-        public int[] ReadVarIntArray(int value)
-        {
-            int[] myInts = new int[value];
-
-            for (int i = 0; i < value; i++)
-            {
-                myInts[i] = ReadVarInt();
-            }
-
-            return myInts;
-        }
 
         public void WriteVarIntArray(int[] value)
         {
@@ -448,7 +339,7 @@ namespace MineLib.Network.IO
 
         #endregion
 
-        public void Dispose()
+        public new void Dispose()
         {
             if (_stream != null)
                 _stream.Dispose();

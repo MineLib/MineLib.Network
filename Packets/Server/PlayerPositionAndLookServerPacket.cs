@@ -12,7 +12,7 @@ namespace MineLib.Network.Packets.Server
         public const byte PacketID = 0x08;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(ref Wrapped stream)
+        public void ReadPacket(PacketByteReader stream)
         {
             X = stream.ReadDouble();
             Y = stream.ReadDouble();
@@ -22,7 +22,7 @@ namespace MineLib.Network.Packets.Server
             OnGround = stream.ReadBool();
         }
 
-        public void WritePacket(ref Wrapped stream)
+        public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
             stream.WriteDouble(X);

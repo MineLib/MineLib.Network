@@ -14,7 +14,7 @@ namespace MineLib.Network.Packets.Server.Login
         public const byte PacketID = 0x01;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(ref Wrapped stream)
+        public void ReadPacket(PacketByteReader stream)
         {
             ServerId = stream.ReadString();
             var pkLength = stream.ReadShort();
@@ -28,7 +28,7 @@ namespace MineLib.Network.Packets.Server.Login
             random.GetBytes(SharedKey);
         }
 
-        public void WritePacket(ref Wrapped stream)
+        public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
             stream.WriteString(ServerId);

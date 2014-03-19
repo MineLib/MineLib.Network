@@ -6,7 +6,7 @@ namespace MineLib.Network.Packets
     public interface IPacket
     {
         byte Id { get; }
-        void ReadPacket(ref Wrapped stream);
-        void WritePacket(ref Wrapped stream);
+        void ReadPacket(PacketByteReader stream);
+        void WritePacket(ref PacketStream stream);
     }
 }
