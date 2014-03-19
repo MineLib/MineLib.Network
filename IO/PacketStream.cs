@@ -254,14 +254,14 @@ namespace MineLib.Network.IO
                 byte[] myBytes = new byte[value];
                 int BytesRead;
 
-                BytesRead = _crypto.DecryptStream.Read(myBytes, 0, value);
+                BytesRead = _crypto.Read(myBytes, 0, value);
 
                 while (true)
                 {
                     if (BytesRead != value)
                     {
                         int newSize = value - BytesRead;
-                        int BytesRead1 = _crypto.DecryptStream.Read(myBytes, BytesRead - 1, newSize);
+                        int BytesRead1 = _crypto.Read(myBytes, BytesRead - 1, newSize);
 
                         if (BytesRead1 != newSize)
                         {
@@ -330,7 +330,7 @@ namespace MineLib.Network.IO
             Buffer.BlockCopy(_buffer, 0, tempBuff, lenBytes.Length, _buffer.Length);
 
             if (EncEnabled)
-                _crypto.EncryptStream.Write(tempBuff, 0, tempBuff.Length);
+                _crypto.Write(tempBuff, 0, tempBuff.Length);
             else
                 _stream.Write(tempBuff, 0, tempBuff.Length);
 

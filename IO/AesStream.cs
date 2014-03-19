@@ -29,6 +29,11 @@ namespace MineLib.Network.IO
             return DecryptStream.ReadByte();
         }
 
+        public int Read(byte[] buffer, int offset, int count)
+        {
+            return DecryptStream.Read(buffer, offset, count);
+        }
+
         public void Write(byte[] buffer, int offset, int count)
         {
             EncryptStream.Write(buffer, offset, count);

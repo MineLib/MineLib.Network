@@ -22,10 +22,13 @@ namespace MineLib.Network
 
         private TcpClient _baseSock;
         private NetworkStream _baseStream;
+        private PacketStream _stream;
+
         private Thread _listener;
         private Thread _sender;
+
         private IMinecraft _minecraft;
-        private PacketStream _stream;
+
         private PacketByteReader _preader;
 
         // Not using Queue because .Net 2.0
@@ -272,6 +275,9 @@ namespace MineLib.Network
             if (_listener.IsAlive)
                 _listener.Abort();
 
+            if (_sender.IsAlive)
+                _sender.Abort();
+
             if (_baseSock != null)
                 _baseSock.Close();
 
@@ -280,6 +286,9 @@ namespace MineLib.Network
 
             if (_stream != null)
                 _stream.Dispose();
+
+            if (_preader != null)
+                _preader.Dispose();
 
                 _minecraft = null;
         }
