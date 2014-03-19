@@ -17,17 +17,19 @@ namespace MineLib.Network
     public partial class NetworkHandler : IDisposable
     {
         public bool Connected {get { return _baseSock.Connected; }}
-<<<<<<< origin/master
-=======
+
         private readonly List<IPacket> packets = new List<IPacket>(); // Debugging
->>>>>>> local
 
         private TcpClient _baseSock;
         private NetworkStream _baseStream;
         private Thread _listener;
+        private Thread _sender;
         private IMinecraft _minecraft;
         private PacketStream _stream;
         private PacketByteReader _preader;
+
+        // Not using Queue because .Net 2.0
+        private readonly List<IPacket> _packetsToSend = new List<IPacket>();
 
         public NetworkHandler(IMinecraft client)
         {
@@ -72,8 +74,11 @@ namespace MineLib.Network
             // Socket Created.
 
             // -- Start network parsing.
-            _listener = new Thread(Updater) {Name = "PacketListener"};
+            _listener = new Thread(ReceiveUpdater) { Name = "PacketListener" };
             _listener.Start();
+
+            _sender = new Thread(SendUpdater) { Name = "PacketSender" };
+            _sender.Start();
             // Handler thread started.
         }
 
@@ -85,24 +90,37 @@ namespace MineLib.Network
             Dispose();
         }
 
-        private void Updater()
+        private void ReceiveUpdater()
         {
-            _preader = new PacketByteReader(new MemoryStream());
+            _preader = new PacketByteReader(new MemoryStream(512));
             try
             {
                 do
                 {
-                } while (PacketHandler());
+                } while (PacketReceiver());
             }
-            catch (IOException) {}
-            catch (SocketException) {}
-            catch (ObjectDisposedException) {}
+            catch (IOException) { }
+            catch (SocketException) { }
+            catch (ObjectDisposedException) { }
+        }
+
+        private void SendUpdater()
+        {
+            try
+            {
+                do
+                {
+                } while (PacketSender());
+            }
+            catch (IOException) { }
+            catch (SocketException) { }
+            catch (ObjectDisposedException) { }
         }
 
         /// <summary>
         ///     Creates an instance of each new packet, so it can be parsed.
         /// </summary>
-        private bool PacketHandler()
+        private bool PacketReceiver()
         {
             try
             {
@@ -111,71 +129,10 @@ namespace MineLib.Network
 
                 while (_baseSock.Client.Available > 0)
                 {
-                    Console.WriteLine("In While");
-
                     int length = _stream.ReadVarInt();
                     int packetID = _stream.ReadVarInt();
 
-<<<<<<< origin/master
-                    Console.WriteLine("ID : 0x" + String.Format("{0:X}", packetID));
-                    Console.WriteLine("Lenght: " + length);
-
-                    switch (_minecraft.State)
-                    {
-                            #region Status
-
-                        case ServerState.Status:
-                            if (ServerResponse.ServerStatusResponse[packetID] == null)
-                            {
-                                _stream.ReadByteArray(length - 1); // -- bypass the packet
-                                break;
-                            }
-
-                            HandlePacket(_stream.ReadByteArray(length - 1), packetID, ServerState.Status);
-
-                            break;
-
-                            #endregion Status
-
-                            #region Login
-
-                            // We handle it right here.
-                        case ServerState.Login:
-                            if (ServerResponse.ServerLoginResponse[packetID] == null)
-                            {
-                                _stream.ReadByteArray(length - 1); // -- bypass the packet
-                                break;
-                            }
-
-                            IPacket packetL = ServerResponse.ServerLoginResponse[packetID]();
-                            packetL.ReadPacket(ref _stream);
-                            RaisePacketHandled(packetL, packetID, ServerState.Login);
-
-                            break;
-
-                            #endregion Login
-
-                            #region Play
-
-                        case ServerState.Play:
-                            if (ServerResponse.ServerPlayResponse[packetID] == null)
-                            {
-                                _stream.ReadByteArray(length - 1); // -- bypass the packet
-                                break;
-                            }
-
-                            HandlePacket(_stream.ReadByteArray(length - 1), packetID, ServerState.Play);
-
-                            break;
-
-                            #endregion Play
-                    }
-                    Console.WriteLine("Out While");
-                    Console.WriteLine(" ");
-=======
                     HandlePacket(packetID, _stream.ReadByteArray(length - 1));
-
->>>>>>> local
                 }
             }
             catch (SocketException)
@@ -187,9 +144,6 @@ namespace MineLib.Network
             return true;
         }
 
-<<<<<<< origin/master
-        private void HandlePacket(byte[] data, int packetID, ServerState state)
-=======
         private bool PacketSender()
         {
             if (_packetsToSend.Count == 0)
@@ -211,7 +165,6 @@ namespace MineLib.Network
         }
 
         private void HandlePacket(int packetID, byte[] data)
->>>>>>> local
         {
             _preader.SetNewData(data);
 
@@ -311,11 +264,7 @@ namespace MineLib.Network
 
         public void Send(IPacket packet)
         {
-<<<<<<< origin/master
-            packet.WritePacket(ref _stream);
-=======
             _packetsToSend.Add(packet);
->>>>>>> local
         }
 
         public void Dispose()
