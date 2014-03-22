@@ -5,6 +5,13 @@ namespace MineLib.Network
 {
     public partial class Yggdrasil
     {
+        public enum ErrorType
+        {
+            ForbiddenOperationException,
+            IllegalArgumentException,
+            UnsupportedMediaType
+        }
+
         #region Response
 
         public struct AvailableProfiles
@@ -39,11 +46,11 @@ namespace MineLib.Network
             [JsonProperty("clientToken")]
             public string ClientToken { get; set; }
 
-            [JsonProperty("availableProfiles")]
-            public List<AvailableProfiles> AvailableProfiles { get; set; }
-
             [JsonProperty("selectedProfile")]
             public SelectedProfile Profile { get; set; }
+
+            [JsonProperty("availableProfiles")]
+            public List<AvailableProfiles> AvailableProfiles { get; set; }
         }
 
         public struct YggdrasilAnswer
@@ -51,6 +58,18 @@ namespace MineLib.Network
             public YggdrasilStatus Status;
 
             public Response Response;
+        }
+
+        public struct Error
+        {
+            [JsonProperty("error")]
+            public ErrorType ErrorDescription { get; set; }
+
+            [JsonProperty("errorMessage")]
+            public string ErrorMessage { get; set; }
+
+            [JsonProperty("cause")]
+            public string Cause { get; set; }
         }
 
         #endregion Response

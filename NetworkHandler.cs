@@ -66,7 +66,7 @@ namespace MineLib.Network
                     wh.Close();
                 }
             }
-            catch (Exception) { return; } // Failed to connect: e.Message.
+            catch (SocketException) { }
 
             // Connected to server.
 
@@ -95,55 +95,33 @@ namespace MineLib.Network
 
         private void ReceiveUpdater()
         {
-            _preader = new PacketByteReader(new MemoryStream(512));
-            try
+            _preader = new PacketByteReader(new MemoryStream(0));
+
+            do
             {
-                do
-                {
-                } while (PacketReceiver());
-            }
-            catch (IOException) { }
-            catch (SocketException) { }
-            catch (ObjectDisposedException) { }
+            } while (PacketReceiver());
         }
 
         private void SendUpdater()
         {
-            try
+            do
             {
-                do
-                {
-                } while (PacketSender());
-            }
-            catch (IOException) { }
-            catch (SocketException) { }
-            catch (ObjectDisposedException) { }
+            } while (PacketSender());
         }
 
-        /// <summary>
-        ///     Creates an instance of each new packet, so it can be parsed.
-        /// </summary>
         private bool PacketReceiver()
         {
-            try
-            {
-                if (_baseSock.Client == null || !_baseSock.Connected)
-                    return false;
-
-                while (_baseSock.Client.Available > 0)
-                {
-                    int length = _stream.ReadVarInt();
-                    int packetID = _stream.ReadVarInt();
-
-                    HandlePacket(packetID, _stream.ReadByteArray(length - 1));
-                }
-            }
-            catch (SocketException)
-            {
-                Console.WriteLine("Error");
-                //Stop();
+            if (_baseSock.Client == null || !Connected)
                 return false;
+
+            while (_baseSock.Client.Available > 0)
+            {
+                int length = _stream.ReadVarInt();
+                int packetID = _stream.ReadVarInt();
+
+                HandlePacket(packetID, _stream.ReadByteArray(length - 1));
             }
+
             return true;
         }
 
@@ -272,10 +250,10 @@ namespace MineLib.Network
 
         public void Dispose()
         {
-            if (_listener.IsAlive)
+            if (_listener != null && _listener.IsAlive)
                 _listener.Abort();
 
-            if (_sender.IsAlive)
+            if (_sender != null && _sender.IsAlive)
                 _sender.Abort();
 
             if (_baseSock != null)

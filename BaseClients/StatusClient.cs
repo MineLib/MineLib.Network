@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using MineLib.Network.Enums;
 using MineLib.Network.Packets;
 using MineLib.Network.Packets.Client.Status;
@@ -55,7 +56,7 @@ namespace MineLib.Network.BaseClients
     public struct ResponseData
     {
         public ServerInfo Info;
-        public int Ping;
+        public long Ping;
     }
 
     public partial class StatusClient : IMinecraft, IDisposable
@@ -99,8 +100,7 @@ namespace MineLib.Network.BaseClients
 
             bool Ready = false;
 
-            int ping = 0;
-            int startTime = 0;
+            var stopwatch = new Stopwatch();
 
             var Info = new ServerInfo();
 
@@ -108,17 +108,22 @@ namespace MineLib.Network.BaseClients
 
             FirePingPacket += packet =>
             {
-                var Ping = (Packets.Server.Status.PingPacket)packet;
-                int currtime = DateTime.UtcNow.Millisecond;
-                ping = currtime - startTime;
+                stopwatch.Stop();
                 Ready = true;
             };
 
-            PingServer(protocolVersion, out startTime);
+            stopwatch.Start();
+            PingServer(protocolVersion);
 
-            while (!Ready) {}
+            int x = 0;
+            while (!Ready)
+            {
+                x++;
+                if (x > 200)
+                    break;
+            }
             Disconnect();
-            return new ResponseData {Info = Info, Ping = ping};
+            return new ResponseData {Info = Info, Ping = stopwatch.ElapsedMilliseconds};
         }
 
         public ServerInfo GetInfo(int protocolVersion)
@@ -137,33 +142,37 @@ namespace MineLib.Network.BaseClients
 
             RequestServerInfo(protocolVersion);
 
-            while (!Ready) {}
+            int x = 0;
+            while (!Ready)
+            {
+                x++;
+                if (x > 200)
+                    break;
+            }
             Disconnect();
             return Info;
         }
 
-        public int GetPing(int protocolVersion)
+        public long GetPing(int protocolVersion)
         {
             if (_connectionClosed) throw new Exception("Initialize new StatusClient");
 
             bool Ready = false;
 
-            int ping = 0;
-            int startTime = 0;
+            var stopwatch = new Stopwatch();
 
             FirePingPacket += packet =>
             {
                 var Ping = (Packets.Server.Status.PingPacket)packet;
-                int currtime = DateTime.UtcNow.Millisecond;
-                ping = currtime - startTime;
+                stopwatch.Stop();
                 Ready = true;
             };
 
-            PingServer(protocolVersion, out startTime);
+            PingServer(protocolVersion);
 
             while (!Ready) {}
             Disconnect();
-            return ping;
+            return stopwatch.ElapsedMilliseconds;
         }
 
         private void RequestServerInfo(int protocolVersion)
@@ -179,7 +188,7 @@ namespace MineLib.Network.BaseClients
             SendPacket(new RequestPacket());
         }
 
-        private void PingServer(int protocolVersion, out int ping)
+        private void PingServer(int protocolVersion)
         {
             SendPacket(new HandshakePacket
             {
@@ -191,9 +200,7 @@ namespace MineLib.Network.BaseClients
 
             SendPacket(new RequestPacket());
 
-            ping = DateTime.UtcNow.Millisecond;
-
-            SendPacket(new Packets.Client.Status.PingPacket {Time = ping});
+            SendPacket(new Packets.Client.Status.PingPacket { Time = DateTime.UtcNow.Millisecond });
         }
 
         private ServerInfo ParseResponse(IPacket packet)

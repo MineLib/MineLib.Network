@@ -11,8 +11,9 @@ namespace MineLib.Network
         WrongPassword,
         Blocked,
         AccountMigrated,
-        NotPremium,
-        InvalidToken
+        InvalidToken,
+        NotFound,
+        UnsupportedMediaType
     }
 
     public static partial class Yggdrasil
@@ -30,7 +31,7 @@ namespace MineLib.Network
                 var wClient = new WebClient();
                 wClient.Headers.Add("Content-Type: application/json");
 
-                string json_request =
+                string json =
                     JsonConvert.SerializeObject(new JsonLogin
                     {
                         Agent = Agent.Minecraft,
@@ -38,27 +39,15 @@ namespace MineLib.Network
                         Password = password
                     });
 
+   
                 var response = JsonConvert.DeserializeObject<Response>(
-                        wClient.UploadString("https://authserver.mojang.com/authenticate", json_request));
+                    wClient.UploadString("https://authserver.mojang.com/authenticate", json));
 
                 return new YggdrasilAnswer {Status = YggdrasilStatus.Success, Response = response};
             }
             catch (WebException e)
             {
-                if (e.Status != WebExceptionStatus.ProtocolError)
-                    return new YggdrasilAnswer {Status = YggdrasilStatus.Error};
-
-                var response = (HttpWebResponse) e.Response;
-                if ((int) response.StatusCode != 403)
-                    return new YggdrasilAnswer {Status = YggdrasilStatus.Blocked};
-
-                using (var sr = new StreamReader(response.GetResponseStream()))
-                {
-                    string result = sr.ReadToEnd();
-                    return result.Contains("UserMigratedException")
-                        ? new YggdrasilAnswer {Status = YggdrasilStatus.AccountMigrated}
-                        : new YggdrasilAnswer {Status = YggdrasilStatus.WrongPassword};
-                }
+                return HandleWebException(e);
             }
         }
 
@@ -75,7 +64,7 @@ namespace MineLib.Network
                 var wClient = new WebClient();
                 wClient.Headers.Add("Content-Type: application/json");
 
-                var json_request =
+                var json =
                     JsonConvert.SerializeObject(new JsonRefreshSession
                     {
                         AccessToken = accessToken,
@@ -83,26 +72,13 @@ namespace MineLib.Network
                     });
 
                 var response = JsonConvert.DeserializeObject<Response>(
-                    wClient.UploadString("https://authserver.mojang.com/refresh", json_request));
+                    wClient.UploadString("https://authserver.mojang.com/refresh", json));
 
                 return new YggdrasilAnswer { Status = YggdrasilStatus.Success, Response =  response };
             }
             catch (WebException e)
             {
-                if (e.Status != WebExceptionStatus.ProtocolError)
-                    return new YggdrasilAnswer { Status = YggdrasilStatus.Error };
-
-                var response = (HttpWebResponse) e.Response;
-                if ((int) response.StatusCode != 403)
-                    return new YggdrasilAnswer { Status = YggdrasilStatus.Blocked };
-
-                using (var sr = new StreamReader(response.GetResponseStream()))
-                {
-                    string result = sr.ReadToEnd();
-                    return result.Contains("ForbiddenOperationException")
-                        ? new YggdrasilAnswer {Status = YggdrasilStatus.InvalidToken}
-                        : new YggdrasilAnswer {Status = YggdrasilStatus.Error};
-                }
+                return HandleWebException(e);
             }
         }
 
@@ -118,13 +94,11 @@ namespace MineLib.Network
                 var wClient = new WebClient();
                 wClient.Headers.Add("Content-Type: application/json");
 
-                var json_request =
-                    JsonConvert.SerializeObject(new JsonVerifySession {AccessToken = accessToken});
+                var json = JsonConvert.SerializeObject(new JsonVerifySession {AccessToken = accessToken});
 
-                var response = JsonConvert.DeserializeObject<Response>(
-                    wClient.UploadString("https://authserver.mojang.com/validate", json_request));
+                var response = wClient.UploadString("https://authserver.mojang.com/validate", json);
 
-                return true;
+                return string.IsNullOrEmpty(response);
             }
             catch (WebException)
             {
@@ -145,17 +119,16 @@ namespace MineLib.Network
                 var wClient = new WebClient();
                 wClient.Headers.Add("Content-Type: application/json");
 
-                var json_request =
+                var json =
                     JsonConvert.SerializeObject(new JsonLogout
                     {
                         Username = username,
                         Password = password
                     });
 
-                var response = JsonConvert.DeserializeObject<Response>(
-                    wClient.UploadString("https://authserver.mojang.com/signout", json_request));
+                var response =  wClient.UploadString("https://authserver.mojang.com/signout", json);
 
-                return true;
+                return string.IsNullOrEmpty(response);
             }
             catch (WebException)
             {
@@ -176,17 +149,16 @@ namespace MineLib.Network
                 var wClient = new WebClient();
                 wClient.Headers.Add("Content-Type: application/json");
 
-                var json_request =
+                var json =
                     JsonConvert.SerializeObject(new JsonInvalidate
                     {
                         AccessToken = accessToken,
                         ClientToken = clientToken
                     });
 
-                var response = JsonConvert.DeserializeObject<Response>(
-                    wClient.UploadString("https://authserver.mojang.com/signout", json_request));
+                var response = wClient.UploadString("https://authserver.mojang.com/signout", json);
 
-                return true;
+                return string.IsNullOrEmpty(response);
             }
             catch (WebException)
             {
@@ -208,7 +180,7 @@ namespace MineLib.Network
                 var wClient = new WebClient();
                 wClient.Headers.Add("Content-Type: application/json");
 
-                var json_request =
+                var json =
                     JsonConvert.SerializeObject(new JsonClientAuth
                     {
                         AccessToken = accessToken,
@@ -216,14 +188,57 @@ namespace MineLib.Network
                         ServerID = serverHash
                     });
 
-                wClient.UploadString("https://sessionserver.mojang.com/session/minecraft/join", json_request);
+                var response = wClient.UploadString("https://sessionserver.mojang.com/session/minecraft/join", json);
 
-                return true;
+                return string.IsNullOrEmpty(response);
             }
             catch (WebException)
             {
                 return false;
             }
         }
+
+        private static YggdrasilAnswer HandleWebException(WebException e)
+        {
+            if (e.Status != WebExceptionStatus.ProtocolError)
+                return new YggdrasilAnswer { Status = YggdrasilStatus.Error };
+
+            using (var response = (HttpWebResponse)e.Response)
+            {
+                if (response.StatusCode != HttpStatusCode.Forbidden)
+                    return new YggdrasilAnswer { Status = YggdrasilStatus.Blocked };
+
+                if (response.StatusCode == HttpStatusCode.UnsupportedMediaType)
+                    return new YggdrasilAnswer { Status = YggdrasilStatus.UnsupportedMediaType };
+
+                if (response.StatusCode == HttpStatusCode.NotFound)
+                    return new YggdrasilAnswer { Status = YggdrasilStatus.NotFound };
+
+                using (var sr = new StreamReader(response.GetResponseStream()))
+                {
+                    string result = sr.ReadToEnd();
+
+                    if (!response.ContentType.Contains("application/json"))
+                        return new YggdrasilAnswer {Status = YggdrasilStatus.Error};
+
+                    var error = JsonConvert.DeserializeObject<Error>(result);
+
+                    if (error.ErrorDescription != ErrorType.ForbiddenOperationException)
+                        return new YggdrasilAnswer {Status = YggdrasilStatus.Error};
+
+                    if (error.Cause != null && error.Cause.Contains("UserMigratedException"))
+                        return new YggdrasilAnswer {Status = YggdrasilStatus.AccountMigrated};
+
+                    else if (error.ErrorMessage.Contains("Invalid token"))
+                        return new YggdrasilAnswer { Status = YggdrasilStatus.InvalidToken };
+
+                    else
+                        return new YggdrasilAnswer {Status = YggdrasilStatus.WrongPassword};
+                }
+
+            }
+
+        }
+
     }
 }
