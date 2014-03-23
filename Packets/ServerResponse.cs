@@ -8,24 +8,24 @@ namespace MineLib.Network.Packets
     {
         public delegate IPacket CreatePacketInstance();
 
-        #region Server Login Response
+        #region Login Response
         public static readonly CreatePacketInstance[] ServerLoginResponse =
         {
             () => new LoginDisconnectPacket(), // 0x00
             () => new EncryptionRequestPacket(), // 0x01
-            () => new LoginSuccessPacket(), // 0x02
+            () => new LoginSuccessPacket() // 0x02
         };
         #endregion
 
-        #region Server Status Response
+        #region Status Response
         public static readonly CreatePacketInstance[] ServerStatusResponse =
         {
             () => new ResponsePacket(), // 0x00
-            () => new PingPacket(), // 0x01
+            () => new PingPacket() // 0x01
         };
         #endregion
 
-        #region Server Play Response
+        #region Play Response
         public static readonly CreatePacketInstance[] ServerPlayResponse =
         {
             () => new KeepAlivePacket(),                    // 0x00
@@ -60,13 +60,13 @@ namespace MineLib.Network.Packets
             () => new EntityEffectPacket(),                 // 0x1D
             () => new RemoveEntityEffectPacket(),           // 0x1E
             () => new SetExperiencePacket(),                // 0x1F
-            () => new EntityPropertiesPacket(),             // 0x20
+            null,//() => new EntityPropertiesPacket(),             // 0x20
             () => new ChunkDataPacket(),                    // 0x21
-            () => new MultiBlockChangePacket(),             // 0x22 // Not working
+            () => new MultiBlockChangePacket(),             // 0x22
             () => new BlockChangePacket(),                  // 0x23
             () => new BlockActionPacket(),                  // 0x24
             () => new BlockBreakAnimationPacket(),          // 0x25
-            null, //() => new MapChunkBulkPacket(),                 // 0x26
+            () => new MapChunkBulkPacket(),                 // 0x26
             () => new ExplosionPacket(),                    // 0x27
             () => new EffectPacket(),                       // 0x28
             () => new SoundEffectPacket(),                  // 0x29
@@ -79,9 +79,9 @@ namespace MineLib.Network.Packets
             () => new WindowItemsPacket(),                  // 0x30
             () => new WindowPropertyPacket(),               // 0x31
             () => new ConfirmTransactionPacket(),           // 0x32
-            () => new UpdateSignPacket(),                   // 0x33
+            null,//() => new UpdateSignPacket(),                   // 0x33 // Many problems with reading
             () => new MapsPacket(),                         // 0x34 
-            null, //() => new UpdateBlockEntityPacket(),            // 0x35
+            () => new UpdateBlockEntityPacket(),            // 0x35
             () => new SignEditorOpenPacket(),               // 0x36
             () => new StatisticsPacket(),                   // 0x37
             () => new PlayerListItemPacket(),               // 0x38
@@ -283,7 +283,7 @@ namespace MineLib.Network.Packets
             null, // 0xFC
             null, // 0xFD
             null, // 0xFE
-            null, // 0xFF
+            null // 0xFF
         };
         #endregion
 

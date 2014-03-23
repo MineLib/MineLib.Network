@@ -15,7 +15,7 @@ namespace MineLib.Network.Packets.Server
 
         public void ReadPacket(PacketByteReader stream)
         {
-            EntityID = stream.ReadInt();
+            EntityID = stream.ReadVarInt();
             Title = stream.ReadString();
             X = stream.ReadInt();
             Y = stream.ReadInt();
@@ -26,7 +26,7 @@ namespace MineLib.Network.Packets.Server
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteInt(EntityID);
+            stream.WriteVarInt(EntityID);
             stream.WriteString(Title);
             stream.WriteInt(X);
             stream.WriteInt(Y);

@@ -9,12 +9,10 @@ namespace MineLib.Network.IO
         public readonly CryptoStream DecryptStream;
         public readonly CryptoStream EncryptStream;
         private readonly Stream _baseStream;
-        private byte[] _key;
 
         public AesStream(Stream stream, byte[] key)
         {
             _baseStream = stream;
-            _key = key;
 
             Rijndael raj = GenerateAES(key);
             ICryptoTransform encTrans = raj.CreateEncryptor();
@@ -41,7 +39,7 @@ namespace MineLib.Network.IO
 
         private Rijndael GenerateAES(byte[] key)
         {
-            RijndaelManaged Cipher = new RijndaelManaged
+            var cipher = new RijndaelManaged
             {
                 Mode = CipherMode.CFB,
                 Padding = PaddingMode.None,
@@ -51,7 +49,7 @@ namespace MineLib.Network.IO
                 IV = key
             };
 
-            return Cipher;
+            return cipher;
         }
 
         public void Dispose()

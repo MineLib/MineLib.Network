@@ -1,6 +1,6 @@
 ﻿namespace MineLib.Network.Enums
 {
-    public enum DigStatus
+    public enum BlockStatus
     {
         StartedDigging              = 0,
         CancelDigging               = 1,

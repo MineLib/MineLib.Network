@@ -24,8 +24,7 @@ namespace MineLib.Network.IO
         {
             if (EncEnabled)
                 return _crypto.DecryptStream.Read(buffer, offset, count);
-            else
-                return _stream.Read(buffer, offset, count);
+            return _stream.Read(buffer, offset, count);
         }
 
         public override void Write(byte[] buffer, int offset, int count)
@@ -57,8 +56,7 @@ namespace MineLib.Network.IO
             {
                 if (EncEnabled)
                     throw new NotSupportedException();
-                else 
-                    return _stream.Length;
+                return _stream.Length;
             }
         }
 
@@ -68,15 +66,13 @@ namespace MineLib.Network.IO
             {
                 if (EncEnabled) 
                     throw new NotSupportedException();
-                else 
-                    return _stream.Position;
+                return _stream.Position;
             }
             set
             {
                 if (EncEnabled)
                     throw new NotSupportedException();
-                else
-                    _stream.Position = value;
+                _stream.Position = value;
             }
         }
     }

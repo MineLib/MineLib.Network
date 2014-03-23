@@ -38,6 +38,7 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseClients\StatusClient.Json.cs" />
     <Compile Include="Cryptography.cs" />
     <Compile Include="Data\Records.cs" />
     <Compile Include="Enums\BlockActions.cs" />
@@ -111,7 +112,7 @@
     <Compile Include="Packets\Client\ClientSettingsPacket.cs" />
     <Compile Include="Packets\Client\PluginMessagePacket.cs" />
     <Compile Include="Packets\IPacket.cs" />
-    <Compile Include="Packets\PacketResponse.cs" />
+    <Compile Include="Packets\ServerResponse.cs" />
     <Compile Include="Packets\Client\AnimationPacket.cs" />
     <Compile Include="Packets\Server\KeepAlivePacket.cs" />
     <Compile Include="Packets\Server\AnimationPacket.cs" />

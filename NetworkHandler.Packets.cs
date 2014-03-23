@@ -26,7 +26,7 @@ namespace MineLib.Network
                             break;
 
                         case PacketsServer.EncryptionRequest:
-                            EnableEncryption(packet); // Automatic enable encryption.
+                            // Don't need to do here anything.
                             break;
 
                         case PacketsServer.LoginSuccess:

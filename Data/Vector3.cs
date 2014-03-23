@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
+// From https://github.com/SirCmpwn/Craft.Net
 namespace MineLib.Network.Data
 {
     /// <summary>

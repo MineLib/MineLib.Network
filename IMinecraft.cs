@@ -6,6 +6,7 @@ namespace MineLib.Network
     {
         string ServerIP { get; set; }
         short ServerPort { get; set; }
+
         ServerState State { get; set; }
 
         string AccessToken { get; set; }

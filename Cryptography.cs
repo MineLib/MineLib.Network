@@ -63,16 +63,16 @@ namespace MineLib.Network
     }
 
     // From https://github.com/ags131/SharpMinecraftLibrary
-    internal class AsnKeyParser
+    public class AsnKeyParser
     {
         private readonly AsnParser parser;
 
-        internal AsnKeyParser(byte[] data)
+        public AsnKeyParser(byte[] data)
         {
             parser = new AsnParser(data);
         }
 
-        internal static byte[] TrimLeadingZero(byte[] values)
+        private static byte[] TrimLeadingZero(byte[] values)
         {
             byte[] r = null;
             if ((0x00 == values[0]) && (values.Length > 1))
@@ -89,7 +89,7 @@ namespace MineLib.Network
             return r;
         }
 
-        internal static bool EqualOid(byte[] first, byte[] second)
+        private static bool EqualOid(byte[] first, byte[] second)
         {
             if (first.Length != second.Length)
             {
@@ -107,7 +107,7 @@ namespace MineLib.Network
             return true;
         }
 
-        internal RSAParameters ParseRSAPublicKey()
+        public RSAParameters ParseRSAPublicKey()
         {
             var parameters = new RSAParameters();
 
@@ -295,7 +295,7 @@ namespace MineLib.Network
             }
         }
 
-        internal byte GetNextOctet()
+        private byte GetNextOctet()
         {
             int position = CurrentPosition();
 
@@ -313,7 +313,7 @@ namespace MineLib.Network
             return b;
         }
 
-        internal byte[] GetOctets(int octetCount)
+        private byte[] GetOctets(int octetCount)
         {
             int position = CurrentPosition();
 
@@ -579,7 +579,7 @@ namespace MineLib.Network
     }
 
     [Serializable]
-    public sealed class BerDecodeException : Exception, ISerializable
+    internal sealed class BerDecodeException : Exception, ISerializable
     {
         private readonly int m_position;
 

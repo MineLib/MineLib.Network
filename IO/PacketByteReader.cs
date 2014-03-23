@@ -49,6 +49,13 @@ namespace MineLib.Network.IO
             return BitConverter.ToInt16(bytes, 0);
         }
 
+        // -- UShort
+
+        public ushort ReadUShort()
+        {
+            return (ushort)((ReadByte() << 8) | ReadByte());
+        }
+
         // -- Integer
 
         public int ReadInt()
@@ -77,29 +84,6 @@ namespace MineLib.Network.IO
                 if ((current & 0x80) != 0x80)
                     break;
             }
-
-            return result;
-        }
-
-        public static byte[] GetVarIntBytes(long value)
-        {
-            byte[] byteBuffer = new byte[10];
-            short pos = 0;
-
-            do
-            {
-                byte byteVal = (byte) (value & 0x7F);
-                value >>= 7;
-
-                if (value != 0)
-                    byteVal |= 0x80;
-
-                byteBuffer[pos] = byteVal;
-                pos += 1;
-            } while (value != 0);
-
-            byte[] result = new byte[pos];
-            Buffer.BlockCopy(byteBuffer, 0, result, 0, pos);
 
             return result;
         }
@@ -145,28 +129,16 @@ namespace MineLib.Network.IO
 
         public sbyte ReadSByte()
         {
-            try
-            {
-                return unchecked((sbyte) ReadSingleByte());
-            }
-            catch
-            {
-                return 0;
-            }
+            return unchecked((sbyte) ReadSingleByte());
+
         }
 
         // -- Bool
 
         public bool ReadBool()
         {
-            try
-            {
-                return Convert.ToBoolean(ReadSingleByte());
-            }
-            catch
-            {
-                return false;
-            }
+            return Convert.ToBoolean(ReadSingleByte());
+
         }
 
         // -- IntegerArray
@@ -225,12 +197,12 @@ namespace MineLib.Network.IO
                 if (BytesRead != value)
                 {
                     int newSize = value - BytesRead;
-                    int BytesRead1 = _stream.Read(myBytes, BytesRead - 1, newSize);
+                    int bytesRead1 = _stream.Read(myBytes, BytesRead - 1, newSize);
 
-                    if (BytesRead1 != newSize)
+                    if (bytesRead1 != newSize)
                     {
                         value = newSize;
-                        BytesRead = BytesRead1;
+                        BytesRead = bytesRead1;
                     }
                     else break;
                 }

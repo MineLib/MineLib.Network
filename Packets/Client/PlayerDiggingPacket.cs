@@ -6,7 +6,7 @@ namespace MineLib.Network.Packets.Client
 {
     public struct PlayerDiggingPacket : IPacket
     {
-        public DigStatus Status;
+        public BlockStatus Status;
         public int X;
         public byte Y;
         public int Z;
@@ -17,7 +17,7 @@ namespace MineLib.Network.Packets.Client
 
         public void ReadPacket(PacketByteReader stream)
         {
-            Status = (DigStatus)stream.ReadByte();
+            Status = (BlockStatus)stream.ReadByte();
             X = stream.ReadInt();
             Y = stream.ReadByte();
             Z = stream.ReadInt();

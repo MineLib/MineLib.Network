@@ -30,8 +30,8 @@ namespace MineLib.Network.Packets.Server
                 {
                     ChunkX = stream.ReadInt(),
                     ChunkZ = stream.ReadInt(),
-                    PrimaryBitMap = stream.ReadShort(),
-                    AddBitMap = stream.ReadShort()
+                    PrimaryBitMap = stream.ReadUShort(),
+                    AddBitMap = stream.ReadUShort()
                 };
                 MetaInformation[i] = metadata;
             }
@@ -50,8 +50,8 @@ namespace MineLib.Network.Packets.Server
             {
                 stream.WriteInt(MetaInformation[i].ChunkX);
                 stream.WriteInt(MetaInformation[i].ChunkZ);
-                stream.WriteShort(MetaInformation[i].PrimaryBitMap);
-                stream.WriteShort(MetaInformation[i].AddBitMap);
+                stream.WriteUShort(MetaInformation[i].PrimaryBitMap);
+                stream.WriteUShort(MetaInformation[i].AddBitMap);
             }
             stream.Purge();
         }

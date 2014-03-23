@@ -4,8 +4,8 @@
     {
         public int ChunkX;
         public int ChunkZ;
-        public short PrimaryBitMap;
-        public short AddBitMap;
+        public ushort PrimaryBitMap;
+        public ushort AddBitMap;
         public bool SkyLight;
     }
 }

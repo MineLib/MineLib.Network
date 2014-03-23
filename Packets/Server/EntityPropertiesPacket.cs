@@ -1,4 +1,3 @@
-using System;
 using MineLib.Network.IO;
 using MineLib.Network.Data;
 
@@ -16,24 +15,24 @@ namespace MineLib.Network.Packets.Server
         public void ReadPacket(PacketByteReader stream)
         {
             EntityID = stream.ReadInt();
+
             var count = stream.ReadInt();
-            if (count < 0)
-                throw new InvalidOperationException("Cannot specify less than zero properties.");
+
             Properties = new EntityProperty[count];
             for (int i = 0; i < count; i++)
             {
-                var property = new EntityProperty { Key = stream.ReadString(), Value = stream.ReadDouble() };
-
+                var property = new EntityProperty();
+                property.Key = stream.ReadString();
+                property.Value = stream.ReadDouble();
                 var listLength = stream.ReadShort();
                 property.UnknownList = new EntityPropertyListItem[listLength];
                 for (int j = 0; j < listLength; j++)
                 {
                     var item = new EntityPropertyListItem
                     {
-                        UnknownMSB = stream.ReadLong(),
-                        UnknownLSB = stream.ReadLong(),
-                        UnknownDouble = stream.ReadDouble(),
-                        UnknownByte = stream.ReadByte()
+                        UUID = stream.ReadLong(),
+                        Amount = stream.ReadDouble(),
+                        Operation = stream.ReadByte()
                     };
 
                     property.UnknownList[j] = item;
@@ -54,10 +53,9 @@ namespace MineLib.Network.Packets.Server
                 stream.WriteShort((short)Properties[i].UnknownList.Length);
                 for (int j = 0; j < Properties[i].UnknownList.Length; j++)
                 {
-                    stream.WriteLong(Properties[i].UnknownList[j].UnknownMSB);
-                    stream.WriteLong(Properties[i].UnknownList[j].UnknownLSB);
-                    stream.WriteDouble(Properties[i].UnknownList[j].UnknownDouble);
-                    stream.WriteByte(Properties[i].UnknownList[j].UnknownByte);
+                    stream.WriteLong(Properties[i].UnknownList[j].UUID);
+                    stream.WriteDouble(Properties[i].UnknownList[j].Amount);
+                    stream.WriteByte(Properties[i].UnknownList[j].Operation);
                 }
             }
             stream.Purge();

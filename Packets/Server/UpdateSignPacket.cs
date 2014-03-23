@@ -8,20 +8,22 @@ namespace MineLib.Network.Packets.Server
         public int X;
         public short Y;
         public int Z;
-        public string Line1, Line2, Line3, Line4;
+        public string[] Text;
 
         public const byte PacketID = 0x33;
         public byte Id { get { return PacketID; } }
 
         public void ReadPacket(PacketByteReader stream)
         {
+            Text = new string[4];
+
             X = stream.ReadInt();
             Y = stream.ReadShort();
             Z = stream.ReadInt();
-            Line1 = stream.ReadString();
-            Line2 = stream.ReadString();
-            Line3 = stream.ReadString();
-            Line4 = stream.ReadString();
+            Text[0] = stream.ReadString();
+            Text[1] = stream.ReadString();
+            Text[2] = stream.ReadString();
+            Text[3] = stream.ReadString();
         }
 
         public void WritePacket(ref PacketStream stream)
@@ -30,10 +32,10 @@ namespace MineLib.Network.Packets.Server
             stream.WriteInt(X);
             stream.WriteShort(Y);
             stream.WriteInt(Z);
-            stream.WriteString(Line1);
-            stream.WriteString(Line2);
-            stream.WriteString(Line3);
-            stream.WriteString(Line4);
+            stream.WriteString(Text[0]);
+            stream.WriteString(Text[1]);
+            stream.WriteString(Text[2]);
+            stream.WriteString(Text[3]);
             stream.Purge();
         }
     }

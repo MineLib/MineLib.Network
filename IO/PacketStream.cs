@@ -27,7 +27,7 @@ namespace MineLib.Network.IO
 
         public void WriteString(string value)
         {
-            byte[] length = GetVarIntBytes((long) value.Length);
+            byte[] length = GetVarIntBytes(value.Length);
             byte[] final = new byte[value.Length + length.Length];
 
             Buffer.BlockCopy(length, 0, final, 0, length.Length);
@@ -44,6 +44,17 @@ namespace MineLib.Network.IO
             Array.Reverse(bytes);
 
             WriteByteArray(bytes);
+        }
+
+        // -- UShort
+
+        public void WriteUShort(ushort value)
+        {
+            Write(new[]
+            {
+                (byte)((value & 0xFF00) >> 8),
+                (byte)(value & 0xFF)
+            }, 0, 2);
         }
 
         // -- Integer
@@ -145,42 +156,24 @@ namespace MineLib.Network.IO
 
         public new void WriteByte(byte value)
         {
-            try
-            {
-                SendSingleByte(value);
-            }
-            catch
-            {
-                return;
-            }
+            SendSingleByte(value);
+
         }
 
         // -- SByte
 
         public void WriteSByte(sbyte value)
         {
-            try
-            {
-                SendSingleByte(unchecked((byte)value));
-            }
-            catch
-            {
-                return;
-            }
+            SendSingleByte(unchecked((byte) value));
+
         }
 
         // -- Bool
 
         public void WriteBool(bool value)
         {
-            try
-            {
-                SendSingleByte(Convert.ToByte(value));
-            }
-            catch
-            {
-                return;
-            }
+            SendSingleByte(Convert.ToByte(value));
+
         }
 
         // -- IntegerArray
@@ -226,21 +219,20 @@ namespace MineLib.Network.IO
             if (!EncEnabled)
             {
                 byte[] myBytes = new byte[value];
-                int BytesRead;
 
-                BytesRead = _stream.Read(myBytes, 0, value);
+                int bytesRead = _stream.Read(myBytes, 0, value);
 
                 while (true)
                 {
-                    if (BytesRead != value)
+                    if (bytesRead != value)
                     {
-                        int newSize = value - BytesRead;
-                        int BytesRead1 = _stream.Read(myBytes, BytesRead - 1, newSize);
+                        int newSize = value - bytesRead;
+                        int bytesRead1 = _stream.Read(myBytes, bytesRead - 1, newSize);
 
-                        if (BytesRead1 != newSize)
+                        if (bytesRead1 != newSize)
                         {
                             value = newSize;
-                            BytesRead = BytesRead1;
+                            bytesRead = bytesRead1;
                         }
                         else break;
                     }
@@ -252,21 +244,20 @@ namespace MineLib.Network.IO
             else
             {
                 byte[] myBytes = new byte[value];
-                int BytesRead;
 
-                BytesRead = _crypto.Read(myBytes, 0, value);
+                int bytesRead = _crypto.Read(myBytes, 0, value);
 
                 while (true)
                 {
-                    if (BytesRead != value)
+                    if (bytesRead != value)
                     {
-                        int newSize = value - BytesRead;
-                        int BytesRead1 = _crypto.Read(myBytes, BytesRead - 1, newSize);
+                        int newSize = value - bytesRead;
+                        int bytesRead1 = _crypto.Read(myBytes, bytesRead - 1, newSize);
 
-                        if (BytesRead1 != newSize)
+                        if (bytesRead1 != newSize)
                         {
                             value = newSize;
-                            BytesRead = BytesRead1;
+                            bytesRead = bytesRead1;
                         }
                         else break;
                     }
@@ -299,8 +290,7 @@ namespace MineLib.Network.IO
         {
             if (EncEnabled)
                 return (byte) _crypto.ReadByte();
-            else
-                return (byte) _stream.ReadByte();
+            return (byte) _stream.ReadByte();
         }
 
         private void SendSingleByte(byte thisByte)
@@ -316,7 +306,7 @@ namespace MineLib.Network.IO
             }
             else
             {
-                _buffer = new byte[] {thisByte};
+                _buffer = new[] {thisByte};
             }
         }
 

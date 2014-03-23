@@ -21,7 +21,6 @@ namespace MineLib.Network
         private readonly List<IPacket> packets = new List<IPacket>(); // Debugging
 
         private TcpClient _baseSock;
-        private NetworkStream _baseStream;
         private PacketStream _stream;
 
         private Thread _listener;
@@ -47,19 +46,19 @@ namespace MineLib.Network
             try
             {
                 _baseSock = new TcpClient();
-                IAsyncResult AR = _baseSock.BeginConnect(_minecraft.ServerIP, _minecraft.ServerPort, null, null);
-                WaitHandle wh = AR.AsyncWaitHandle;
+                IAsyncResult ar = _baseSock.BeginConnect(_minecraft.ServerIP, _minecraft.ServerPort, null, null);
+                WaitHandle wh = ar.AsyncWaitHandle;
 
                 try
                 {
-                    if (!AR.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(5), false))
+                    if (!ar.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(5), false))
                     {
                         _baseSock.Close();
                         // Failed to connect: Connection Timeout.
                         return;
                     }
 
-                    _baseSock.EndConnect(AR);
+                    _baseSock.EndConnect(ar);
                 }
                 finally
                 {
@@ -71,8 +70,7 @@ namespace MineLib.Network
             // Connected to server.
 
             // -- Create our Wrapped socket.
-            _baseStream = _baseSock.GetStream();
-            _stream = new PacketStream(_baseStream);
+            _stream = new PacketStream(_baseSock.GetStream());
 
             // Socket Created.
 
@@ -258,9 +256,6 @@ namespace MineLib.Network
 
             if (_baseSock != null)
                 _baseSock.Close();
-
-            if (_baseStream != null)
-                _baseStream.Dispose();
 
             if (_stream != null)
                 _stream.Dispose();
