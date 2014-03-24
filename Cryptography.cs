@@ -65,16 +65,16 @@ namespace MineLib.Network
     // From https://github.com/ags131/SharpMinecraftLibrary
     public class AsnKeyParser
     {
-        private readonly AsnParser parser;
+        private readonly AsnParser _parser;
 
         public AsnKeyParser(byte[] data)
         {
-            parser = new AsnParser(data);
+            _parser = new AsnParser(data);
         }
 
         private static byte[] TrimLeadingZero(byte[] values)
         {
-            byte[] r = null;
+            byte[] r;
             if ((0x00 == values[0]) && (values.Length > 1))
             {
                 r = new byte[values.Length - 1];
@@ -112,43 +112,43 @@ namespace MineLib.Network
             var parameters = new RSAParameters();
 
             // Current value
-            byte[] value = null;
+            byte[] value;
 
             // Sanity Check
-            int length = 0;
+            int length;
 
             // Checkpoint
-            int position = parser.CurrentPosition();
+            int position = _parser.CurrentPosition();
 
             // Ignore Sequence - PublicKeyInfo
-            length = parser.NextSequence();
-            if (length != parser.RemainingBytes())
+            length = _parser.NextSequence();
+            if (length != _parser.RemainingBytes())
             {
                 var sb = new StringBuilder("Incorrect Sequence Size. ");
                 sb.AppendFormat("Specified: {0}, Remaining: {1}",
                     length.ToString(CultureInfo.InvariantCulture),
-                    parser.RemainingBytes().ToString(CultureInfo.InvariantCulture));
+                    _parser.RemainingBytes().ToString(CultureInfo.InvariantCulture));
                 throw new BerDecodeException(sb.ToString(), position);
             }
 
             // Checkpoint
-            position = parser.CurrentPosition();
+            position = _parser.CurrentPosition();
 
             // Ignore Sequence - AlgorithmIdentifier
-            length = parser.NextSequence();
-            if (length > parser.RemainingBytes())
+            length = _parser.NextSequence();
+            if (length > _parser.RemainingBytes())
             {
                 var sb = new StringBuilder("Incorrect AlgorithmIdentifier Size. ");
                 sb.AppendFormat("Specified: {0}, Remaining: {1}",
                     length.ToString(CultureInfo.InvariantCulture),
-                    parser.RemainingBytes().ToString(CultureInfo.InvariantCulture));
+                    _parser.RemainingBytes().ToString(CultureInfo.InvariantCulture));
                 throw new BerDecodeException(sb.ToString(), position);
             }
 
             // Checkpoint
-            position = parser.CurrentPosition();
+            position = _parser.CurrentPosition();
             // Grab the OID
-            value = parser.NextOID();
+            value = _parser.NextOID();
             byte[] oid = {0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x01};
             if (!EqualOid(value, oid))
             {
@@ -156,49 +156,49 @@ namespace MineLib.Network
             }
 
             // Optional Parameters
-            if (parser.IsNextNull())
+            if (_parser.IsNextNull())
             {
-                parser.NextNull();
+                _parser.NextNull();
                 // Also OK: value = parser.Next();
             }
             else
             {
                 // Gracefully skip the optional data
-                value = parser.Next();
+                _parser.Next();
             }
 
             // Checkpoint
-            position = parser.CurrentPosition();
+            position = _parser.CurrentPosition();
 
             // Ignore BitString - PublicKey
-            length = parser.NextBitString();
-            if (length > parser.RemainingBytes())
+            length = _parser.NextBitString();
+            if (length > _parser.RemainingBytes())
             {
                 var sb = new StringBuilder("Incorrect PublicKey Size. ");
                 sb.AppendFormat("Specified: {0}, Remaining: {1}",
                     length.ToString(CultureInfo.InvariantCulture),
-                    (parser.RemainingBytes()).ToString(CultureInfo.InvariantCulture));
+                    (_parser.RemainingBytes()).ToString(CultureInfo.InvariantCulture));
                 throw new BerDecodeException(sb.ToString(), position);
             }
 
             // Checkpoint
-            position = parser.CurrentPosition();
+            position = _parser.CurrentPosition();
 
             // Ignore Sequence - RSAPublicKey
-            length = parser.NextSequence();
-            if (length < parser.RemainingBytes())
+            length = _parser.NextSequence();
+            if (length < _parser.RemainingBytes())
             {
                 var sb = new StringBuilder("Incorrect RSAPublicKey Size. ");
                 sb.AppendFormat("Specified: {0}, Remaining: {1}",
                     length.ToString(CultureInfo.InvariantCulture),
-                    parser.RemainingBytes().ToString(CultureInfo.InvariantCulture));
+                    _parser.RemainingBytes().ToString(CultureInfo.InvariantCulture));
                 throw new BerDecodeException(sb.ToString(), position);
             }
 
-            parameters.Modulus = TrimLeadingZero(parser.NextInteger());
-            parameters.Exponent = TrimLeadingZero(parser.NextInteger());
+            parameters.Modulus = TrimLeadingZero(_parser.NextInteger());
+            parameters.Exponent = TrimLeadingZero(_parser.NextInteger());
 
-            Debug.Assert(0 == parser.RemainingBytes());
+            Debug.Assert(0 == _parser.RemainingBytes());
 
             return parameters;
         }
@@ -206,25 +206,25 @@ namespace MineLib.Network
 
     internal class AsnParser
     {
-        private readonly int initialCount;
-        private readonly List<byte> octets;
+        private readonly int _initialCount;
+        private readonly List<byte> _octets;
 
         internal AsnParser(byte[] values)
         {
-            octets = new List<byte>(values.Length);
-            octets.AddRange(values);
+            _octets = new List<byte>(values.Length);
+            _octets.AddRange(values);
 
-            initialCount = octets.Count;
+            _initialCount = _octets.Count;
         }
 
         internal int CurrentPosition()
         {
-            return initialCount - octets.Count;
+            return _initialCount - _octets.Count;
         }
 
         internal int RemainingBytes()
         {
-            return octets.Count;
+            return _octets.Count;
         }
 
         private int GetLength()
@@ -274,7 +274,7 @@ namespace MineLib.Network
 
             try
             {
-                byte b = GetNextOctet();
+                GetNextOctet();
 
                 int length = GetLength();
                 if (length > RemainingBytes())
@@ -330,8 +330,8 @@ namespace MineLib.Network
 
             try
             {
-                octets.CopyTo(0, values, 0, octetCount);
-                octets.RemoveRange(0, octetCount);
+                _octets.CopyTo(0, values, 0, octetCount);
+                _octets.RemoveRange(0, octetCount);
             }
 
             catch (ArgumentOutOfRangeException ex)
@@ -344,7 +344,7 @@ namespace MineLib.Network
 
         internal bool IsNextNull()
         {
-            return 0x05 == octets[0];
+            return 0x05 == _octets[0];
         }
 
         internal int NextNull()
@@ -381,7 +381,7 @@ namespace MineLib.Network
 
         internal bool IsNextSequence()
         {
-            return 0x30 == octets[0];
+            return 0x30 == _octets[0];
         }
 
         internal int NextSequence()
@@ -420,7 +420,7 @@ namespace MineLib.Network
 
         internal bool IsNextOctetString()
         {
-            return 0x04 == octets[0];
+            return 0x04 == _octets[0];
         }
 
         internal int NextOctetString()
@@ -458,7 +458,7 @@ namespace MineLib.Network
 
         internal bool IsNextBitString()
         {
-            return 0x03 == octets[0];
+            return 0x03 == _octets[0];
         }
 
         internal int NextBitString()
@@ -479,8 +479,8 @@ namespace MineLib.Network
 
                 // We need to consume unused bits, which is the first
                 //   octet of the remaing values
-                b = octets[0];
-                octets.RemoveAt(0);
+                b = _octets[0];
+                _octets.RemoveAt(0);
                 length--;
 
                 if (0x00 != b)
@@ -499,7 +499,7 @@ namespace MineLib.Network
 
         internal bool IsNextInteger()
         {
-            return 0x02 == octets[0];
+            return 0x02 == _octets[0];
         }
 
         internal byte[] NextInteger()
@@ -564,8 +564,8 @@ namespace MineLib.Network
 
                 for (int i = 0; i < length; i++)
                 {
-                    values[i] = octets[0];
-                    octets.RemoveAt(0);
+                    values[i] = _octets[0];
+                    _octets.RemoveAt(0);
                 }
 
                 return values;
@@ -579,7 +579,7 @@ namespace MineLib.Network
     }
 
     [Serializable]
-    internal sealed class BerDecodeException : Exception, ISerializable
+    internal sealed class BerDecodeException : Exception
     {
         private readonly int m_position;
 

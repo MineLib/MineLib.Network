@@ -229,11 +229,10 @@ namespace MineLib.Network
                     if (error.Cause != null && error.Cause.Contains("UserMigratedException"))
                         return new YggdrasilAnswer {Status = YggdrasilStatus.AccountMigrated};
 
-                    else if (error.ErrorMessage.Contains("Invalid token"))
+                    if (error.ErrorMessage.Contains("Invalid token"))
                         return new YggdrasilAnswer { Status = YggdrasilStatus.InvalidToken };
 
-                    else
-                        return new YggdrasilAnswer {Status = YggdrasilStatus.WrongPassword};
+                    return new YggdrasilAnswer {Status = YggdrasilStatus.WrongPassword};
                 }
 
             }

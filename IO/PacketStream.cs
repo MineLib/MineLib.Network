@@ -8,7 +8,7 @@ namespace MineLib.Network.IO
     public partial class PacketStream : IDisposable
     {
         // -- Credits to SirCmpwn for encryption support, as taken from SMProxy.
-        private Stream _stream;
+        private readonly Stream _stream;
         private AesStream _crypto;
         public bool EncEnabled;
         private byte[] _buffer;

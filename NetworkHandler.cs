@@ -16,21 +16,25 @@ namespace MineLib.Network
 {
     public partial class NetworkHandler : IDisposable
     {
-        public bool Connected {get { return _baseSock.Connected; }}
+        // -- Debugging
+        private readonly List<IPacket> _packets = new List<IPacket>();
+        // -- Debugging.
 
-        private readonly List<IPacket> packets = new List<IPacket>(); // Debugging
+        private delegate void DataReceived(int id, byte[] data);
+        private event DataReceived OnDataReceived;
+
+        public bool Connected {get { return _baseSock.Connected; }}
 
         private TcpClient _baseSock;
         private PacketStream _stream;
+        private PacketByteReader _preader;
 
         private Thread _listener;
         private Thread _sender;
 
         private IMinecraft _minecraft;
 
-        private PacketByteReader _preader;
-
-        // Not using Queue because .Net 2.0
+        // -- Not using Queue because .Net 2.0
         private readonly List<IPacket> _packetsToSend = new List<IPacket>();
 
         public NetworkHandler(IMinecraft client)
@@ -43,44 +47,23 @@ namespace MineLib.Network
         /// </summary>
         public void Start()
         {
-            try
-            {
-                _baseSock = new TcpClient();
-                IAsyncResult ar = _baseSock.BeginConnect(_minecraft.ServerIP, _minecraft.ServerPort, null, null);
-                WaitHandle wh = ar.AsyncWaitHandle;
-
-                try
-                {
-                    if (!ar.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(5), false))
-                    {
-                        _baseSock.Close();
-                        // Failed to connect: Connection Timeout.
-                        return;
-                    }
-
-                    _baseSock.EndConnect(ar);
-                }
-                finally
-                {
-                    wh.Close();
-                }
-            }
-            catch (SocketException) { }
-
-            // Connected to server.
+            // -- Connect to server.
+            _baseSock = new TcpClient();
+            _baseSock.Connect(_minecraft.ServerIP, _minecraft.ServerPort);
 
             // -- Create our Wrapped socket.
             _stream = new PacketStream(_baseSock.GetStream());
 
-            // Socket Created.
+            // -- Subscribe to DataReceived event.
+            OnDataReceived += HandlePacket;
 
             // -- Start network parsing.
-            _listener = new Thread(ReceiveUpdater) { Name = "PacketListener" };
+            _listener = new Thread(StartReceiving) {Name = "PacketListener"};
             _listener.Start();
 
-            _sender = new Thread(SendUpdater) { Name = "PacketSender" };
+            // -- Start network sending.
+            _sender = new Thread(StartSending) {Name = "PacketSender"};
             _sender.Start();
-            // Handler thread started.
         }
 
         /// <summary>
@@ -91,20 +74,15 @@ namespace MineLib.Network
             Dispose();
         }
 
-        private void ReceiveUpdater()
+        #region Sending and Receiving.
+
+        private void StartReceiving()
         {
             _preader = new PacketByteReader(new MemoryStream(0));
 
             do
             {
             } while (PacketReceiver());
-        }
-
-        private void SendUpdater()
-        {
-            do
-            {
-            } while (PacketSender());
         }
 
         private bool PacketReceiver()
@@ -115,12 +93,19 @@ namespace MineLib.Network
             while (_baseSock.Client.Available > 0)
             {
                 int length = _stream.ReadVarInt();
-                int packetID = _stream.ReadVarInt();
+                int id = _stream.ReadVarInt();
 
-                HandlePacket(packetID, _stream.ReadByteArray(length - 1));
+                OnDataReceived(id, _stream.ReadByteArray(length - 1));
             }
 
             return true;
+        }
+
+        private void StartSending()
+        {
+            do
+            {
+            } while (PacketSender());
         }
 
         private bool PacketSender()
@@ -136,14 +121,16 @@ namespace MineLib.Network
                 if (packet == null) 
                     continue;
 
-                packets.Add(packet);
+                _packets.Add(packet);
                 packet.WritePacket(ref _stream);
 
             }
             return true;
         }
 
-        private void HandlePacket(int packetID, byte[] data)
+        #endregion Sending and Receiving.
+
+        private void HandlePacket(int id, byte[] data)
         {
             _preader.SetNewData(data);
 
@@ -152,12 +139,12 @@ namespace MineLib.Network
                     #region Status
 
                 case ServerState.Status:
-                    if (ServerResponse.ServerStatusResponse[packetID] == null)
+                    if (ServerResponse.ServerStatusResponse[id] == null)
                         break;
 
-                    IPacket packetS = ServerResponse.ServerStatusResponse[packetID]();
+                    IPacket packetS = ServerResponse.ServerStatusResponse[id]();
                     packetS.ReadPacket(_preader);
-                    RaisePacketHandled(packetS, packetID, ServerState.Status);
+                    RaisePacketHandled(packetS, id, ServerState.Status);
 
                     break;
 
@@ -166,14 +153,14 @@ namespace MineLib.Network
                     #region Login
 
                 case ServerState.Login:
-                    if (ServerResponse.ServerLoginResponse[packetID] == null)
+                    if (ServerResponse.ServerLoginResponse[id] == null)
                         break;
 
-                    IPacket packetL = ServerResponse.ServerLoginResponse[packetID]();
+                    IPacket packetL = ServerResponse.ServerLoginResponse[id]();
                     packetL.ReadPacket(_preader);
-                    RaisePacketHandled(packetL, packetID, ServerState.Login);
+                    RaisePacketHandled(packetL, id, ServerState.Login);
 
-                    if (packetID == 1)
+                    if (id == 1)
                         EnableEncryption(packetL);
 
                     break;
@@ -183,12 +170,12 @@ namespace MineLib.Network
                     #region Play
 
                 case ServerState.Play:
-                    if (ServerResponse.ServerPlayResponse[packetID] == null)
+                    if (ServerResponse.ServerPlayResponse[id] == null)
                         break;
 
-                    IPacket packetP = ServerResponse.ServerPlayResponse[packetID]();
+                    IPacket packetP = ServerResponse.ServerPlayResponse[id]();
                     packetP.ReadPacket(_preader);
-                    RaisePacketHandled(packetP, packetID, ServerState.Play);
+                    RaisePacketHandled(packetP, id, ServerState.Play);
 
                     break;
 
