@@ -9,7 +9,7 @@ using System.Resources;
 [assembly: AssemblyTitle("MineLib.Network")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("https://github.com/Aragas/MineLib.Network")]
+[assembly: AssemblyCompany("github.com/Aragas/MineLib.Network")]
 [assembly: AssemblyProduct("MineLib.Network")]
 [assembly: AssemblyCopyright("Aragas (Aragasas)")]
 [assembly: AssemblyTrademark("")]
@@ -18,7 +18,7 @@ using System.Resources;
 // Установка значения False в параметре ComVisible делает типы в этой сборке невидимыми 
 // для COM-компонентов. Если необходим доступ к типу в этой сборке из 
 // COM, следует установить атрибут ComVisible в TRUE для этого типа.
-[assembly: ComVisible(false)]
+[assembly: ComVisible(true)]
 
 // Следующий GUID служит для идентификации библиотеки типов, если этот проект будет видимым для COM
 [assembly: Guid("a19e5fc9-c4de-43b9-a40f-3ab4843e0adc")]
