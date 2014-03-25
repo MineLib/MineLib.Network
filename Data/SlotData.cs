@@ -2,10 +2,7 @@
 using System.IO;
 using MineLib.Network.IO;
 using fNbt;
-
-
 //using fNbt.Serialization;
-// Serialization WIP
 
 namespace MineLib.Network.Data
 {
@@ -178,7 +175,7 @@ namespace MineLib.Network.Data
         private sbyte _Count;
         private short _Metadata;
 
-        //[IgnoreOnNull] // Why it don't work?
+        //[IgnoreOnNull]
         public NbtCompound Nbt { get; set; }
         //[NbtIgnore]
         public int Index;

@@ -174,7 +174,7 @@ namespace MineLib.Network.BaseClients
         private void Disconnect()
         {
             if (_handler != null)
-                _handler.Stop();
+                _handler.Dispose();
 
             _connectionClosed = true;
         }

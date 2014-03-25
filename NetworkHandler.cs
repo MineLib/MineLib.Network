@@ -34,8 +34,7 @@ namespace MineLib.Network
 
         private IMinecraft _minecraft;
 
-        // -- Not using Queue because .Net 2.0
-        private readonly List<IPacket> _packetsToSend = new List<IPacket>();
+        private readonly Queue<IPacket> _packetsToSend = new Queue<IPacket>();
 
         public NetworkHandler(IMinecraft client)
         {
@@ -45,11 +44,15 @@ namespace MineLib.Network
         /// <summary>
         ///     Starts the network handler.
         /// </summary>
-        public void Start()
+        public bool Start()
         {
             // -- Connect to server.
-            _baseSock = new TcpClient();
-            _baseSock.Connect(_minecraft.ServerIP, _minecraft.ServerPort);
+            try
+            {
+                _baseSock = new TcpClient();
+                _baseSock.Connect(_minecraft.ServerIP, _minecraft.ServerPort);
+            }
+            catch (SocketException) { return false; }
 
             // -- Create our Wrapped socket.
             _stream = new PacketStream(_baseSock.GetStream());
@@ -64,14 +67,8 @@ namespace MineLib.Network
             // -- Start network sending.
             _sender = new Thread(StartSending) {Name = "PacketSender"};
             _sender.Start();
-        }
 
-        /// <summary>
-        ///     Stops and dispose the network handler.
-        /// </summary>
-        public void Stop()
-        {
-            Dispose();
+            return true;
         }
 
         #region Sending and Receiving.
@@ -110,13 +107,17 @@ namespace MineLib.Network
 
         private bool PacketSender()
         {
+            if (_baseSock.Client == null || !Connected)
+                return false;
+
             if (_packetsToSend.Count == 0)
                 return true;
 
             while (_packetsToSend.Count > 0)
             {
-                IPacket packet = _packetsToSend[0];
-                _packetsToSend.RemoveAt(0);
+                Thread.Sleep(1); // -- Important to make a little pause.
+                // _packetsToSend.Dequeue().WritePacket(ref _stream);
+                IPacket packet = _packetsToSend.Dequeue();
 
                 if (packet == null) 
                     continue;
@@ -230,9 +231,12 @@ namespace MineLib.Network
 
         public void Send(IPacket packet)
         {
-            _packetsToSend.Add(packet);
+            _packetsToSend.Enqueue(packet);
         }
 
+        /// <summary>
+        ///     Stops and dispose the network handler.
+        /// </summary>
         public void Dispose()
         {
             if (_listener != null && _listener.IsAlive)
