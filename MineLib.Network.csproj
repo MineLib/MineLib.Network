@@ -20,7 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -43,12 +43,12 @@
       <HintPath>Libraries\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseClients\StatusClient.Json.cs" />
     <Compile Include="Cryptography.cs" />
     <Compile Include="Data\Records.cs" />
+    <Compile Include="Data\SpawnPlayerData.cs" />
     <Compile Include="Enums\BlockActions.cs" />
     <Compile Include="IMinecraft.cs" />
     <Compile Include="Data\EntityMetadata\MetadadaShort.cs" />
@@ -198,7 +198,6 @@
     <Compile Include="BaseClients\StatusClient.cs" />
     <Compile Include="BaseClients\StatusClient.Events.cs" />
     <Compile Include="BaseClients\StatusClient.Packets.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IO\AesStream.cs" />
     <Compile Include="IO\PacketStream.cs" />
     <Compile Include="Yggdrasil.cs" />
@@ -207,6 +206,9 @@
   <ItemGroup>
     <Content Include="Libraries\fNbt.dll" />
     <Content Include="Libraries\Newtonsoft.Json.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSHARP.Targets" />
   <ProjectExtensions>

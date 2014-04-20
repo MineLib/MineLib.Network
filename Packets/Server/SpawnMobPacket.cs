@@ -9,7 +9,7 @@ namespace MineLib.Network.Packets.Server
     {
         public int EntityID;
         public Mobs Type;
-        public int X, Y, Z;
+        public double X, Y, Z;
         public byte Pitch, HeadPitch, Yaw;
         public short VelocityX, VelocityY, VelocityZ;
         public MetadataDictionary Metadata;
@@ -21,9 +21,9 @@ namespace MineLib.Network.Packets.Server
         {
             EntityID = stream.ReadVarInt();
             Type = (Mobs)stream.ReadByte();
-            X = stream.ReadInt();
-            Y = stream.ReadInt();
-            Z = stream.ReadInt();
+            X = stream.ReadInt() / 32;
+            Y = stream.ReadInt() / 32;
+            Z = stream.ReadInt() / 32;
             Pitch = stream.ReadByte();
             HeadPitch = stream.ReadByte();
             Yaw = stream.ReadByte();
@@ -38,9 +38,9 @@ namespace MineLib.Network.Packets.Server
             stream.WriteVarInt(Id);
             stream.WriteVarInt(EntityID);
             stream.WriteByte((byte)Type);
-            stream.WriteInt(X);
-            stream.WriteInt(Y);
-            stream.WriteInt(Z);
+            stream.WriteInt((int)X * 32);
+            stream.WriteInt((int)Y * 32);
+            stream.WriteInt((int)Z * 32);
             stream.WriteByte(Pitch);
             stream.WriteByte(HeadPitch);
             stream.WriteByte(Yaw);

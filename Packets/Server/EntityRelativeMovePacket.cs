@@ -6,7 +6,7 @@ namespace MineLib.Network.Packets.Server
     public struct EntityRelativeMovePacket : IPacket
     {
         public int EntityID;
-        public sbyte DeltaX, DeltaY, DeltaZ;
+        public double DeltaX, DeltaY, DeltaZ;
 
         public const byte PacketID = 0x15;
         public byte Id { get { return PacketID; } }
@@ -14,18 +14,18 @@ namespace MineLib.Network.Packets.Server
         public void ReadPacket(PacketByteReader stream)
         {
             EntityID = stream.ReadInt();
-            DeltaX = stream.ReadSByte();
-            DeltaY = stream.ReadSByte();
-            DeltaZ = stream.ReadSByte();
+            DeltaX = (double)stream.ReadSByte() / 32;
+            DeltaY = (double)stream.ReadSByte() / 32;
+            DeltaZ = (double)stream.ReadSByte() / 32;
         }
 
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
             stream.WriteInt(EntityID);
-            stream.WriteSByte(DeltaX);
-            stream.WriteSByte(DeltaY);
-            stream.WriteSByte(DeltaZ);
+            stream.WriteSByte((sbyte)(DeltaX * 32)); // Check that.
+            stream.WriteSByte((sbyte)(DeltaY * 32)); // Check that.
+            stream.WriteSByte((sbyte)(DeltaZ * 32)); // Check that.
             stream.Purge();
         }
     }

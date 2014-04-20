@@ -7,7 +7,7 @@ namespace MineLib.Network.Packets.Server
     {
         public int EntityID;
         public byte Type;
-        public int X, Y, Z;
+        public double X, Y, Z;
 
         public const byte PacketID = 0x2C;
         public byte Id { get { return PacketID; } }
@@ -16,9 +16,9 @@ namespace MineLib.Network.Packets.Server
         {
             EntityID = stream.ReadVarInt();
             Type = stream.ReadByte();
-            X = stream.ReadInt();
-            Y = stream.ReadInt();
-            Z = stream.ReadInt();
+            X = stream.ReadInt() / 32;
+            Y = stream.ReadInt() / 32;
+            Z = stream.ReadInt() / 32;
         }
 
         public void WritePacket(ref PacketStream stream)
@@ -26,9 +26,9 @@ namespace MineLib.Network.Packets.Server
             stream.WriteVarInt(Id);
             stream.WriteVarInt(EntityID);
             stream.WriteByte(Type);
-            stream.WriteInt(X);
-            stream.WriteInt(Y);
-            stream.WriteInt(Z);
+            stream.WriteInt((int)X * 32);
+            stream.WriteInt((int)Y * 32);
+            stream.WriteInt((int)Z * 32);
             stream.Purge();
         }
     }

@@ -1,3 +1,4 @@
+using MineLib.Network.Data;
 using MineLib.Network.IO;
 using MineLib.Network.Data.EntityMetadata;
 
@@ -8,7 +9,8 @@ namespace MineLib.Network.Packets.Server
     {
         public int EntityID;
         public string PlayerUUID, PlayerName;
-        public int X, Y, Z;
+        public SpawnPlayerData[] Data;
+        public double X, Y, Z;
         public byte Yaw, Pitch;
         public short CurrentItem;
         public MetadataDictionary Metadata;
@@ -21,9 +23,19 @@ namespace MineLib.Network.Packets.Server
             EntityID = stream.ReadVarInt();
             PlayerUUID = stream.ReadString();
             PlayerName = stream.ReadString();
-            X = stream.ReadInt();
-            Y = stream.ReadInt();
-            Z = stream.ReadInt();
+
+            int length = stream.ReadVarInt();
+            Data = new SpawnPlayerData[length];
+            for (int i = 0; i < length; i++)
+            {
+                Data[i].Name = stream.ReadString();
+                Data[i].Value = stream.ReadString();
+                Data[i].Signature = stream.ReadString();
+            }
+
+            X = stream.ReadInt() / 32;
+            Y = stream.ReadInt() / 32;
+            Z = stream.ReadInt() / 32;
             Yaw = stream.ReadByte();
             Pitch = stream.ReadByte();
             CurrentItem = stream.ReadShort();
@@ -37,9 +49,9 @@ namespace MineLib.Network.Packets.Server
             stream.WriteVarInt(EntityID);
             stream.WriteString(PlayerUUID);
             stream.WriteString(PlayerName);
-            stream.WriteInt(X);
-            stream.WriteInt(Y);
-            stream.WriteInt(Z);
+            stream.WriteInt((int)X * 32);
+            stream.WriteInt((int)Y * 32);
+            stream.WriteInt((int)Z * 32);
             stream.WriteByte(Yaw);
             stream.WriteByte(Pitch);
             stream.WriteShort(CurrentItem);
