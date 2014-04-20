@@ -83,7 +83,6 @@
     <Compile Include="Enums\Mobs.cs" />
     <Compile Include="Enums\NextState.cs" />
     <Compile Include="Enums\Objects.cs" />
-    <Compile Include="Enums\PlayerAbility.cs" />
     <Compile Include="Enums\ScoreboardPosition.cs" />
     <Compile Include="Enums\ServerState.cs" />
     <Compile Include="Enums\TeamMode.cs" />

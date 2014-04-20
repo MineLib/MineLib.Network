@@ -6,7 +6,7 @@ namespace MineLib.Network.Packets.Server
 {
     public struct PlayerAbilitiesPacket : IPacket
     {
-        public PlayerAbility Flags;
+        public byte Flags;
         public float FlyingSpeed, WalkingSpeed;
 
         public const byte PacketID = 0x39;
@@ -14,7 +14,7 @@ namespace MineLib.Network.Packets.Server
 
         public void ReadPacket(PacketByteReader stream)
         {
-            Flags = (PlayerAbility)stream.ReadByte();
+            Flags = stream.ReadByte();
             FlyingSpeed = stream.ReadFloat();
             WalkingSpeed = stream.ReadFloat();
         }
@@ -22,7 +22,7 @@ namespace MineLib.Network.Packets.Server
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteByte((byte)Flags);
+            stream.WriteByte(Flags);
             stream.WriteFloat(FlyingSpeed);
             stream.WriteFloat(WalkingSpeed);
             stream.Purge();
