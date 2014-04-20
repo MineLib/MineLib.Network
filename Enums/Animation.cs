@@ -2,13 +2,12 @@
 {
     public enum Animation
     {
-        NoAnimation         = 0,
-        SwingArm            = 1,
-        DamageAnimation     = 2,
-        LeaveBed            = 3,
-        EatFood             = 5,
-        CriticalEffect      = 6,
-        MagicCriticalEffect = 7,
+        SwingArm            = 0,
+        DamageAnimation     = 1,
+        LeaveBed            = 2,
+        EatFood             = 3,
+        CriticalEffect      = 4,
+        MagicCriticalEffect = 5,
         UnknownAnimation    = 102,
         Crouch              = 104,
         Uncrouch            = 105
