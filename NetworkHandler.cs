@@ -11,13 +11,13 @@ using MineLib.Network.Packets;
 using MineLib.Network.Packets.Client.Login;
 using MineLib.Network.Packets.Server.Login;
 
-
 namespace MineLib.Network
 {
     public partial class NetworkHandler : IDisposable
     {
         // -- Debugging
-        private readonly List<IPacket> _packets = new List<IPacket>();
+        private readonly List<IPacket> _packetsReceived = new List<IPacket>();
+        private readonly List<IPacket> _packetsSended = new List<IPacket>();
         // -- Debugging.
 
         private delegate void DataReceived(int id, byte[] data);
@@ -122,7 +122,7 @@ namespace MineLib.Network
                 if (packet == null) 
                     continue;
 
-                _packets.Add(packet);
+                _packetsSended.Add(packet);
                 packet.WritePacket(ref _stream);
 
             }
