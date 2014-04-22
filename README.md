@@ -5,8 +5,7 @@ Library for handling network connection with Minecraft server.
 
 My implementation of How-it-should-be.
 
-All server and clients packets for 1.7.4 are supported.
-Only logic here - automatically enable encryption. You don't need to manually handle with that.
+All server and clients packets for 1.7.9 are supported.
 
 You can use Events based packet handling (use RaisePacketHandledUnUsed() in NetworkHandler.Packets.cs) or handle dat stuff manually (use OnPacketHandled for that).
 
