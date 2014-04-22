@@ -29,8 +29,15 @@ namespace MineLib.Network.Data
             Z = z;
         }
 
+        public Vector3(Vector3 v)
+        {
+            X = v.X;
+            Y = v.Y;
+            Z = v.Z;
+        }
+
         /// <summary>
-        /// Converts this Vector3 to a string in the format &lt;x, y, z&gt;.
+        /// Converts this Vector3 to a string.
         /// </summary>
         /// <returns></returns>
         public override string ToString()
@@ -56,14 +63,6 @@ namespace MineLib.Network.Data
             return Math.Sqrt(Square(other.X - X) +
                              Square(other.Y - Y) +
                              Square(other.Z - Z));
-        }
-
-        /// <summary>
-        /// Calculates the square of a num.
-        /// </summary>
-        private double Square(double num)
-        {
-            return num * num;
         }
 
         /// <summary>

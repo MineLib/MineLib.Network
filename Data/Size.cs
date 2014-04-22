@@ -16,6 +16,22 @@
             Depth = depth;
         }
 
+        public Size(Size s)
+        {
+            Width = s.Width;
+            Height = s.Height;
+            Depth = s.Depth;
+        }
+
+        /// <summary>
+        /// Converts this Size to a string.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return string.Format("Depth: {0}, Height: {1}, Width: {2}", Depth, Height, Width);
+        }
+
         // TODO: More operators
         public static Size operator /(Size a, double b)
         {
