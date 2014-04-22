@@ -66,6 +66,14 @@ namespace MineLib.Network.Data
         }
 
         /// <summary>
+        /// Calculates the square of a num.
+        /// </summary>
+        private double Square(double num)
+        {
+            return num * num;
+        }
+
+        /// <summary>
         /// Finds the distance of this vector from Vector3.Zero
         /// </summary>
         public double Distance
