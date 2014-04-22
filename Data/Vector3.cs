@@ -35,7 +35,7 @@ namespace MineLib.Network.Data
         /// <returns></returns>
         public override string ToString()
         {
-            return string.Format("<{0},{1},{2}>", X, Y, Z);
+            return string.Format("X: {0}, Y: {1}, Z: {2}", X, Y, Z);
         }
 
         #region Math
