@@ -1,7 +1,6 @@
 using MineLib.Network.IO;
 using MineLib.Network.Data;
 
-
 namespace MineLib.Network.Packets.Client
 {
     public struct ConfirmTransactionPacket : IPacket

@@ -1,5 +1,5 @@
+using MineLib.Network.Data;
 using MineLib.Network.IO;
-
 
 namespace MineLib.Network.Packets.Server
 {
@@ -7,7 +7,7 @@ namespace MineLib.Network.Packets.Server
     {
         public int EntityID;
         public string Title;
-        public int X, Y, Z;
+        public Vector3 Vector3;
         public int Direction;
 
         public const byte PacketID = 0x10;
@@ -17,9 +17,9 @@ namespace MineLib.Network.Packets.Server
         {
             EntityID = stream.ReadVarInt();
             Title = stream.ReadString();
-            X = stream.ReadInt();
-            Y = stream.ReadInt();
-            Z = stream.ReadInt();
+            Vector3.X = stream.ReadInt();
+            Vector3.Y = stream.ReadInt();
+            Vector3.Z = stream.ReadInt();
             Direction = stream.ReadInt();
         }
 
@@ -28,9 +28,9 @@ namespace MineLib.Network.Packets.Server
             stream.WriteVarInt(Id);
             stream.WriteVarInt(EntityID);
             stream.WriteString(Title);
-            stream.WriteInt(X);
-            stream.WriteInt(Y);
-            stream.WriteInt(Z);
+            stream.WriteInt((int)Vector3.X);
+            stream.WriteInt((int)Vector3.Y);
+            stream.WriteInt((int)Vector3.Z);
             stream.WriteInt(Direction);
             stream.Purge();
         }

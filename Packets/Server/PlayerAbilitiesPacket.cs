@@ -1,13 +1,12 @@
 using MineLib.Network.IO;
-using MineLib.Network.Enums;
-
 
 namespace MineLib.Network.Packets.Server
 {
     public struct PlayerAbilitiesPacket : IPacket
     {
         public byte Flags;
-        public float FlyingSpeed, WalkingSpeed;
+        public float FlyingSpeed;
+        public float WalkingSpeed;
 
         public const byte PacketID = 0x39;
         public byte Id { get { return PacketID; } }

@@ -1,14 +1,12 @@
+using MineLib.Network.Data;
 using MineLib.Network.IO;
-
 
 namespace MineLib.Network.Packets.Server
 {
     public struct BlockActionPacket : IPacket
     {
         // Use BlockAction enum.
-        public int X;
-        public short Y;
-        public int Z;
+        public Vector3 Vector3;
         public byte Byte1;
         public byte Byte2;
         public int BlockType;
@@ -18,9 +16,9 @@ namespace MineLib.Network.Packets.Server
 
         public void ReadPacket(PacketByteReader stream)
         {
-            X = stream.ReadInt();
-            Y = stream.ReadShort();
-            Z = stream.ReadInt();
+            Vector3.X = stream.ReadInt();
+            Vector3.Y = stream.ReadShort();
+            Vector3.Z = stream.ReadInt();
             Byte1 = stream.ReadByte();
             Byte2 = stream.ReadByte();
             BlockType = stream.ReadVarInt();
@@ -29,9 +27,9 @@ namespace MineLib.Network.Packets.Server
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteInt(X);
-            stream.WriteShort(Y);
-            stream.WriteInt(Z);
+            stream.WriteInt((int)Vector3.X);
+            stream.WriteShort((short)Vector3.Y);
+            stream.WriteInt((int)Vector3.Z);
             stream.WriteByte(Byte1);
             stream.WriteByte(Byte2);
             stream.WriteVarInt(BlockType);

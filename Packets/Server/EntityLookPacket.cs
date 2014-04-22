@@ -1,12 +1,12 @@
 using MineLib.Network.IO;
 
-
 namespace MineLib.Network.Packets.Server
 {
     public struct EntityLookPacket : IPacket
     {
         public int EntityID;
-        public byte Yaw, Pitch;
+        public byte Yaw;
+        public byte Pitch;
 
         public const byte PacketID = 0x16;
         public byte Id { get { return PacketID; } }

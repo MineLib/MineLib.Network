@@ -1,6 +1,5 @@
 using MineLib.Network.IO;
 
-
 namespace MineLib.Network.Packets.Client
 {
     public struct KeepAlivePacket : IPacket

@@ -1,6 +1,5 @@
 using MineLib.Network.IO;
 
-
 namespace MineLib.Network.Packets.Client.Status
 {
     public struct RequestPacket : IPacket

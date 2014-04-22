@@ -1,7 +1,6 @@
 using System.Security.Cryptography;
 using MineLib.Network.IO;
 
-
 namespace MineLib.Network.Packets.Server.Login
 {
     public struct EncryptionRequestPacket : IPacket

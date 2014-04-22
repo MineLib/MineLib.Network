@@ -1,6 +1,5 @@
 using MineLib.Network.IO;
 
-
 namespace MineLib.Network.Packets.Client.Login
 {
     public struct LoginStartPacket : IPacket

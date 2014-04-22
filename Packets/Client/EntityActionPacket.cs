@@ -1,7 +1,6 @@
 using MineLib.Network.IO;
 using MineLib.Network.Enums;
 
-
 namespace MineLib.Network.Packets.Client
 {
     public struct EntityActionPacket : IPacket

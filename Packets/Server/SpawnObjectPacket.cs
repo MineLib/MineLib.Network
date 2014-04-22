@@ -1,6 +1,6 @@
+using MineLib.Network.Data;
 using MineLib.Network.IO;
 using MineLib.Network.Enums;
-
 
 namespace MineLib.Network.Packets.Server
 {
@@ -8,7 +8,7 @@ namespace MineLib.Network.Packets.Server
     {
         public int EntityID;
         public Objects Type;
-        public double X, Y, Z;
+        public Vector3 Vector3;
         public int Data; // Maybe new data-type ObjectData?
         public short? SpeedX, SpeedY, SpeedZ;
         public byte Yaw, Pitch;
@@ -20,9 +20,9 @@ namespace MineLib.Network.Packets.Server
         {
             EntityID = stream.ReadVarInt();
             Type = (Objects)stream.ReadByte();
-            X = stream.ReadInt() / 32;
-            Y = stream.ReadInt() / 32;
-            Z = stream.ReadInt() / 32;
+            Vector3.X = stream.ReadInt() / 32;
+            Vector3.Y = stream.ReadInt() / 32;
+            Vector3.Z = stream.ReadInt() / 32;
             Yaw = stream.ReadByte();
             Pitch = stream.ReadByte();
             Data = stream.ReadInt();
@@ -39,9 +39,9 @@ namespace MineLib.Network.Packets.Server
             stream.WriteVarInt(Id);
             stream.WriteVarInt(EntityID);
             stream.WriteByte((byte)Type);
-            stream.WriteInt((int)X * 32);
-            stream.WriteInt((int)Y * 32);
-            stream.WriteInt((int)Z * 32);
+            stream.WriteInt((int)Vector3.X * 32);
+            stream.WriteInt((int)Vector3.Y * 32);
+            stream.WriteInt((int)Vector3.Z * 32);
             stream.WriteByte(Yaw);
             stream.WriteByte(Pitch);
             stream.WriteInt(Data);

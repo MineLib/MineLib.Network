@@ -2,7 +2,6 @@ using MineLib.Network.Data;
 using MineLib.Network.IO;
 using MineLib.Network.Data.EntityMetadata;
 
-
 namespace MineLib.Network.Packets.Server
 {
     public struct SpawnPlayerPacket : IPacket
@@ -10,7 +9,7 @@ namespace MineLib.Network.Packets.Server
         public int EntityID;
         public string PlayerUUID, PlayerName;
         public SpawnPlayerData[] Data;
-        public double X, Y, Z;
+        public Vector3 Vector3;
         public byte Yaw, Pitch;
         public short CurrentItem;
         public MetadataDictionary Metadata;
@@ -33,9 +32,9 @@ namespace MineLib.Network.Packets.Server
                 Data[i].Signature = stream.ReadString();
             }
 
-            X = stream.ReadInt() / 32;
-            Y = stream.ReadInt() / 32;
-            Z = stream.ReadInt() / 32;
+            Vector3.X = stream.ReadInt() / 32;
+            Vector3.Y = stream.ReadInt() / 32;
+            Vector3.Z = stream.ReadInt() / 32;
             Yaw = stream.ReadByte();
             Pitch = stream.ReadByte();
             CurrentItem = stream.ReadShort();
@@ -49,9 +48,9 @@ namespace MineLib.Network.Packets.Server
             stream.WriteVarInt(EntityID);
             stream.WriteString(PlayerUUID);
             stream.WriteString(PlayerName);
-            stream.WriteInt((int)X * 32);
-            stream.WriteInt((int)Y * 32);
-            stream.WriteInt((int)Z * 32);
+            stream.WriteInt((int)Vector3.X * 32);
+            stream.WriteInt((int)Vector3.Y * 32);
+            stream.WriteInt((int)Vector3.Z * 32);
             stream.WriteByte(Yaw);
             stream.WriteByte(Pitch);
             stream.WriteShort(CurrentItem);

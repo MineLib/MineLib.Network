@@ -1,11 +1,11 @@
 using MineLib.Network.IO;
 
-
 namespace MineLib.Network.Packets.Server
 {
     public struct TimeUpdatePacket : IPacket
     {
-        public long AgeOfTheWorld, TimeOfDay;
+        public long AgeOfTheWorld;
+        public long TimeOfDay;
 
         public const byte PacketID = 0x03;
         public byte Id { get { return PacketID; } }

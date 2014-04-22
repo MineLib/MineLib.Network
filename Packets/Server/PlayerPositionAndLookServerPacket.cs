@@ -1,11 +1,11 @@
+using MineLib.Network.Data;
 using MineLib.Network.IO;
-
 
 namespace MineLib.Network.Packets.Server
 {
     public struct PlayerPositionAndLookPacket : IPacket
     {
-        public double X, Y, Z;
+        public Vector3 Vector3;
         public float Yaw, Pitch;
         public bool OnGround;
 
@@ -14,9 +14,9 @@ namespace MineLib.Network.Packets.Server
 
         public void ReadPacket(PacketByteReader stream)
         {
-            X = stream.ReadDouble();
-            Y = stream.ReadDouble();
-            Z = stream.ReadDouble();
+            Vector3.X = stream.ReadDouble();
+            Vector3.Y = stream.ReadDouble();
+            Vector3.Z = stream.ReadDouble();
             Yaw = stream.ReadFloat();
             Pitch = stream.ReadFloat();
             OnGround = stream.ReadBool();
@@ -25,9 +25,9 @@ namespace MineLib.Network.Packets.Server
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteDouble(X);
-            stream.WriteDouble(Y);
-            stream.WriteDouble(Z);
+            stream.WriteDouble(Vector3.X);
+            stream.WriteDouble(Vector3.Y);
+            stream.WriteDouble(Vector3.Z);
             stream.WriteFloat(Yaw);
             stream.WriteFloat(Pitch);
             stream.WriteBool(OnGround);

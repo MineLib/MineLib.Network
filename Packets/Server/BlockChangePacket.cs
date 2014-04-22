@@ -1,13 +1,11 @@
+using MineLib.Network.Data;
 using MineLib.Network.IO;
-
 
 namespace MineLib.Network.Packets.Server
 {
     public struct BlockChangePacket : IPacket
     {
-        public int X;
-        public byte Y;
-        public int Z;
+        public Vector3 Vector3;
         public int BlockID;
         public byte BlockMetadata;
 
@@ -16,9 +14,9 @@ namespace MineLib.Network.Packets.Server
 
         public void ReadPacket(PacketByteReader stream)
         {
-            X = stream.ReadInt();
-            Y = stream.ReadByte();
-            Z = stream.ReadInt();
+            Vector3.X = stream.ReadInt();
+            Vector3.Y = stream.ReadByte();
+            Vector3.Z = stream.ReadInt();
             BlockID = stream.ReadVarInt();
             BlockMetadata = stream.ReadByte();
         }
@@ -26,9 +24,9 @@ namespace MineLib.Network.Packets.Server
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteInt(X);
-            stream.WriteByte(Y);
-            stream.WriteInt(Z);
+            stream.WriteInt((int)Vector3.X);
+            stream.WriteByte((byte)Vector3.Y);
+            stream.WriteInt((int)Vector3.Z);
             stream.WriteVarInt(BlockID);
             stream.WriteByte(BlockMetadata);
             stream.Purge();

@@ -1,12 +1,12 @@
+using MineLib.Network.Data;
 using MineLib.Network.IO;
-
 
 namespace MineLib.Network.Packets.Server
 {
     public struct SoundEffectPacket : IPacket
     {
         public string SoundName;
-        public int X, Y, Z;
+        public Vector3 Vector3;
         public float Volume;
         public byte Pitch;
 
@@ -16,9 +16,9 @@ namespace MineLib.Network.Packets.Server
         public void ReadPacket(PacketByteReader stream)
         {
             SoundName = stream.ReadString();
-            X = stream.ReadInt();
-            Y = stream.ReadInt();
-            Z = stream.ReadInt();
+            Vector3.X = stream.ReadInt();
+            Vector3.Y = stream.ReadInt();
+            Vector3.Z = stream.ReadInt();
             Volume = stream.ReadFloat();
             Pitch = stream.ReadByte();
         }
@@ -27,9 +27,9 @@ namespace MineLib.Network.Packets.Server
         {
             stream.WriteVarInt(Id);
             stream.WriteString(SoundName);
-            stream.WriteInt(X);
-            stream.WriteInt(Y);
-            stream.WriteInt(Z);
+            stream.WriteInt((int)Vector3.X);
+            stream.WriteInt((int)Vector3.Y);
+            stream.WriteInt((int)Vector3.Z);
             stream.WriteFloat(Volume);
             stream.WriteByte(Pitch);
             stream.Purge();

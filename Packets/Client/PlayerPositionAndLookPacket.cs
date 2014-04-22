@@ -1,12 +1,12 @@
 using MineLib.Network.IO;
 
-
 namespace MineLib.Network.Packets.Client
 {
     public struct PlayerPositionAndLookPacket : IPacket
     {
         public double X, FeetY, HeadY, Z;
-        public float Yaw, Pitch;
+        public float Yaw;
+        public float Pitch;
         public bool OnGround;
 
         public const byte PacketID = 0x06;

@@ -1,11 +1,11 @@
 using MineLib.Network.IO;
 
-
 namespace MineLib.Network.Packets.Server
 {
     public struct AttachEntityPacket : IPacket
     {
-        public int EntityID, VehicleID;
+        public int EntityID;
+        public int VehicleID;
         public bool Leash;
 
         public const byte PacketID = 0x1B;

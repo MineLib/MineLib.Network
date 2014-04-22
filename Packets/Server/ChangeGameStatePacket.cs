@@ -1,13 +1,12 @@
 using MineLib.Network.IO;
 using MineLib.Network.Enums;
 
-
 namespace MineLib.Network.Packets.Server
 {
     public struct ChangeGameStatePacket : IPacket
     {
         public GameStateReason Reason;
-        public float Value; // Was GameMode
+        public float Value;
 
         public const byte PacketID = 0x2B;
         public byte Id { get { return PacketID; } }

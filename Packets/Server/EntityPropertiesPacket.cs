@@ -1,7 +1,6 @@
 using MineLib.Network.IO;
 using MineLib.Network.Data;
 
-
 namespace MineLib.Network.Packets.Server
 {
     public struct EntityPropertiesPacket : IPacket

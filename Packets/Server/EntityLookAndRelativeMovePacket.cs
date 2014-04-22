@@ -1,5 +1,5 @@
+using MineLib.Network.Data;
 using MineLib.Network.IO;
-
 
 namespace MineLib.Network.Packets.Server
 {
@@ -7,7 +7,8 @@ namespace MineLib.Network.Packets.Server
     {
         public int EntityID;
         public double DeltaX, DeltaY, DeltaZ;
-        public byte Yaw, Pitch;
+        public byte Yaw;
+        public byte Pitch;
 
         public const byte PacketID = 0x17;
         public byte Id { get { return PacketID; } }
