@@ -60,7 +60,7 @@ namespace MineLib.Network.Packets
             () => new EntityEffectPacket(),                 // 0x1D
             () => new RemoveEntityEffectPacket(),           // 0x1E
             () => new SetExperiencePacket(),                // 0x1F
-            null,//() => new EntityPropertiesPacket(),             // 0x20
+            () => new EntityPropertiesPacket(),             // 0x20
             () => new ChunkDataPacket(),                    // 0x21
             () => new MultiBlockChangePacket(),             // 0x22
             () => new BlockChangePacket(),                  // 0x23
@@ -79,7 +79,7 @@ namespace MineLib.Network.Packets
             () => new WindowItemsPacket(),                  // 0x30
             () => new WindowPropertyPacket(),               // 0x31
             () => new ConfirmTransactionPacket(),           // 0x32
-            null,//() => new UpdateSignPacket(),                   // 0x33 // Many problems with reading
+            () => new UpdateSignPacket(),                   // 0x33 // Many problems with reading
             () => new MapsPacket(),                         // 0x34 
             () => new UpdateBlockEntityPacket(),            // 0x35
             () => new SignEditorOpenPacket(),               // 0x36

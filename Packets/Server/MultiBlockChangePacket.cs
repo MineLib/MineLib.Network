@@ -32,12 +32,12 @@ namespace MineLib.Network.Packets.Server
 
                 RecordsArray[i].Metadata = blockData[3] & 0xF;
                 RecordsArray[i].BlockID = (blockData[2] << 4) | ((blockData[3] & 0xF0) >> 4);
-                RecordsArray[i].Y = (blockData[1]);
-                RecordsArray[i].Z = (blockData[0] & 0x0f);
-                RecordsArray[i].X = (blockData[0] >> 4) & 0x0f;
+                RecordsArray[i].Vector3.Y = (blockData[1]);
+                RecordsArray[i].Vector3.Z = (blockData[0] & 0x0f);
+                RecordsArray[i].Vector3.X = (blockData[0] >> 4) & 0x0f;
 
-                RecordsArray[i].X = ((int)Vector2.X * 16) + RecordsArray[i].X;
-                RecordsArray[i].Z = ((int)Vector2.Z * 16) + RecordsArray[i].Z;
+                RecordsArray[i].Vector3.X = ((int)Vector2.X * 16) + RecordsArray[i].Vector3.X;
+                RecordsArray[i].Vector3.Z = ((int)Vector2.Z * 16) + RecordsArray[i].Vector3.Z;
             
             }
 

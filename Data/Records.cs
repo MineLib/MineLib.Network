@@ -3,7 +3,7 @@
     public struct Records
     {
         public int BlockID;
-        public int X, Y, Z;
+        public Vector3 Vector3;
         public int Metadata;
     }
 }
