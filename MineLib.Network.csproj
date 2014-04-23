@@ -49,7 +49,10 @@
     <Compile Include="Cryptography.cs" />
     <Compile Include="Data\Records.cs" />
     <Compile Include="Data\SpawnPlayerData.cs" />
+    <Compile Include="Data\Vector2.cs" />
+    <Compile Include="Data\Size2.cs" />
     <Compile Include="Enums\BlockActions.cs" />
+    <Compile Include="Enums\EffectID.cs" />
     <Compile Include="IMinecraft.cs" />
     <Compile Include="Data\EntityMetadata\MetadadaShort.cs" />
     <Compile Include="Data\EntityMetadata\MetadataByte.cs" />
@@ -62,11 +65,10 @@
     <Compile Include="Data\EntityProperty.cs" />
     <Compile Include="Data\EntityPropertyListItem.cs" />
     <Compile Include="Data\MapChunkBulkMetadata.cs" />
-    <Compile Include="Data\Size.cs" />
+    <Compile Include="Data\Size3.cs" />
     <Compile Include="Data\SlotData.cs" />
     <Compile Include="Data\Vector3.cs" />
     <Compile Include="Enums\Animation.cs" />
-    <Compile Include="Enums\Blocks.cs" />
     <Compile Include="Enums\ChatMode.cs" />
     <Compile Include="Enums\ClickMode.cs" />
     <Compile Include="Enums\ClientStatus.cs" />

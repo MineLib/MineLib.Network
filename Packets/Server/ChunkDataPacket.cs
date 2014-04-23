@@ -5,7 +5,7 @@ namespace MineLib.Network.Packets.Server
 {
     public struct ChunkDataPacket : IPacket
     {
-        public Vector3 Coordinates;
+        public Vector2 Vector2;
         public bool GroundUpContinuous;
         public short PrimaryBitMap;
         public short AddBitMap;
@@ -17,8 +17,8 @@ namespace MineLib.Network.Packets.Server
 
         public void ReadPacket(PacketByteReader stream)
         {
-            Coordinates.X = stream.ReadInt();
-            Coordinates.Z = stream.ReadInt();
+            Vector2.X = stream.ReadInt();
+            Vector2.Z = stream.ReadInt();
             GroundUpContinuous = stream.ReadBool();
             PrimaryBitMap = stream.ReadShort();
             AddBitMap = stream.ReadShort();
@@ -31,8 +31,8 @@ namespace MineLib.Network.Packets.Server
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteInt((int)Coordinates.X);
-            stream.WriteInt((int)Coordinates.Z);
+            stream.WriteInt((int)Vector2.X);
+            stream.WriteInt((int)Vector2.Z);
             stream.WriteBool(GroundUpContinuous);
             stream.WriteShort(PrimaryBitMap);
             stream.WriteShort(AddBitMap);

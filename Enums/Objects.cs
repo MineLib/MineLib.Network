@@ -14,7 +14,7 @@
         EggProjectile           = 62,
         FireBallProjectile      = 63,
         FireChargeProjectile    = 64,
-        ThrownEnderpearl        = 65,
+        ThrownEnderPearl        = 65,
         WitherSkull             = 66,
         FallingObjects          = 70,
         ItemFrames              = 71,

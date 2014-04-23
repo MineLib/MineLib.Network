@@ -1,3 +1,4 @@
+using MineLib.Network.Enums;
 using MineLib.Network.IO;
 
 namespace MineLib.Network.Packets.Server
@@ -5,7 +6,7 @@ namespace MineLib.Network.Packets.Server
     public struct EntityEffectPacket : IPacket
     {
         public int EntityID;
-        public byte EffectID;
+        public EffectID EffectID;
         public byte Amplifier;
         public short Duration;
 
@@ -15,7 +16,7 @@ namespace MineLib.Network.Packets.Server
         public void ReadPacket(PacketByteReader stream)
         {
             EntityID = stream.ReadInt();
-            EffectID = stream.ReadByte();
+            EffectID = (EffectID)stream.ReadByte();
             Amplifier = stream.ReadByte();
             Duration = stream.ReadShort();
         }
@@ -24,7 +25,7 @@ namespace MineLib.Network.Packets.Server
         {
             stream.WriteVarInt(Id);
             stream.WriteInt(EntityID);
-            stream.WriteByte(EffectID);
+            stream.WriteByte((byte)EffectID);
             stream.WriteByte(Amplifier);
             stream.WriteShort(Duration);
             stream.Purge();

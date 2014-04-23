@@ -10,7 +10,7 @@
         MagicCriticalEffect = 5,
         UnknownAnimation    = 102,
         Crouch              = 104,
-        Uncrouch            = 105
+        UnCrouch            = 105
     }
 
 }

@@ -1,11 +1,12 @@
 using MineLib.Network.Data;
+using MineLib.Network.Enums;
 using MineLib.Network.IO;
 
 namespace MineLib.Network.Packets.Server
 {
     public struct EffectPacket : IPacket
     {
-        public int EffectID;
+        public EffectID EffectID;
         public Vector3 Vector3;
         public int Data;
         public bool DisableRelativeVolume;
@@ -15,7 +16,7 @@ namespace MineLib.Network.Packets.Server
 
         public void ReadPacket(PacketByteReader stream)
         {
-            EffectID = stream.ReadInt();
+            EffectID = (EffectID)stream.ReadInt();
             Vector3.X = stream.ReadInt();
             Vector3.Y = stream.ReadByte();
             Vector3.Z = stream.ReadInt();
@@ -26,7 +27,7 @@ namespace MineLib.Network.Packets.Server
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteInt(EffectID);
+            stream.WriteInt((int)EffectID);
             stream.WriteInt((int)Vector3.X);
             stream.WriteByte((byte)Vector3.Y);
             stream.WriteInt((int)Vector3.Z);

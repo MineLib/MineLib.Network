@@ -1,6 +1,6 @@
 ﻿namespace MineLib.Network.Enums
 {
-    public enum PacketsClient
+    public enum PacketsClient : byte
     {
         Handshake                   = 0x00,
         LoginStart                  = 0x00,

@@ -132,7 +132,7 @@ namespace MineLib.Network.Data
                 a.Z - b.Z);
         }
 
-        public static Vector3 operator +(Vector3 a, Size b)
+        public static Vector3 operator +(Vector3 a, Size3 b)
         {
             return new Vector3(
                 a.X + b.Width,
@@ -140,7 +140,7 @@ namespace MineLib.Network.Data
                 a.Z + b.Depth);
         }
 
-        public static Vector3 operator -(Vector3 a, Size b)
+        public static Vector3 operator -(Vector3 a, Size3 b)
         {
             return new Vector3(
                 a.X - b.Width,
@@ -170,6 +170,11 @@ namespace MineLib.Network.Data
                 a.X / b.X,
                 a.Y / b.Y,
                 a.Z / b.Z);
+        }
+
+        public static Vector3 operator %(Vector3 a, Vector3 b)
+        {
+            return new Vector3(a.X % b.X, a.Y % b.Y, a.Z % b.Z);
         }
 
         public static Vector3 operator +(Vector3 a, double b)
@@ -204,6 +209,11 @@ namespace MineLib.Network.Data
                 a.Z / b);
         }
 
+        public static Vector3 operator %(Vector3 a, double b)
+        {
+            return new Vector3(a.X % b, a.Y % b, a.Y % b);
+        }
+
         public static Vector3 operator +(double a, Vector3 b)
         {
             return new Vector3(
@@ -234,6 +244,11 @@ namespace MineLib.Network.Data
                 a / b.X,
                 a / b.Y,
                 a / b.Z);
+        }
+
+        public static explicit operator Vector3(Vector2 a)
+        {
+            return new Vector3(a.X, 0 , a.Z);
         }
 
         #endregion

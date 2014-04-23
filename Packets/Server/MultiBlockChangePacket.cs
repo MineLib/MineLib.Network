@@ -7,7 +7,7 @@ namespace MineLib.Network.Packets.Server
     public struct MultiBlockChangePacket : IPacket
     {
         // Implement FromStream and WriteTo for Records
-        public int ChunkX, ChunkZ;
+        public Vector2 Vector2;
         public short RecordCount;
         public byte[] Data;
         public Records[] RecordsArray;
@@ -17,8 +17,8 @@ namespace MineLib.Network.Packets.Server
 
         public void ReadPacket(PacketByteReader stream)
         {
-            ChunkX = stream.ReadInt();
-            ChunkZ = stream.ReadInt();
+            Vector2.X = stream.ReadInt();
+            Vector2.Z = stream.ReadInt();
             RecordCount = stream.ReadShort();
             int size = stream.ReadInt();
             Data = stream.ReadByteArray(size);
@@ -36,8 +36,8 @@ namespace MineLib.Network.Packets.Server
                 RecordsArray[i].Z = (blockData[0] & 0x0f);
                 RecordsArray[i].X = (blockData[0] >> 4) & 0x0f;
 
-                RecordsArray[i].X = (ChunkX * 16) + RecordsArray[i].X;
-                RecordsArray[i].Z = (ChunkZ * 16) + RecordsArray[i].Z;
+                RecordsArray[i].X = ((int)Vector2.X * 16) + RecordsArray[i].X;
+                RecordsArray[i].Z = ((int)Vector2.Z * 16) + RecordsArray[i].Z;
             
             }
 
@@ -46,8 +46,8 @@ namespace MineLib.Network.Packets.Server
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteInt(ChunkX);
-            stream.WriteInt(ChunkZ);
+            stream.WriteInt((int)Vector2.X);
+            stream.WriteInt((int)Vector2.Z);
             stream.WriteShort(RecordCount);
             stream.WriteInt(RecordCount * 4);
             stream.WriteByteArray(Data);
