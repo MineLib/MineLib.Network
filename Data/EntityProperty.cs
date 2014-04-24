@@ -6,17 +6,18 @@
         {
             Key = key;
             Value = value;
-            UnknownList = new EntityPropertyListItem[0];
+            Modifiers = new Modifiers[0];
         }
 
         public string Key;
         public double Value;
-        public EntityPropertyListItem[] UnknownList;
+        public Modifiers[] Modifiers;
     }
 
-    public struct EntityPropertyListItem
+    public struct Modifiers
     {
-        public long UUID;
+        public long UUID_1;
+        public long UUID_2;
         public double Amount;
         public byte Operation;
     }
