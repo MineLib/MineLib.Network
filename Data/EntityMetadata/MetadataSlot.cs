@@ -1,12 +1,19 @@
-﻿using MineLib.Network.IO;
-using fNbt;
-
+﻿using fNbt;
+using MineLib.Network.IO;
 
 namespace MineLib.Network.Data.EntityMetadata
 {
     public class MetadataSlot : MetadataEntry
     {
+        public override byte Identifier { get { return 5; } }
+        public override string FriendlyName { get { return "slot"; } }
+
         public ItemStack Value;
+
+        public static implicit operator MetadataSlot(ItemStack value)
+        {
+            return new MetadataSlot(value);
+        }
 
         public MetadataSlot()
         {
@@ -17,22 +24,7 @@ namespace MineLib.Network.Data.EntityMetadata
             Value = value;
         }
 
-        public override byte Identifier
-        {
-            get { return 5; }
-        }
-
-        public override string FriendlyName
-        {
-            get { return "slot"; }
-        }
-
-        public static implicit operator MetadataSlot(ItemStack value)
-        {
-            return new MetadataSlot(value);
-        }
-
-        public override void FromStream(ref PacketByteReader stream)
+        public override void FromStream(PacketByteReader stream)
         {
             Value = ItemStack.FromStream(ref stream);
         }

@@ -105,7 +105,7 @@ namespace MineLib.Network.Data
 
         public static ItemStack FromNbt(NbtCompound compound)
         {
-            var s = EmptyStack;
+            var s = ItemStack.EmptyStack;
             s.Id = compound.Get<NbtShort>("id").Value;
             s.Metadata = compound.Get<NbtShort>("Damage").Value;
             s.Count = (sbyte)compound.Get<NbtByte>("Count").Value;
@@ -177,6 +177,7 @@ namespace MineLib.Network.Data
 
         //[IgnoreOnNull]
         public NbtCompound Nbt { get; set; }
+
         //[NbtIgnore]
         public int Index;
 

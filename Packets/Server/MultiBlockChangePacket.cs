@@ -4,6 +4,13 @@ using MineLib.Network.Data;
 
 namespace MineLib.Network.Packets.Server
 {
+    public struct Records
+    {
+        public int BlockID;
+        public Vector3 Vector3;
+        public int Metadata;
+    }
+
     public struct MultiBlockChangePacket : IPacket
     {
         // Implement FromStream and WriteTo for Records

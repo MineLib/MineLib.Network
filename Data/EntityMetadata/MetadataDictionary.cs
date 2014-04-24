@@ -2,7 +2,6 @@
 using System.Text;
 using MineLib.Network.IO;
 
-
 namespace MineLib.Network.Data.EntityMetadata
 {
     /// <summary>
@@ -10,54 +9,37 @@ namespace MineLib.Network.Data.EntityMetadata
     /// </summary>
     public class MetadataDictionary
     {
-        #region Nested type: CreateEntryInstance
-
-        private delegate MetadataEntry CreateEntryInstance();
-
-        #endregion
-
-        private static readonly CreateEntryInstance[] EntryTypes = new CreateEntryInstance[]
-                                                                       {
-                                                                           () => new MetadataByte(),    // 0
-                                                                           () => new MetadataShort(),   // 1
-                                                                           () => new MetadataInt(),     // 2
-                                                                           () => new MetadataFloat(),   // 3
-                                                                           () => new MetadataString(),  // 4
-                                                                           () => new MetadataSlot(),    // 5
-                                                                       };
-
-        private readonly Dictionary<byte, MetadataEntry> entries;
+        private readonly Dictionary<byte, MetadataEntry> _entries;
 
         public MetadataDictionary()
         {
-            entries = new Dictionary<byte, MetadataEntry>();
+            _entries = new Dictionary<byte, MetadataEntry>();
         }
 
         public int Count
         {
-            get { return entries.Count; }
+            get { return _entries.Count; }
         }
 
         public MetadataEntry this[byte index]
         {
-            get { return entries[index]; }
-            set { entries[index] = value; }
+            get { return _entries[index]; }
+            set { _entries[index] = value; }
         }
 
-        public static MetadataDictionary FromStream(ref PacketByteReader stream)
+        public static MetadataDictionary FromStream(PacketByteReader stream)
         {
             var value = new MetadataDictionary();
             while (true)
             {
-                byte item = stream.ReadByte();
-                if (item == 127) break;
+                byte key = stream.ReadByte();
+                if (key == 127) break;
 
-                var index = (byte) (item & 31);
-                var type = (byte) ((item & 224) >> 5);
-                //var type = (byte)((item & 0xE0) >> 5);
+                byte type = (byte)((key & 0xE0) >> 5);
+                byte index = (byte)(key & 0x1F);
 
-                MetadataEntry entry = EntryTypes[type]();
-                entry.FromStream(ref stream);
+                var entry = EntryTypes[type]();
+                entry.FromStream(stream);
                 entry.Index = index;
 
                 value[index] = entry;
@@ -67,16 +49,28 @@ namespace MineLib.Network.Data.EntityMetadata
 
         public void WriteTo(ref PacketStream stream)
         {
-            foreach (var entry in entries)
+            foreach (var entry in _entries)
                 entry.Value.WriteTo(ref stream, entry.Key);
             stream.WriteByte(0x7F);
         }
+
+        delegate MetadataEntry CreateEntryInstance();
+
+        private static readonly CreateEntryInstance[] EntryTypes = new CreateEntryInstance[]
+            {
+                () => new MetadataByte(),   // 0
+                () => new MetadataShort(),  // 1
+                () => new MetadataInt(),    // 2
+                () => new MetadataFloat(),  // 3
+                () => new MetadataString(), // 4
+                () => new MetadataSlot()    // 5
+            };
 
         public override string ToString()
         {
             StringBuilder sb = null;
 
-            foreach (MetadataEntry entry in entries.Values)
+            foreach (var entry in _entries.Values)
             {
                 if (sb != null)
                     sb.Append(", ");

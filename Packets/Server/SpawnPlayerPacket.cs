@@ -4,6 +4,13 @@ using MineLib.Network.Data.EntityMetadata;
 
 namespace MineLib.Network.Packets.Server
 {
+    public struct SpawnPlayerData
+    {
+        public string Name;
+        public string Value;
+        public string Signature;
+    }
+
     public struct SpawnPlayerPacket : IPacket
     {
         public int EntityID;
@@ -38,7 +45,7 @@ namespace MineLib.Network.Packets.Server
             Yaw = stream.ReadByte();
             Pitch = stream.ReadByte();
             CurrentItem = stream.ReadShort();
-            Metadata = MetadataDictionary.FromStream(ref stream);
+            Metadata = MetadataDictionary.FromStream(stream);
 
         }
     

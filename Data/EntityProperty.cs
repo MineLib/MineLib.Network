@@ -13,4 +13,11 @@
         public double Value;
         public EntityPropertyListItem[] UnknownList;
     }
+
+    public struct EntityPropertyListItem
+    {
+        public long UUID;
+        public double Amount;
+        public byte Operation;
+    }
 }

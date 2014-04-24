@@ -14,7 +14,7 @@ namespace MineLib.Network.Packets.Server
         public void ReadPacket(PacketByteReader stream)
         {
             EntityID = stream.ReadInt();
-            Metadata = MetadataDictionary.FromStream(ref stream);
+            Metadata = MetadataDictionary.FromStream(stream);
         }
     
         public void WritePacket(ref PacketStream stream)

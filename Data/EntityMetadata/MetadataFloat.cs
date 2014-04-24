@@ -1,11 +1,18 @@
 ﻿using MineLib.Network.IO;
 
-
 namespace MineLib.Network.Data.EntityMetadata
 {
     public class MetadataFloat : MetadataEntry
     {
+        public override byte Identifier { get { return 3; } }
+        public override string FriendlyName { get { return "float"; } }
+
         public float Value;
+
+        public static implicit operator MetadataFloat(float value)
+        {
+            return new MetadataFloat(value);
+        }
 
         public MetadataFloat()
         {
@@ -16,22 +23,7 @@ namespace MineLib.Network.Data.EntityMetadata
             Value = value;
         }
 
-        public override byte Identifier
-        {
-            get { return 3; }
-        }
-
-        public override string FriendlyName
-        {
-            get { return "float"; }
-        }
-
-        public static implicit operator MetadataFloat(float value)
-        {
-            return new MetadataFloat(value);
-        }
-
-        public override void FromStream(ref PacketByteReader stream)
+        public override void FromStream(PacketByteReader stream)
         {
             Value = stream.ReadFloat();
         }

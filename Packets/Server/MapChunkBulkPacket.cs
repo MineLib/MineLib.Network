@@ -1,8 +1,16 @@
 using MineLib.Network.IO;
-using MineLib.Network.Data;
 
 namespace MineLib.Network.Packets.Server
 {
+    public struct MapChunkBulkMetadata
+    {
+        public int ChunkX;
+        public int ChunkZ;
+        public short PrimaryBitMap;
+        public short AddBitMap;
+        public bool SkyLight;
+    }
+
     public struct MapChunkBulkPacket : IPacket
     {
         public short ChunkColumnCount;

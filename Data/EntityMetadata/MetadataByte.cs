@@ -1,11 +1,18 @@
 ﻿using MineLib.Network.IO;
 
-
 namespace MineLib.Network.Data.EntityMetadata
 {
     public class MetadataByte : MetadataEntry
     {
+        public override byte Identifier { get { return 0; } }
+        public override string FriendlyName { get { return "byte"; } }
+
         public byte Value;
+
+        public static implicit operator MetadataByte(byte value)
+        {
+            return new MetadataByte(value);
+        }
 
         public MetadataByte()
         {
@@ -16,22 +23,7 @@ namespace MineLib.Network.Data.EntityMetadata
             Value = value;
         }
 
-        public override byte Identifier
-        {
-            get { return 0; }
-        }
-
-        public override string FriendlyName
-        {
-            get { return "byte"; }
-        }
-
-        public static implicit operator MetadataByte(byte value)
-        {
-            return new MetadataByte(value);
-        }
-
-        public override void FromStream(ref PacketByteReader stream)
+        public override void FromStream(PacketByteReader stream)
         {
             Value = stream.ReadByte();
         }
