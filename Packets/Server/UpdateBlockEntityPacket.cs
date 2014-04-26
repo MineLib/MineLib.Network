@@ -5,7 +5,7 @@ namespace MineLib.Network.Packets.Server
 {
     public struct UpdateBlockEntityPacket : IPacket
     {
-        public Vector3 Vector3;
+        public Coordinates3D Coordinates;
         public byte Action; // Convert
         public byte[] NBTData;
 
@@ -14,9 +14,9 @@ namespace MineLib.Network.Packets.Server
 
         public void ReadPacket(PacketByteReader stream)
         {
-            Vector3.X = stream.ReadInt();
-            Vector3.Y = stream.ReadShort();
-            Vector3.Z = stream.ReadInt();
+            Coordinates.X = stream.ReadInt();
+            Coordinates.Y = stream.ReadShort();
+            Coordinates.Z = stream.ReadInt();
             Action = stream.ReadByte();
             int length = stream.ReadShort();
 
@@ -27,9 +27,9 @@ namespace MineLib.Network.Packets.Server
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteInt((int)Vector3.X);
-            stream.WriteShort((short)Vector3.Y);
-            stream.WriteInt((int)Vector3.Z);
+            stream.WriteInt(Coordinates.X);
+            stream.WriteShort((short)Coordinates.Y);
+            stream.WriteInt(Coordinates.Z);
             stream.WriteByte(Action);
             stream.WriteShort((short)NBTData.Length);
             stream.WriteByteArray(NBTData);

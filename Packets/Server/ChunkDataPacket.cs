@@ -5,23 +5,25 @@ namespace MineLib.Network.Packets.Server
 {
     public struct ChunkDataPacket : IPacket
     {
-        public Vector2 Vector2;
-        public bool GroundUpContinuous;
-        public short PrimaryBitMap;
-        public short AddBitMap;
+        public Coordinates2D Coordinates;
+        public bool GroundUp;
+        public ushort PrimaryBitMap;
+        public ushort AddBitMap;
         public byte[] Data; // Maybe NbtByteArray?
         public byte[] Trim;
+        public bool SkyLightSend;
 
         public const byte PacketID = 0x21;
         public byte Id { get { return PacketID; } }
 
         public void ReadPacket(PacketByteReader stream)
         {
-            Vector2.X = stream.ReadInt();
-            Vector2.Z = stream.ReadInt();
-            GroundUpContinuous = stream.ReadBool();
-            PrimaryBitMap = stream.ReadShort();
-            AddBitMap = stream.ReadShort();
+            Coordinates.X = stream.ReadInt();
+            Coordinates.Z = stream.ReadInt();
+            GroundUp = stream.ReadBool();
+            SkyLightSend = true; // Assumed true in 0x21
+            PrimaryBitMap = stream.ReadUShort();
+            AddBitMap = stream.ReadUShort();
             var length = stream.ReadInt(); // was short.
             Data = stream.ReadByteArray(length);
 
@@ -31,11 +33,11 @@ namespace MineLib.Network.Packets.Server
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteInt((int)Vector2.X);
-            stream.WriteInt((int)Vector2.Z);
-            stream.WriteBool(GroundUpContinuous);
-            stream.WriteShort(PrimaryBitMap);
-            stream.WriteShort(AddBitMap);
+            stream.WriteInt(Coordinates.X);
+            stream.WriteInt(Coordinates.Z);
+            stream.WriteBool(GroundUp);
+            stream.WriteUShort(PrimaryBitMap);
+            stream.WriteUShort(AddBitMap);
             stream.WriteVarInt(Data.Length);
             stream.WriteByteArray(Data);
             stream.Purge();

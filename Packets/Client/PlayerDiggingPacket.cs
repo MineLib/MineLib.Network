@@ -7,7 +7,7 @@ namespace MineLib.Network.Packets.Client
     public struct PlayerDiggingPacket : IPacket
     {
         public BlockStatus Status;
-        public Vector3 Vector3;
+        public Coordinates3D Coordinates;
         public byte Face;
 
         public const byte PacketID = 0x07;
@@ -16,9 +16,9 @@ namespace MineLib.Network.Packets.Client
         public void ReadPacket(PacketByteReader stream)
         {
             Status = (BlockStatus)stream.ReadByte();
-            Vector3.X = stream.ReadInt();
-            Vector3.Y = stream.ReadByte();
-            Vector3.Z = stream.ReadInt();
+            Coordinates.X = stream.ReadInt();
+            Coordinates.Y = stream.ReadByte();
+            Coordinates.Z = stream.ReadInt();
             Face = stream.ReadByte();
         }
 
@@ -26,9 +26,9 @@ namespace MineLib.Network.Packets.Client
         {
             stream.WriteVarInt(Id);
             stream.WriteByte((byte)Status);
-            stream.WriteInt((int)Vector3.X);
-            stream.WriteByte((byte)Vector3.Y);
-            stream.WriteInt((int)Vector3.Z);
+            stream.WriteInt(Coordinates.X);
+            stream.WriteByte((byte)Coordinates.Y);
+            stream.WriteInt(Coordinates.Z);
             stream.WriteByte(Face);
             stream.Purge();
         }

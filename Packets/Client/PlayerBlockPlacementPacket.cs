@@ -6,7 +6,7 @@ namespace MineLib.Network.Packets.Client
 {
     public struct PlayerBlockPlacementPacket : IPacket
     {
-        public Vector3 Vector3;
+        public Coordinates3D Coordinates;
         public Direction Direction;
         public ItemStack Slot;
         public Vector3 CursorVector3;
@@ -16,9 +16,9 @@ namespace MineLib.Network.Packets.Client
 
         public void ReadPacket(PacketByteReader stream)
         {
-            Vector3.X = stream.ReadInt();
-            Vector3.Y = stream.ReadByte();
-            Vector3.Z = stream.ReadInt();
+            Coordinates.X = stream.ReadInt();
+            Coordinates.Y = stream.ReadByte();
+            Coordinates.Z = stream.ReadInt();
             Direction = (Direction)stream.ReadByte();
             Slot = ItemStack.FromStream(ref stream);
             CursorVector3.X = stream.ReadByte();
@@ -29,9 +29,9 @@ namespace MineLib.Network.Packets.Client
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteInt((int)Vector3.X);
-            stream.WriteByte((byte)Vector3.Y);
-            stream.WriteInt((int)Vector3.Z);
+            stream.WriteInt(Coordinates.X);
+            stream.WriteByte((byte)Coordinates.Y);
+            stream.WriteInt(Coordinates.Z);
             stream.WriteByte((byte)Direction);
             Slot.WriteTo(ref stream);
             stream.WriteByte((byte)CursorVector3.X);

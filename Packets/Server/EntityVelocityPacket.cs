@@ -1,4 +1,3 @@
-using MineLib.Network.Data;
 using MineLib.Network.IO;
 
 namespace MineLib.Network.Packets.Server

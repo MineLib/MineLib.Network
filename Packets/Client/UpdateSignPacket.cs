@@ -5,7 +5,7 @@ namespace MineLib.Network.Packets.Client
 {
     public struct UpdateSignPacket : IPacket
     {
-        public Vector3 Vector3;
+        public Coordinates3D Coordinates;
         public string[] Text;
 
         public const byte PacketID = 0x12;
@@ -13,9 +13,9 @@ namespace MineLib.Network.Packets.Client
 
         public void ReadPacket(PacketByteReader stream)
         {
-            Vector3.X = stream.ReadInt();
-            Vector3.Y = stream.ReadShort();
-            Vector3.Z = stream.ReadInt();
+            Coordinates.X = stream.ReadInt();
+            Coordinates.Y = stream.ReadShort();
+            Coordinates.Z = stream.ReadInt();
             Text = new string[3];
             Text[0] = stream.ReadString();
             Text[1] = stream.ReadString();
@@ -26,9 +26,9 @@ namespace MineLib.Network.Packets.Client
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteInt((int)Vector3.X);
-            stream.WriteShort((short)Vector3.Y);
-            stream.WriteInt((int)Vector3.Z);
+            stream.WriteInt(Coordinates.X);
+            stream.WriteShort((short)Coordinates.Y);
+            stream.WriteInt(Coordinates.Z);
             stream.WriteString(Text[0]);
             stream.WriteString(Text[1]);
             stream.WriteString(Text[2]);

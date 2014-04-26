@@ -38,9 +38,9 @@ namespace MineLib.Network.Packets.Server
             stream.WriteVarInt(Id);
             stream.WriteVarInt(EntityID);
             stream.WriteByte((byte)Type);
-            stream.WriteInt((int)Vector3.X * 32);
-            stream.WriteInt((int)Vector3.Y * 32);
-            stream.WriteInt((int)Vector3.Z * 32);
+            stream.WriteInt((int)(Vector3.X * 32));
+            stream.WriteInt((int)(Vector3.Y * 32));
+            stream.WriteInt((int)(Vector3.Z * 32));
             stream.WriteByte(Pitch);
             stream.WriteByte(HeadPitch);
             stream.WriteByte(Yaw);

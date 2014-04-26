@@ -246,7 +246,7 @@ namespace MineLib.Network.Data
                 a / b.Z);
         }
 
-        public static explicit operator Vector3(Vector2 a)
+        public static explicit operator Vector3(Coordinates2D a)
         {
             return new Vector3(a.X, 0 , a.Z);
         }

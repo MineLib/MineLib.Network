@@ -89,6 +89,7 @@ namespace MineLib.Network
 
             while (_baseSock.Client.Available > 0)
             {
+                //Thread.Sleep(1); // -- Important to make a little pause.
                 int length = _stream.ReadVarInt();
                 int id = _stream.ReadVarInt();
 

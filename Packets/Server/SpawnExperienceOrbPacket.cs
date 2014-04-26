@@ -6,7 +6,7 @@ namespace MineLib.Network.Packets.Server
     public struct SpawnExperienceOrbPacket : IPacket
     {
         public int EntityID;
-        public Vector3 Vector3;
+        public Coordinates3D Coordinates;
         public short Count;
 
         public const byte PacketID = 0x11;
@@ -15,9 +15,9 @@ namespace MineLib.Network.Packets.Server
         public void ReadPacket(PacketByteReader stream)
         {
             EntityID = stream.ReadVarInt();
-            Vector3.X = stream.ReadInt();
-            Vector3.Y = stream.ReadInt();
-            Vector3.Z = stream.ReadInt();
+            Coordinates.X = stream.ReadInt();
+            Coordinates.Y = stream.ReadInt();
+            Coordinates.Z = stream.ReadInt();
             Count = stream.ReadShort();
         }
 
@@ -25,9 +25,9 @@ namespace MineLib.Network.Packets.Server
         {
             stream.WriteVarInt(Id);
             stream.WriteVarInt(EntityID);
-            stream.WriteInt((int)Vector3.X);
-            stream.WriteInt((int)Vector3.Y);
-            stream.WriteInt((int)Vector3.Z);
+            stream.WriteInt(Coordinates.X);
+            stream.WriteInt(Coordinates.Y);
+            stream.WriteInt(Coordinates.Z);
             stream.WriteShort(Count);
             stream.Purge();
         }

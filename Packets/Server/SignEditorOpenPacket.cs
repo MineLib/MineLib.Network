@@ -5,24 +5,24 @@ namespace MineLib.Network.Packets.Server
 {
     public struct SignEditorOpenPacket : IPacket
     {
-        public Vector3 Vector3;
+        public Coordinates3D Coordinates;
 
         public const byte PacketID = 0x36;
         public byte Id { get { return PacketID; } }
 
         public void ReadPacket(PacketByteReader stream)
         {
-            Vector3.X = stream.ReadInt();
-            Vector3.Y = stream.ReadInt();
-            Vector3.Z = stream.ReadInt();
+            Coordinates.X = stream.ReadInt();
+            Coordinates.Y = stream.ReadInt();
+            Coordinates.Z = stream.ReadInt();
         }
 
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteInt((int)Vector3.X);
-            stream.WriteInt((int)Vector3.Y);
-            stream.WriteInt((int)Vector3.Z);
+            stream.WriteInt(Coordinates.X);
+            stream.WriteInt(Coordinates.Y);
+            stream.WriteInt(Coordinates.Z);
             stream.Purge();
         }
     }

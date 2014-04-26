@@ -5,7 +5,7 @@ namespace MineLib.Network.Packets.Server
 {
     public struct BlockChangePacket : IPacket
     {
-        public Vector3 Vector3;
+        public Coordinates3D Coordinates;
         public int BlockID;
         public byte BlockMetadata;
 
@@ -14,9 +14,9 @@ namespace MineLib.Network.Packets.Server
 
         public void ReadPacket(PacketByteReader stream)
         {
-            Vector3.X = stream.ReadInt();
-            Vector3.Y = stream.ReadByte();
-            Vector3.Z = stream.ReadInt();
+            Coordinates.X = stream.ReadInt();
+            Coordinates.Y = stream.ReadByte();
+            Coordinates.Z = stream.ReadInt();
             BlockID = stream.ReadVarInt();
             BlockMetadata = stream.ReadByte();
         }
@@ -24,9 +24,9 @@ namespace MineLib.Network.Packets.Server
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteInt((int)Vector3.X);
-            stream.WriteByte((byte)Vector3.Y);
-            stream.WriteInt((int)Vector3.Z);
+            stream.WriteInt(Coordinates.X);
+            stream.WriteByte((byte)Coordinates.Y);
+            stream.WriteInt(Coordinates.Z);
             stream.WriteVarInt(BlockID);
             stream.WriteByte(BlockMetadata);
             stream.Purge();

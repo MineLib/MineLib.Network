@@ -47,7 +47,7 @@
   <ItemGroup>
     <Compile Include="BaseClients\StatusClient.Json.cs" />
     <Compile Include="Cryptography.cs" />
-    <Compile Include="Data\Vector2.cs" />
+    <Compile Include="Data\Coordinates.cs" />
     <Compile Include="Data\Size2.cs" />
     <Compile Include="Enums\BlockActions.cs" />
     <Compile Include="Enums\EffectID.cs" />

@@ -1,14 +1,15 @@
+using MineLib.Network.Data;
 using MineLib.Network.IO;
 
 namespace MineLib.Network.Packets.Server
 {
-    public struct MapChunkBulkMetadata
+    public struct ChunkColumnMetadata
     {
-        public int ChunkX;
-        public int ChunkZ;
-        public short PrimaryBitMap;
-        public short AddBitMap;
-        public bool SkyLight;
+        public Coordinates2D Coordinates;
+        public ushort PrimaryBitMap;
+        public ushort AddBitMap;
+        public bool SkyLightSend;
+        public bool GroundUp; // True in 0x26
     }
 
     public struct MapChunkBulkPacket : IPacket
@@ -16,8 +17,7 @@ namespace MineLib.Network.Packets.Server
         public short ChunkColumnCount;
         public bool SkyLightSent;
         public byte[] ChunkData;
-        public byte[] Trim;
-        public MapChunkBulkMetadata[] MetaInformation;
+        public ChunkColumnMetadata[] MetaInformation;
 
         public const byte PacketID = 0x26;
         public byte Id { get { return PacketID; } }
@@ -28,21 +28,18 @@ namespace MineLib.Network.Packets.Server
             var length = stream.ReadInt();
             SkyLightSent = stream.ReadBool();
             ChunkData = stream.ReadByteArray(length);
-            Trim = new byte[length - 2];
 
-            MetaInformation = new MapChunkBulkMetadata[ChunkColumnCount];
-            for (int i = 0; i < ChunkColumnCount; i++)
+            MetaInformation = new ChunkColumnMetadata[ChunkColumnCount];
+            for (var i = 0; i < ChunkColumnCount; i++)
             {
-                var metadata = new MapChunkBulkMetadata
-                {
-                    ChunkX = stream.ReadInt(),
-                    ChunkZ = stream.ReadInt(),
-                    PrimaryBitMap = stream.ReadShort(),
-                    AddBitMap = stream.ReadShort()
-                };
-                MetaInformation[i] = metadata;
+                MetaInformation[i] = new ChunkColumnMetadata();
+                MetaInformation[i].Coordinates.X = stream.ReadInt();
+                MetaInformation[i].Coordinates.Z = stream.ReadInt();
+                MetaInformation[i].PrimaryBitMap = stream.ReadUShort();
+                MetaInformation[i].AddBitMap = stream.ReadUShort();
+                MetaInformation[i].GroundUp = true;
+                MetaInformation[i].SkyLightSend = SkyLightSent;
             }
-
         }
 
         public void WritePacket(ref PacketStream stream)
@@ -53,12 +50,12 @@ namespace MineLib.Network.Packets.Server
             stream.WriteBool(SkyLightSent);
             stream.WriteByteArray(ChunkData);
 
-            for (int i = 0; i < ChunkColumnCount; i++)
+            for (var i = 0; i < ChunkColumnCount; i++)
             {
-                stream.WriteInt(MetaInformation[i].ChunkX);
-                stream.WriteInt(MetaInformation[i].ChunkZ);
-                stream.WriteShort(MetaInformation[i].PrimaryBitMap);
-                stream.WriteShort(MetaInformation[i].AddBitMap);
+                stream.WriteInt(MetaInformation[i].Coordinates.X);
+                stream.WriteInt(MetaInformation[i].Coordinates.Z);
+                stream.WriteUShort(MetaInformation[i].PrimaryBitMap);
+                stream.WriteUShort(MetaInformation[i].AddBitMap);
             }
             stream.Purge();
         }
