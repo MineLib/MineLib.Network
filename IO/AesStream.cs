@@ -105,14 +105,13 @@ namespace MineLib.Network.IO
 
         public int ReadByte()
         {
-            int value = BaseStream.ReadByte();
-            if (value == -1) return value;
-            return _decryptCipher.ProcessByte((byte)value)[0];
+            var value = BaseStream.ReadByte();
+            return value == -1 ? value : _decryptCipher.ProcessByte((byte)value)[0];
         }
 
         public int Read(byte[] buffer, int offset, int count)
         {
-            int length = BaseStream.Read(buffer, offset, count);
+            var length = BaseStream.Read(buffer, offset, count);
             var decrypted = _decryptCipher.ProcessBytes(buffer, offset, length);
             Array.Copy(decrypted, 0, buffer, offset, decrypted.Length);
             return length;
