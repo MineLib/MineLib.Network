@@ -70,14 +70,14 @@ namespace MineLib.Network
 
             // -- Start network parsing.
             _listener = Classic
-                ? new Thread(StartReceiving) {Name = "PacketListener"}
-                : new Thread(StartReceivingClassic) {Name = "PacketListener"};
+                ? new Thread(StartReceivingClassic) {Name = "PacketListener"}
+                : new Thread(StartReceiving) {Name = "PacketListener"};
             _listener.Start();
 
             // -- Start network sending.
             _sender = Classic
-                ? new Thread(StartSending) {Name = "PacketSender"}
-                : new Thread(StartSendingClassic) {Name = "PacketSender"};
+                ? new Thread(StartSendingClassic) {Name = "PacketSender"}
+                : new Thread(StartSending) {Name = "PacketSender"};
             _sender.Start();
 
             return true;
