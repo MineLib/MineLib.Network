@@ -16,8 +16,8 @@ namespace MineLib.Network.Packets.Client
         {
             Sideways = stream.ReadFloat();
             Forward = stream.ReadFloat();
-            Jump = stream.ReadBool();
-            Unmount = stream.ReadBool();
+            Jump = stream.ReadBoolean();
+            Unmount = stream.ReadBoolean();
         }
 
         public void WritePacket(ref PacketStream stream)

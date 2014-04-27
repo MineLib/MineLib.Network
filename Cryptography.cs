@@ -17,13 +17,13 @@ namespace MineLib.Network
         /// </summary>
         public static string JavaHexDigest(byte[] data)
         {
-            SHA1 sha1 = SHA1.Create();
-            byte[] hash = sha1.ComputeHash(data);
-            bool negative = (hash[0] & 0x80) == 0x80;
+            var sha1 = SHA1.Create();
+            var hash = sha1.ComputeHash(data);
+            var negative = (hash[0] & 0x80) == 0x80;
             if (negative) // check for negative hashes
                 hash = TwosCompliment(hash);
             // Create the string and trim away the zeroes
-            string digest = GetHexString(hash).TrimStart('0');
+            var digest = GetHexString(hash).TrimStart('0');
             if (negative)
                 digest = "-" + digest;
             return digest;
@@ -35,8 +35,8 @@ namespace MineLib.Network
         /// </summary>
         private static string GetHexString(byte[] p)
         {
-            string result = "";
-            for (int i = 0; i < p.Length; i++)
+            var result = "";
+            for (var i = 0; i < p.Length; i++)
                 result += p[i].ToString("x2", CultureInfo.InvariantCulture);
             return result;
         }
@@ -47,9 +47,8 @@ namespace MineLib.Network
         /// </summary>
         private static byte[] TwosCompliment(byte[] p)
         {
-            int i;
-            bool carry = true;
-            for (i = p.Length - 1; i >= 0; i--)
+            var carry = true;
+            for (var i = p.Length - 1; i >= 0; i--)
             {
                 p[i] = (byte) ~p[i];
                 if (carry)
@@ -92,16 +91,14 @@ namespace MineLib.Network
         private static bool EqualOid(byte[] first, byte[] second)
         {
             if (first.Length != second.Length)
-            {
                 return false;
-            }
+            
 
-            for (int i = 0; i < first.Length; i++)
+            for (var i = 0; i < first.Length; i++)
             {
                 if (first[i] != second[i])
-                {
                     return false;
-                }
+                
             }
 
             return true;
@@ -111,17 +108,11 @@ namespace MineLib.Network
         {
             var parameters = new RSAParameters();
 
-            // Current value
-            byte[] value;
-
-            // Sanity Check
-            int length;
-
             // Checkpoint
-            int position = _parser.CurrentPosition();
+            var position = _parser.CurrentPosition();
 
             // Ignore Sequence - PublicKeyInfo
-            length = _parser.NextSequence();
+            var length = _parser.NextSequence();
             if (length != _parser.RemainingBytes())
             {
                 var sb = new StringBuilder("Incorrect Sequence Size. ");
@@ -148,24 +139,21 @@ namespace MineLib.Network
             // Checkpoint
             position = _parser.CurrentPosition();
             // Grab the OID
-            value = _parser.NextOID();
+            var value = _parser.NextOID();
             byte[] oid = {0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x01};
             if (!EqualOid(value, oid))
-            {
                 throw new BerDecodeException("Expected OID 1.2.840.113549.1.1.1", position);
-            }
+            
 
             // Optional Parameters
             if (_parser.IsNextNull())
-            {
-                _parser.NextNull();
+                _parser.NextNull(); 
                 // Also OK: value = parser.Next();
-            }
+            
             else
-            {
                 // Gracefully skip the optional data
                 _parser.Next();
-            }
+            
 
             // Checkpoint
             position = _parser.CurrentPosition();
@@ -229,20 +217,19 @@ namespace MineLib.Network
 
         private int GetLength()
         {
-            int length = 0;
+            var length = 0;
 
             // Checkpoint
-            int position = CurrentPosition();
+            var position = CurrentPosition();
 
             try
             {
-                byte b = GetNextOctet();
+                var b = GetNextOctet();
 
                 if (b == (b & 0x7f))
-                {
                     return b;
-                }
-                int i = b & 0x7f;
+
+                var i = b & 0x7f;
 
                 if (i > 4)
                 {
@@ -270,13 +257,13 @@ namespace MineLib.Network
 
         internal byte[] Next()
         {
-            int position = CurrentPosition();
+            var position = CurrentPosition();
 
             try
             {
                 GetNextOctet();
 
-                int length = GetLength();
+                var length = GetLength();
                 if (length > RemainingBytes())
                 {
                     var sb = new StringBuilder("Incorrect Size. ");
@@ -297,7 +284,7 @@ namespace MineLib.Network
 
         private byte GetNextOctet()
         {
-            int position = CurrentPosition();
+            var position = CurrentPosition();
 
             if (0 == RemainingBytes())
             {
@@ -308,14 +295,14 @@ namespace MineLib.Network
                 throw new BerDecodeException(sb.ToString(), position);
             }
 
-            byte b = GetOctets(1)[0];
+            var b = GetOctets(1)[0];
 
             return b;
         }
 
         private byte[] GetOctets(int octetCount)
         {
-            int position = CurrentPosition();
+            var position = CurrentPosition();
 
             if (octetCount > RemainingBytes())
             {
@@ -349,11 +336,11 @@ namespace MineLib.Network
 
         internal int NextNull()
         {
-            int position = CurrentPosition();
+            var position = CurrentPosition();
 
             try
             {
-                byte b = GetNextOctet();
+                var b = GetNextOctet();
                 if (0x05 != b)
                 {
                     var sb = new StringBuilder("Expected Null. ");
@@ -386,11 +373,11 @@ namespace MineLib.Network
 
         internal int NextSequence()
         {
-            int position = CurrentPosition();
+            var position = CurrentPosition();
 
             try
             {
-                byte b = GetNextOctet();
+                var b = GetNextOctet();
                 if (0x30 != b)
                 {
                     var sb = new StringBuilder("Expected Sequence. ");
@@ -399,7 +386,7 @@ namespace MineLib.Network
                     throw new BerDecodeException(sb.ToString(), position);
                 }
 
-                int length = GetLength();
+                var length = GetLength();
                 if (length > RemainingBytes())
                 {
                     var sb = new StringBuilder("Incorrect Sequence Size. ");
@@ -425,11 +412,11 @@ namespace MineLib.Network
 
         internal int NextOctetString()
         {
-            int position = CurrentPosition();
+            var position = CurrentPosition();
 
             try
             {
-                byte b = GetNextOctet();
+                var b = GetNextOctet();
                 if (0x04 != b)
                 {
                     var sb = new StringBuilder("Expected Octet String. ");
@@ -437,7 +424,7 @@ namespace MineLib.Network
                     throw new BerDecodeException(sb.ToString(), position);
                 }
 
-                int length = GetLength();
+                var length = GetLength();
                 if (length > RemainingBytes())
                 {
                     var sb = new StringBuilder("Incorrect Octet String Size. ");
@@ -463,11 +450,11 @@ namespace MineLib.Network
 
         internal int NextBitString()
         {
-            int position = CurrentPosition();
+            var position = CurrentPosition();
 
             try
             {
-                byte b = GetNextOctet();
+                var b = GetNextOctet();
                 if (0x03 != b)
                 {
                     var sb = new StringBuilder("Expected Bit String. ");
@@ -475,18 +462,17 @@ namespace MineLib.Network
                     throw new BerDecodeException(sb.ToString(), position);
                 }
 
-                int length = GetLength();
+                var length = GetLength();
 
                 // We need to consume unused bits, which is the first
-                //   octet of the remaing values
+                //   octet of the remain values
                 b = _octets[0];
                 _octets.RemoveAt(0);
                 length--;
 
                 if (0x00 != b)
-                {
                     throw new BerDecodeException("The first octet of BitString must be 0", position);
-                }
+                
 
                 return length;
             }
@@ -504,11 +490,11 @@ namespace MineLib.Network
 
         internal byte[] NextInteger()
         {
-            int position = CurrentPosition();
+            var position = CurrentPosition();
 
             try
             {
-                byte b = GetNextOctet();
+                var b = GetNextOctet();
                 if (0x02 != b)
                 {
                     var sb = new StringBuilder("Expected Integer. ");
@@ -516,7 +502,7 @@ namespace MineLib.Network
                     throw new BerDecodeException(sb.ToString(), position);
                 }
 
-                int length = GetLength();
+                var length = GetLength();
                 if (length > RemainingBytes())
                 {
                     var sb = new StringBuilder("Incorrect Integer Size. ");
@@ -537,11 +523,11 @@ namespace MineLib.Network
 
         internal byte[] NextOID()
         {
-            int position = CurrentPosition();
+            var position = CurrentPosition();
 
             try
             {
-                byte b = GetNextOctet();
+                var b = GetNextOctet();
                 if (0x06 != b)
                 {
                     var sb = new StringBuilder("Expected Object Identifier. ");
@@ -550,7 +536,7 @@ namespace MineLib.Network
                     throw new BerDecodeException(sb.ToString(), position);
                 }
 
-                int length = GetLength();
+                var length = GetLength();
                 if (length > RemainingBytes())
                 {
                     var sb = new StringBuilder("Incorrect Object Identifier Size. ");
@@ -562,7 +548,7 @@ namespace MineLib.Network
 
                 var values = new byte[length];
 
-                for (int i = 0; i < length; i++)
+                for (var i = 0; i < length; i++)
                 {
                     values[i] = _octets[0];
                     _octets.RemoveAt(0);
@@ -581,7 +567,7 @@ namespace MineLib.Network
     [Serializable]
     internal sealed class BerDecodeException : Exception
     {
-        private readonly int m_position;
+        private readonly int _mPosition;
 
         public BerDecodeException()
         {
@@ -600,24 +586,24 @@ namespace MineLib.Network
         public BerDecodeException(String message, int position)
             : base(message)
         {
-            m_position = position;
+            _mPosition = position;
         }
 
         public BerDecodeException(String message, int position, Exception ex)
             : base(message, ex)
         {
-            m_position = position;
+            _mPosition = position;
         }
 
         private BerDecodeException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
-            m_position = info.GetInt32("Position");
+            _mPosition = info.GetInt32("Position");
         }
 
         public int Position
         {
-            get { return m_position; }
+            get { return _mPosition; }
         }
 
         public override string Message
@@ -627,7 +613,7 @@ namespace MineLib.Network
                 var sb = new StringBuilder(base.Message);
 
                 sb.AppendFormat(" (Position {0}){1}",
-                    m_position, Environment.NewLine);
+                    _mPosition, Environment.NewLine);
 
                 return sb.ToString();
             }
@@ -637,7 +623,7 @@ namespace MineLib.Network
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             base.GetObjectData(info, context);
-            info.AddValue("Position", m_position);
+            info.AddValue("Position", _mPosition);
         }
     }
 }

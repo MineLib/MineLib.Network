@@ -27,8 +27,8 @@ namespace MineLib.Network.IO
 
         public void WriteString(string value)
         {
-            byte[] length = GetVarIntBytes(value.Length);
-            byte[] final = new byte[value.Length + length.Length];
+            var length = GetVarIntBytes(value.Length);
+            var final = new byte[value.Length + length.Length];
 
             Buffer.BlockCopy(length, 0, final, 0, length.Length);
             Buffer.BlockCopy(Encoding.UTF8.GetBytes(value), 0, final, length.Length, value.Length);
@@ -40,7 +40,7 @@ namespace MineLib.Network.IO
 
         public void WriteShort(short value)
         {
-            byte[] bytes = BitConverter.GetBytes(value);
+            var bytes = BitConverter.GetBytes(value);
             Array.Reverse(bytes);
 
             WriteByteArray(bytes);
@@ -61,7 +61,7 @@ namespace MineLib.Network.IO
 
         public void WriteInt(int value)
         {
-            byte[] bytes = BitConverter.GetBytes(value);
+            var bytes = BitConverter.GetBytes(value);
             Array.Reverse(bytes);
 
             WriteByteArray(bytes);
@@ -71,12 +71,12 @@ namespace MineLib.Network.IO
 
         public int ReadVarInt()
         {
-            int result = 0;
-            int length = 0;
+            var result = 0;
+            var length = 0;
 
             while (true)
             {
-                byte current = ReadByte();
+                var current = ReadByte();
                 result |= (current & 0x7F) << length++*7;
 
                 if (length > 6)
@@ -96,12 +96,12 @@ namespace MineLib.Network.IO
 
         public static byte[] GetVarIntBytes(long value)
         {
-            byte[] byteBuffer = new byte[10];
+            var byteBuffer = new byte[10];
             short pos = 0;
 
             do
             {
-                byte byteVal = (byte) (value & 0x7F);
+                var byteVal = (byte) (value & 0x7F);
                 value >>= 7;
 
                 if (value != 0)
@@ -111,7 +111,7 @@ namespace MineLib.Network.IO
                 pos += 1;
             } while (value != 0);
 
-            byte[] result = new byte[pos];
+            var result = new byte[pos];
             Buffer.BlockCopy(byteBuffer, 0, result, 0, pos);
 
             return result;
@@ -121,7 +121,7 @@ namespace MineLib.Network.IO
 
         public void WriteLong(long value)
         {
-            byte[] bytes = BitConverter.GetBytes(value);
+            var bytes = BitConverter.GetBytes(value);
             Array.Reverse(bytes);
 
             WriteByteArray(bytes);
@@ -131,7 +131,7 @@ namespace MineLib.Network.IO
 
         public void WriteDouble(double value)
         {
-            byte[] bytes = BitConverter.GetBytes(value);
+            var bytes = BitConverter.GetBytes(value);
             Array.Reverse(bytes);
 
             WriteByteArray(bytes);
@@ -141,7 +141,7 @@ namespace MineLib.Network.IO
 
         public void WriteFloat(float value)
         {
-            byte[] bytes = BitConverter.GetBytes(value);
+            var bytes = BitConverter.GetBytes(value);
             Array.Reverse(bytes);
 
             WriteByteArray(bytes);
@@ -180,9 +180,9 @@ namespace MineLib.Network.IO
 
         public void WriteIntArray(int[] value)
         {
-            int length = value.Length;
+            var length = value.Length;
 
-            for (int i = 0; i < length; i++)
+            for (var i = 0; i < length; i++)
             {
                 WriteInt(value[i]);
             }
@@ -192,9 +192,9 @@ namespace MineLib.Network.IO
 
         public void WriteStringArray(string[] value)
         {
-            int length = value.Length;
+            var length = value.Length;
 
-            for (int i = 0; i < length; i++)
+            for (var i = 0; i < length; i++)
             {
                 WriteString(value[i]);
             }
@@ -204,9 +204,9 @@ namespace MineLib.Network.IO
 
         public void WriteVarIntArray(int[] value)
         {
-            int length = value.Length;
+            var length = value.Length;
 
-            for (int i = 0; i < length; i++)
+            for (var i = 0; i < length; i++)
             {
                 WriteVarInt(value[i]);
             }
@@ -218,16 +218,16 @@ namespace MineLib.Network.IO
         {
             if (!EncEnabled)
             {
-                byte[] myBytes = new byte[value];
+                var myBytes = new byte[value];
 
-                int bytesRead = _stream.Read(myBytes, 0, value);
+                var bytesRead = _stream.Read(myBytes, 0, value);
 
                 while (true)
                 {
                     if (bytesRead != value)
                     {
-                        int newSize = value - bytesRead;
-                        int bytesRead1 = _stream.Read(myBytes, bytesRead - 1, newSize);
+                        var newSize = value - bytesRead;
+                        var bytesRead1 = _stream.Read(myBytes, bytesRead - 1, newSize);
 
                         if (bytesRead1 != newSize)
                         {
@@ -243,16 +243,16 @@ namespace MineLib.Network.IO
             }
             else
             {
-                byte[] myBytes = new byte[value];
+                var myBytes = new byte[value];
 
-                int bytesRead = _crypto.Read(myBytes, 0, value);
+                var bytesRead = _crypto.Read(myBytes, 0, value);
 
                 while (true)
                 {
                     if (bytesRead != value)
                     {
-                        int newSize = value - bytesRead;
-                        int bytesRead1 = _crypto.Read(myBytes, bytesRead - 1, newSize);
+                        var newSize = value - bytesRead;
+                        var bytesRead1 = _crypto.Read(myBytes, bytesRead - 1, newSize);
 
                         if (bytesRead1 != newSize)
                         {
@@ -272,8 +272,8 @@ namespace MineLib.Network.IO
         {
             if (_buffer != null)
             {
-                int tempLength = _buffer.Length + value.Length;
-                byte[] tempBuff = new byte[tempLength];
+                var tempLength = _buffer.Length + value.Length;
+                var tempBuff = new byte[tempLength];
 
                 Buffer.BlockCopy(_buffer, 0, tempBuff, 0, _buffer.Length);
                 Buffer.BlockCopy(value, 0, tempBuff, _buffer.Length, value.Length);
@@ -297,7 +297,7 @@ namespace MineLib.Network.IO
         {
             if (_buffer != null)
             {
-                byte[] tempBuff = new byte[_buffer.Length + 1];
+                var tempBuff = new byte[_buffer.Length + 1];
 
                 Buffer.BlockCopy(_buffer, 0, tempBuff, 0, _buffer.Length);
                 tempBuff[_buffer.Length] = thisByte;
@@ -305,16 +305,15 @@ namespace MineLib.Network.IO
                 _buffer = tempBuff;
             }
             else
-            {
                 _buffer = new[] {thisByte};
-            }
+            
         }
 
         public void Purge()
         {
-            byte[] lenBytes = GetVarIntBytes(_buffer.Length);
+            var lenBytes = GetVarIntBytes(_buffer.Length);
 
-            byte[] tempBuff = new byte[_buffer.Length + lenBytes.Length];
+            var tempBuff = new byte[_buffer.Length + lenBytes.Length];
 
             Buffer.BlockCopy(lenBytes, 0, tempBuff, 0, lenBytes.Length);
             Buffer.BlockCopy(_buffer, 0, tempBuff, lenBytes.Length, _buffer.Length);

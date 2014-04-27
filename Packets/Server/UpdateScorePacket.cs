@@ -15,7 +15,7 @@ namespace MineLib.Network.Packets.Server
         public void ReadPacket(PacketByteReader stream)
         {
             ItemName = stream.ReadString();
-            RemoveItem = stream.ReadBool();
+            RemoveItem = stream.ReadBoolean();
             if (!RemoveItem)
             {
                 ScoreName = stream.ReadString();

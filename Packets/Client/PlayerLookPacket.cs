@@ -15,7 +15,7 @@ namespace MineLib.Network.Packets.Client
         {
             Yaw = stream.ReadFloat();
             Pitch = stream.ReadFloat();
-            OnGround = stream.ReadBool();
+            OnGround = stream.ReadBoolean();
         }
 
         public void WritePacket(ref PacketStream stream)

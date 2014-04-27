@@ -132,7 +132,7 @@ namespace MineLib.Network.Data
                 a.Z - b.Z);
         }
 
-        public static Vector3 operator +(Vector3 a, Size3 b)
+        public static Vector3 operator +(Vector3 a, Size b)
         {
             return new Vector3(
                 a.X + b.Width,
@@ -140,7 +140,7 @@ namespace MineLib.Network.Data
                 a.Z + b.Depth);
         }
 
-        public static Vector3 operator -(Vector3 a, Size3 b)
+        public static Vector3 operator -(Vector3 a, Size b)
         {
             return new Vector3(
                 a.X - b.Width,
@@ -246,74 +246,24 @@ namespace MineLib.Network.Data
                 a / b.Z);
         }
 
-        public static explicit operator Vector3(Coordinates2D a)
-        {
-            return new Vector3(a.X, 0 , a.Z);
-        }
-
         #endregion
 
         #region Constants
 
-        public static Vector3 Zero
-        {
-            get { return new Vector3(0); }
-        }
+        public static readonly Vector3 Zero = new Vector3(0);
+        public static readonly Vector3 One = new Vector3(1);
 
-        public static Vector3 One
-        {
-            get { return new Vector3(1); }
-        }
+        public static readonly Vector3 Up = new Vector3(0, 1, 0);
+        public static readonly Vector3 Down = new Vector3(0, -1, 0);
+        public static readonly Vector3 Left = new Vector3(-1, 0, 0);
+        public static readonly Vector3 Right = new Vector3(1, 0, 0);
+        public static readonly Vector3 Backwards = new Vector3(0, 0, -1);
+        public static readonly Vector3 Forwards = new Vector3(0, 0, 1);
 
-        public static Vector3 Up
-        {
-            get { return new Vector3(0, 1, 0); }
-        }
-
-        public static Vector3 Down
-        {
-            get { return new Vector3(0, -1, 0); }
-        }
-
-        public static Vector3 Left
-        {
-            get { return new Vector3(-1, 0, 0); }
-        }
-
-        public static Vector3 Right
-        {
-            get { return new Vector3(1, 0, 0); }
-        }
-
-        public static Vector3 Backwards
-        {
-            get { return new Vector3(0, 0, -1); }
-        }
-
-        public static Vector3 Forwards
-        {
-            get { return new Vector3(0, 0, 1); }
-        }
-
-        public static Vector3 South
-        {
-            get { return new Vector3(0, 0, 1); }
-        }
-
-        public static Vector3 North
-        {
-            get { return new Vector3(0, 0, -1); }
-        }
-
-        public static Vector3 West
-        {
-            get { return new Vector3(-1, 0, 0); }
-        }
-
-        public static Vector3 East
-        {
-            get { return new Vector3(1, 0, 0); }
-        }
+        public static readonly Vector3 East = new Vector3(1, 0, 0);
+        public static readonly Vector3 West = new Vector3(-1, 0, 0);
+        public static readonly Vector3 North = new Vector3(0, 0, -1);
+        public static readonly Vector3 South = new Vector3(0, 0, 1);
 
         #endregion
 
@@ -333,7 +283,7 @@ namespace MineLib.Network.Data
         {
             unchecked
             {
-                int result = X.GetHashCode();
+                var result = X.GetHashCode();
                 result = (result * 397) ^ Y.GetHashCode();
                 result = (result * 397) ^ Z.GetHashCode();
                 return result;

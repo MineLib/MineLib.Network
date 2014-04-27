@@ -33,8 +33,8 @@ namespace MineLib.Network.IO
 
         public string ReadString()
         {
-            int length = ReadVarInt();
-            byte[] stringBytes = ReadByteArray(length);
+            var length = ReadVarInt();
+            var stringBytes = ReadByteArray(length);
 
             return Encoding.UTF8.GetString(stringBytes);
         }
@@ -43,7 +43,7 @@ namespace MineLib.Network.IO
 
         public short ReadShort()
         {
-            byte[] bytes = ReadByteArray(2);
+            var bytes = ReadByteArray(2);
             Array.Reverse(bytes);
 
             return BitConverter.ToInt16(bytes, 0);
@@ -60,7 +60,7 @@ namespace MineLib.Network.IO
 
         public int ReadInt()
         {
-            byte[] bytes = ReadByteArray(4);
+            var bytes = ReadByteArray(4);
             Array.Reverse(bytes);
 
             return BitConverter.ToInt32(bytes, 0);
@@ -70,12 +70,12 @@ namespace MineLib.Network.IO
 
         public int ReadVarInt()
         {
-            int result = 0;
-            int length = 0;
+            var result = 0;
+            var length = 0;
 
             while (true)
             {
-                byte current = ReadByte();
+                var current = ReadByte();
                 result |= (current & 0x7F) << length++*7;
 
                 if (length > 6)
@@ -92,7 +92,7 @@ namespace MineLib.Network.IO
 
         public long ReadLong()
         {
-            byte[] bytes = ReadByteArray(8);
+            var bytes = ReadByteArray(8);
             Array.Reverse(bytes);
 
             return BitConverter.ToInt64(bytes, 0);
@@ -102,7 +102,7 @@ namespace MineLib.Network.IO
 
         public double ReadDouble()
         {
-            byte[] bytes = ReadByteArray(8);
+            var bytes = ReadByteArray(8);
             Array.Reverse(bytes);
 
             return BitConverter.ToDouble(bytes, 0);
@@ -112,7 +112,7 @@ namespace MineLib.Network.IO
 
         public float ReadFloat()
         {
-            byte[] bytes = ReadByteArray(4);
+            var bytes = ReadByteArray(4);
             Array.Reverse(bytes);
 
             return BitConverter.ToSingle(bytes, 0);
@@ -135,7 +135,7 @@ namespace MineLib.Network.IO
 
         // -- Bool
 
-        public bool ReadBool()
+        public bool ReadBoolean()
         {
             return Convert.ToBoolean(ReadSingleByte());
 
@@ -145,9 +145,9 @@ namespace MineLib.Network.IO
 
         public int[] ReadIntArray(int value)
         {
-            int[] myInts = new int[value];
+            var myInts = new int[value];
 
-            for (int i = 0; i < value; i++)
+            for (var i = 0; i < value; i++)
             {
                 myInts[i] = ReadInt();
             }
@@ -159,9 +159,9 @@ namespace MineLib.Network.IO
 
         public string[] ReadStringArray(int value)
         {
-            string[] myStrings = new string[value];
+            var myStrings = new string[value];
 
-            for (int i = 0; i < value; i++)
+            for (var i = 0; i < value; i++)
             {
                 myStrings[i] = ReadString();
             }
@@ -173,9 +173,9 @@ namespace MineLib.Network.IO
 
         public int[] ReadVarIntArray(int value)
         {
-            int[] myInts = new int[value];
+            var myInts = new int[value];
 
-            for (int i = 0; i < value; i++)
+            for (var i = 0; i < value; i++)
             {
                 myInts[i] = ReadVarInt();
             }
@@ -187,22 +187,21 @@ namespace MineLib.Network.IO
 
         public byte[] ReadByteArray(int value)
         {
-            byte[] myBytes = new byte[value];
-            int BytesRead;
+            var myBytes = new byte[value];
 
-            BytesRead = _stream.Read(myBytes, 0, value);
+            var bytesRead = _stream.Read(myBytes, 0, value);
 
             while (true)
             {
-                if (BytesRead != value)
+                if (bytesRead != value)
                 {
-                    int newSize = value - BytesRead;
-                    int bytesRead1 = _stream.Read(myBytes, BytesRead - 1, newSize);
+                    var newSize = value - bytesRead;
+                    var bytesRead1 = _stream.Read(myBytes, bytesRead - 1, newSize);
 
                     if (bytesRead1 != newSize)
                     {
                         value = newSize;
-                        BytesRead = bytesRead1;
+                        bytesRead = bytesRead1;
                     }
                     else break;
                 }

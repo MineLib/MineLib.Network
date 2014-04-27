@@ -16,7 +16,7 @@ namespace MineLib.Network.Packets.Client
             FeetY = stream.ReadDouble();
             HeadY = stream.ReadDouble();
             Z = stream.ReadDouble();
-            OnGround = stream.ReadBool();
+            OnGround = stream.ReadBoolean();
         }
 
         public void WritePacket(ref PacketStream stream)

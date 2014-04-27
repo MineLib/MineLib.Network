@@ -20,9 +20,9 @@ namespace MineLib.Network.Packets.Client
             Locale = stream.ReadString();
             ViewDistance = stream.ReadByte();
             ChatFlags = stream.ReadByte();
-            ChatColours = stream.ReadBool();
+            ChatColours = stream.ReadBoolean();
             Difficulty = (Difficulty)stream.ReadByte();
-            ShowCape = stream.ReadBool();
+            ShowCape = stream.ReadBoolean();
         }
 
         public void WritePacket(ref PacketStream stream)

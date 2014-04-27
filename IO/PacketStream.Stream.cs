@@ -24,7 +24,8 @@ namespace MineLib.Network.IO
         {
             if (EncEnabled)
                 return _crypto.DecryptStream.Read(buffer, offset, count);
-            return _stream.Read(buffer, offset, count);
+            else
+                return _stream.Read(buffer, offset, count);
         }
 
         public override void Write(byte[] buffer, int offset, int count)

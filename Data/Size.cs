@@ -1,22 +1,25 @@
 ﻿namespace MineLib.Network.Data
 {
     /// <summary>
-    ///     Represents the size of an object in 2D space.
+    ///     Represents the size of an object in 3D space.
     /// </summary>
-    public struct Size2
+    public struct Size
     {
         public double Depth;
+        public double Height;
         public double Width;
 
-        public Size2(double width, double depth)
+        public Size(double width, double height, double depth)
         {
             Width = width;
+            Height = height;
             Depth = depth;
         }
 
-        public Size2(Size2 s)
+        public Size(Size s)
         {
             Width = s.Width;
+            Height = s.Height;
             Depth = s.Depth;
         }
 
@@ -26,13 +29,13 @@
         /// <returns></returns>
         public override string ToString()
         {
-            return string.Format("Depth: {0}, Width: {2}", Depth, Width);
+            return string.Format("Depth: {0}, Height: {1}, Width: {2}", Depth, Height, Width);
         }
 
         // TODO: More operators
-        public static Size2 operator /(Size2 a, double b)
+        public static Size operator /(Size a, double b)
         {
-            return new Size2(a.Width/b, a.Depth/b);
+            return new Size(a.Width/b, a.Height/b, a.Depth/b);
         }
     }
 }

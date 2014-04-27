@@ -10,7 +10,6 @@ namespace MineLib.Network.Packets.Server
         public ushort PrimaryBitMap;
         public ushort AddBitMap;
         public byte[] Data; // Maybe NbtByteArray?
-        public byte[] Trim;
         public bool SkyLightSend;
 
         public const byte PacketID = 0x21;
@@ -20,14 +19,12 @@ namespace MineLib.Network.Packets.Server
         {
             Coordinates.X = stream.ReadInt();
             Coordinates.Z = stream.ReadInt();
-            GroundUp = stream.ReadBool();
+            GroundUp = stream.ReadBoolean();
             SkyLightSend = true; // Assumed true in 0x21
             PrimaryBitMap = stream.ReadUShort();
             AddBitMap = stream.ReadUShort();
             var length = stream.ReadInt(); // was short.
             Data = stream.ReadByteArray(length);
-
-            Trim = new byte[length - 2];  
         }
 
         public void WritePacket(ref PacketStream stream)

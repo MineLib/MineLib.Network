@@ -23,7 +23,7 @@ namespace MineLib.Network.Packets.Server.Login
 
             SharedKey = new byte[16];
 
-            RandomNumberGenerator random = RandomNumberGenerator.Create();
+            var random = RandomNumberGenerator.Create();
             random.GetBytes(SharedKey);
         }
 

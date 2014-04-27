@@ -8,29 +8,6 @@ namespace MineLib.Network.Data
 {
     public struct ItemStack : ICloneable, IEquatable<ItemStack>
     {
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                int hashCode = _Id.GetHashCode();
-                hashCode = (hashCode * 397) ^ _Count.GetHashCode();
-                hashCode = (hashCode * 397) ^ _Metadata.GetHashCode();
-                hashCode = (hashCode * 397) ^ Index;
-                hashCode = (hashCode * 397) ^ (Nbt != null ? Nbt.GetHashCode() : 0);
-                return hashCode;
-            }
-        }
-
-        public static bool operator ==(ItemStack left, ItemStack right)
-        {
-            return left.Equals(right);
-        }
-
-        public static bool operator !=(ItemStack left, ItemStack right)
-        {
-            return !left.Equals(right);
-        }
-
         public ItemStack(short id)
             : this()
         {
@@ -64,6 +41,33 @@ namespace MineLib.Network.Data
                 Nbt = null;
             }
         }
+
+        public override string ToString()
+        {
+            if (Empty)
+                return "(Empty)";
+            string result = "ID: " + Id;
+            if (Count != 1) result += "; Count: " + Count;
+            if (Metadata != 0) result += "; Metadata: " + Metadata;
+            if (Nbt != null) result += Environment.NewLine + Nbt;
+            return "(" + result + ")";
+        }
+
+        #region Operators
+
+        public static bool operator ==(ItemStack left, ItemStack right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(ItemStack left, ItemStack right)
+        {
+            return !left.Equals(right);
+        }
+
+        #endregion
+
+        #region Network
 
         public static ItemStack FromStream(ref PacketByteReader stream)
         {
@@ -102,6 +106,8 @@ namespace MineLib.Network.Data
             stream.WriteShort((short)mStream.Position);
             //stream.writeVarIntArray(mStream.GetBuffer(), 0, (int)mStream.Position);
         }
+
+        #endregion
 
         public static ItemStack FromNbt(NbtCompound compound)
         {
@@ -181,17 +187,6 @@ namespace MineLib.Network.Data
         //[NbtIgnore]
         public int Index;
 
-        public override string ToString()
-        {
-            if (Empty)
-                return "(Empty)";
-            string result = "ID: " + Id;
-            if (Count != 1) result += "; Count: " + Count;
-            if (Metadata != 0) result += "; Metadata: " + Metadata;
-            if (Nbt != null) result += Environment.NewLine + Nbt;
-            return "(" + result + ")";
-        }
-
         public object Clone()
         {
             return new ItemStack(Id, Count, Metadata, Nbt);
@@ -222,6 +217,19 @@ namespace MineLib.Network.Data
         public bool Equals(ItemStack other)
         {
             return _Id == other._Id && _Count == other._Count && _Metadata == other._Metadata && Index == other.Index && Equals(Nbt, other.Nbt);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hashCode = _Id.GetHashCode();
+                hashCode = (hashCode * 397) ^ _Count.GetHashCode();
+                hashCode = (hashCode * 397) ^ _Metadata.GetHashCode();
+                hashCode = (hashCode * 397) ^ Index;
+                hashCode = (hashCode * 397) ^ (Nbt != null ? Nbt.GetHashCode() : 0);
+                return hashCode;
+            }
         }
     }
 }

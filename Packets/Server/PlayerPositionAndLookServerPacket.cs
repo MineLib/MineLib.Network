@@ -19,7 +19,7 @@ namespace MineLib.Network.Packets.Server
             Vector3.Z = stream.ReadDouble();
             Yaw = stream.ReadFloat();
             Pitch = stream.ReadFloat();
-            OnGround = stream.ReadBool();
+            OnGround = stream.ReadBoolean();
         }
 
         public void WritePacket(ref PacketStream stream)

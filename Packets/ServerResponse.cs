@@ -11,9 +11,9 @@ namespace MineLib.Network.Packets
         #region Login Response
         public static readonly CreatePacketInstance[] ServerLoginResponse =
         {
-            () => new LoginDisconnectPacket(), // 0x00
-            () => new EncryptionRequestPacket(), // 0x01
-            () => new LoginSuccessPacket() // 0x02
+            () => new LoginDisconnectPacket(),      // 0x00
+            () => new EncryptionRequestPacket(),    // 0x01
+            () => new LoginSuccessPacket()          // 0x02
         };
         #endregion
 
@@ -21,7 +21,7 @@ namespace MineLib.Network.Packets
         public static readonly CreatePacketInstance[] ServerStatusResponse =
         {
             () => new ResponsePacket(), // 0x00
-            () => new PingPacket() // 0x01
+            () => new PingPacket()      // 0x01
         };
         #endregion
 
@@ -79,7 +79,7 @@ namespace MineLib.Network.Packets
             () => new WindowItemsPacket(),                  // 0x30
             () => new WindowPropertyPacket(),               // 0x31
             () => new ConfirmTransactionPacket(),           // 0x32
-            () => new UpdateSignPacket(),                   // 0x33 // Many problems with reading
+            () => new UpdateSignPacket(),                   // 0x33
             () => new MapsPacket(),                         // 0x34 
             () => new UpdateBlockEntityPacket(),            // 0x35
             () => new SignEditorOpenPacket(),               // 0x36

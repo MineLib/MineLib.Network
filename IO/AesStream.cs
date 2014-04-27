@@ -14,9 +14,9 @@ namespace MineLib.Network.IO
         {
             _baseStream = stream;
 
-            Rijndael raj = GenerateAES(key);
-            ICryptoTransform encTrans = raj.CreateEncryptor();
-            ICryptoTransform decTrans = raj.CreateDecryptor();
+            var raj = GenerateAES(key);
+            var encTrans = raj.CreateEncryptor();
+            var decTrans = raj.CreateDecryptor();
 
             EncryptStream = new CryptoStream(_baseStream, encTrans, CryptoStreamMode.Write);
             DecryptStream = new CryptoStream(_baseStream, decTrans, CryptoStreamMode.Read);

@@ -4,12 +4,45 @@ namespace MineLib.Network.Data
 {
     public struct Coordinates2D
     {
-        public int X, Z;
+        public int X;
+        public int Z;
+
+        public Coordinates2D(int value)
+        {
+            X = Z = value;
+        }
 
         public Coordinates2D(int x, int z)
         {
             X = x;
             Z = z;
+        }
+
+        public Coordinates2D(Coordinates2D v)
+        {
+            X = v.X;
+            Z = v.Z;
+        }
+
+        /// <summary>
+        /// Converts this Coordinates2D to a string.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return string.Format("X: {0}, Z: {1}", X, Z);
+        }
+
+        #region Operators
+
+        public static bool operator !=(Coordinates2D a, Coordinates2D b)
+        {
+            return !a.Equals(b);
+        }
+
+        public static bool operator ==(Coordinates2D a, Coordinates2D b)
+        {
+            return a.Equals(b);
         }
 
         public static Coordinates2D operator +(Coordinates2D a, Coordinates2D b)
@@ -20,6 +53,13 @@ namespace MineLib.Network.Data
         public static Coordinates2D operator -(Coordinates2D a, Coordinates2D b)
         {
             return new Coordinates2D(a.X - b.X, a.Z - b.Z);
+        }
+
+        public static Coordinates2D operator -(Coordinates2D a)
+        {
+            return new Coordinates2D(
+                -a.X,
+                -a.Z);
         }
 
         public static Coordinates2D operator *(Coordinates2D a, Coordinates2D b)
@@ -35,16 +75,6 @@ namespace MineLib.Network.Data
         public static Coordinates2D operator %(Coordinates2D a, Coordinates2D b)
         {
             return new Coordinates2D(a.X % b.X, a.Z % b.Z);
-        }
-
-        public static bool operator !=(Coordinates2D a, Coordinates2D b)
-        {
-            return !a.Equals(b);
-        }
-
-        public static bool operator ==(Coordinates2D a, Coordinates2D b)
-        {
-            return a.Equals(b);
         }
 
         public static Coordinates2D operator +(Coordinates2D a, int b)
@@ -72,15 +102,49 @@ namespace MineLib.Network.Data
             return new Coordinates2D(a.X % b, a.Z % b);
         }
 
+        public static Coordinates2D operator +(int a, Coordinates2D b)
+        {
+            return new Coordinates2D(a + b.X, a + b.Z);
+        }
+
+        public static Coordinates2D operator -(int a, Coordinates2D b)
+        {
+            return new Coordinates2D(a - b.X, a - b.Z);
+        }
+
+        public static Coordinates2D operator *(int a, Coordinates2D b)
+        {
+            return new Coordinates2D(a * b.X, a * b.Z);
+        }
+
+        public static Coordinates2D operator /(int a, Coordinates2D b)
+        {
+            return new Coordinates2D(a / b.X, a / b.Z);
+        }
+
+        public static Coordinates2D operator %(int a, Coordinates2D b)
+        {
+            return new Coordinates2D(a % b.X, a % b.Z);
+        }
+
         public static explicit operator Coordinates2D(Coordinates3D a)
         {
             return new Coordinates2D(a.X, a.Z);
         }
 
-        public override string ToString()
-        {
-            return string.Format("<{0},{1}>", X, Z);
-        }
+        #endregion
+
+        #region Constants
+
+        public static readonly Coordinates2D Zero = new Coordinates2D(0);
+        public static readonly Coordinates2D One = new Coordinates2D(1);
+        
+        public static readonly Coordinates2D Forward = new Coordinates2D(0, 1);
+        public static readonly Coordinates2D Backward = new Coordinates2D(0, -1);
+        public static readonly Coordinates2D Left = new Coordinates2D(-1, 0);
+        public static readonly Coordinates2D Right = new Coordinates2D(1, 0);
+
+        #endregion
 
         public bool Equals(Coordinates2D other)
         {
@@ -98,23 +162,23 @@ namespace MineLib.Network.Data
         {
             unchecked
             {
-                int result = X.GetHashCode();
+                var result = X.GetHashCode();
                 result = (result * 397) ^ Z.GetHashCode();
                 return result;
             }
         }
-
-        public static readonly Coordinates2D Zero = new Coordinates2D(0, 0);
-        public static readonly Coordinates2D One = new Coordinates2D(1, 1);
-        public static readonly Coordinates2D Forward = new Coordinates2D(0, 1);
-        public static readonly Coordinates2D Backward = new Coordinates2D(0, -1);
-        public static readonly Coordinates2D Left = new Coordinates2D(-1, 0);
-        public static readonly Coordinates2D Right = new Coordinates2D(1, 0);
     }
 
-    public struct Coordinates3D
+    public struct Coordinates3D : IEquatable<Coordinates3D>
     {
-        public int X, Y, Z;
+        public int X;
+        public int Y;
+        public int Z;
+
+        public Coordinates3D(int value)
+        {
+            X = Y = Z = value;
+        }
 
         public Coordinates3D(int x, int y, int z)
         {
@@ -123,9 +187,83 @@ namespace MineLib.Network.Data
             Z = z;
         }
 
-        public static Coordinates3D operator -(Coordinates3D a)
+        public Coordinates3D(Coordinates3D v)
         {
-            return new Coordinates3D(-a.X, -a.Y, -a.Z);
+            X = v.X;
+            Y = v.Y;
+            Z = v.Z;
+        }
+
+        /// <summary>
+        /// Converts this Coordinates3D to a string.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return string.Format("X: {0}, Y: {1}, Z: {2}", X, Y, Z);
+        }
+
+        #region Math
+
+        /// <summary>
+        /// Calculates the distance between two Coordinates3D objects.
+        /// </summary>
+        public double DistanceTo(Coordinates3D other)
+        {
+            return Math.Sqrt(Square((double)other.X - (double)X) +
+                             Square((double)other.Y - (double)Y) +
+                             Square((double)other.Z - (double)Z));
+        }
+
+        /// <summary>
+        /// Calculates the square of a num.
+        /// </summary>
+        private double Square(double num)
+        {
+            return num * num;
+        }
+
+        /// <summary>
+        /// Finds the distance of this vector from Coordinates3D.Zero
+        /// </summary>
+        public double Distance
+        {
+            get
+            {
+                return DistanceTo(Zero);
+            }
+        }
+
+        public static Coordinates3D Min(Coordinates3D value1, Coordinates3D value2)
+        {
+            return new Coordinates3D(
+                Math.Min(value1.X, value2.X),
+                Math.Min(value1.Y, value2.Y),
+                Math.Min(value1.Z, value2.Z)
+                );
+        }
+
+        public static Coordinates3D Max(Coordinates3D value1, Coordinates3D value2)
+        {
+            return new Coordinates3D(
+                Math.Max(value1.X, value2.X),
+                Math.Max(value1.Y, value2.Y),
+                Math.Max(value1.Z, value2.Z)
+                );
+        }
+
+        #endregion
+
+        #region Operators
+
+        public static bool operator !=(Coordinates3D a, Coordinates3D b)
+        {
+            return !a.Equals(b);
+        }
+
+        public static bool operator ==(Coordinates3D a, Coordinates3D b)
+        {
+            return a.Equals(b);
         }
 
         public static Coordinates3D operator +(Coordinates3D a, Coordinates3D b)
@@ -136,6 +274,11 @@ namespace MineLib.Network.Data
         public static Coordinates3D operator -(Coordinates3D a, Coordinates3D b)
         {
             return new Coordinates3D(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
+        }
+
+        public static Coordinates3D operator -(Coordinates3D a)
+        {
+            return new Coordinates3D(-a.X, -a.Y, -a.Z);
         }
 
         public static Coordinates3D operator *(Coordinates3D a, Coordinates3D b)
@@ -151,16 +294,6 @@ namespace MineLib.Network.Data
         public static Coordinates3D operator %(Coordinates3D a, Coordinates3D b)
         {
             return new Coordinates3D(a.X % b.X, a.Y % b.Y, a.Z % b.Z);
-        }
-
-        public static bool operator !=(Coordinates3D a, Coordinates3D b)
-        {
-            return !a.Equals(b);
-        }
-
-        public static bool operator ==(Coordinates3D a, Coordinates3D b)
-        {
-            return a.Equals(b);
         }
 
         public static Coordinates3D operator +(Coordinates3D a, int b)
@@ -188,6 +321,31 @@ namespace MineLib.Network.Data
             return new Coordinates3D(a.X % b, a.Y % b, a.Z % b);
         }
 
+        public static Coordinates3D operator +(int a, Coordinates3D b)
+        {
+            return new Coordinates3D(a + b.X, a + b.Y, a + b.Z);
+        }
+
+        public static Coordinates3D operator -(int a, Coordinates3D b)
+        {
+            return new Coordinates3D(a - b.X, a - b.Y, a - b.Z);
+        }
+
+        public static Coordinates3D operator *(int a, Coordinates3D b)
+        {
+            return new Coordinates3D(a * b.X, a * b.Y, a * b.Z);
+        }
+
+        public static Coordinates3D operator /(int a, Coordinates3D b)
+        {
+            return new Coordinates3D(a / b.X, a / b.Y, a / b.Z);
+        }
+
+        public static Coordinates3D operator %(int a, Coordinates3D b)
+        {
+            return new Coordinates3D(a % b.X, a % b.Y, a % b.Z);
+        }
+
         public static explicit operator Coordinates3D(Coordinates2D a)
         {
             return new Coordinates3D(a.X, 0, a.Z);
@@ -203,22 +361,26 @@ namespace MineLib.Network.Data
             return new Vector3(a.X, a.Y, a.Z);
         }
 
-        public double DistanceTo(Coordinates3D other)
-        {
-            return Math.Sqrt(Square((double)other.X - (double)X) +
-                             Square((double)other.Y - (double)Y) +
-                             Square((double)other.Z - (double)Z));
-        }
+        #endregion
 
-        private double Square(double num)
-        {
-            return num * num;
-        }
+        #region Constants
 
-        public override string ToString()
-        {
-            return string.Format("<{0},{1},{2}>", X, Y, Z);
-        }
+        public static readonly Coordinates3D Zero = new Coordinates3D(0);
+        public static readonly Coordinates3D One = new Coordinates3D(1);
+
+        public static readonly Coordinates3D Up = new Coordinates3D(0, 1, 0);
+        public static readonly Coordinates3D Down = new Coordinates3D(0, -1, 0);
+        public static readonly Coordinates3D Left = new Coordinates3D(-1, 0, 0);
+        public static readonly Coordinates3D Right = new Coordinates3D(1, 0, 0);
+        public static readonly Coordinates3D Backwards = new Coordinates3D(0, 0, -1);
+        public static readonly Coordinates3D Forwards = new Coordinates3D(0, 0, 1);
+
+        public static readonly Coordinates3D East = new Coordinates3D(1, 0, 0);
+        public static readonly Coordinates3D West = new Coordinates3D(-1, 0, 0);
+        public static readonly Coordinates3D North = new Coordinates3D(0, 0, -1);
+        public static readonly Coordinates3D South = new Coordinates3D(0, 0, 1);
+
+        #endregion
 
         public bool Equals(Coordinates3D other)
         {
@@ -236,26 +398,11 @@ namespace MineLib.Network.Data
         {
             unchecked
             {
-                int result = X.GetHashCode();
+                var result = X.GetHashCode();
                 result = (result * 397) ^ Y.GetHashCode();
                 result = (result * 397) ^ Z.GetHashCode();
                 return result;
             }
         }
-
-        public static readonly Coordinates3D Zero = new Coordinates3D(0, 0, 0);
-        public static readonly Coordinates3D One = new Coordinates3D(1, 1, 1);
-
-        public static readonly Coordinates3D Up = new Coordinates3D(0, 1, 0);
-        public static readonly Coordinates3D Down = new Coordinates3D(0, -1, 0);
-        public static readonly Coordinates3D Left = new Coordinates3D(-1, 0, 0);
-        public static readonly Coordinates3D Right = new Coordinates3D(1, 0, 0);
-        public static readonly Coordinates3D Backwards = new Coordinates3D(0, 0, -1);
-        public static readonly Coordinates3D Forwards = new Coordinates3D(0, 0, 1);
-
-        public static readonly Coordinates3D East = new Coordinates3D(1, 0, 0);
-        public static readonly Coordinates3D West = new Coordinates3D(-1, 0, 0);
-        public static readonly Coordinates3D North = new Coordinates3D(0, 0, -1);
-        public static readonly Coordinates3D South = new Coordinates3D(0, 0, 1);
     }
 }

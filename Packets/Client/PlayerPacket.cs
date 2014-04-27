@@ -11,7 +11,7 @@ namespace MineLib.Network.Packets.Client
 
         public void ReadPacket(PacketByteReader stream)
         {
-            OnGround = stream.ReadBool();
+            OnGround = stream.ReadBoolean();
         }
 
         public void WritePacket(ref PacketStream stream)

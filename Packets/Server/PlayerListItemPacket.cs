@@ -14,7 +14,7 @@ namespace MineLib.Network.Packets.Server
         public void ReadPacket(PacketByteReader stream)
         {
             PlayerName = stream.ReadString();
-            Online = stream.ReadBool();
+            Online = stream.ReadBoolean();
             Ping = stream.ReadShort();
         }
 

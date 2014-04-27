@@ -5,7 +5,7 @@ namespace MineLib.Network.BaseClients
 {
     public partial class StatusClient
     {
-        private void RaisePacketHandled(IPacket packet, int id, ServerState state)
+        private void RaisePacketHandled(IPacket packet, int id, ServerState? state)
         {
             if (state != ServerState.Status) return;
 

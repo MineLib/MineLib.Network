@@ -20,7 +20,7 @@ namespace MineLib.Network.Packets.Server
             InventoryType = stream.ReadByte();
             WindowTitle = stream.ReadString();
             NumberOfSlots = stream.ReadByte();
-            UseProvidedTitle = stream.ReadBool();
+            UseProvidedTitle = stream.ReadBoolean();
             if (InventoryType == 11)
                 EntityID = stream.ReadInt();
         }

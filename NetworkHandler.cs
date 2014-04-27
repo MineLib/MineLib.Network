@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
+using MineLib.Network.Classic.Packets;
 using MineLib.Network.IO;
 using MineLib.Network.Enums;
 using MineLib.Network.Packets;
@@ -24,6 +25,8 @@ namespace MineLib.Network
         private event DataReceived OnDataReceived;
 
         public bool Connected {get { return _baseSock.Connected; }}
+
+        public bool Classic { get; set; }
 
         private TcpClient _baseSock;
         private PacketStream _stream;
@@ -89,11 +92,24 @@ namespace MineLib.Network
 
             while (_baseSock.Client.Available > 0)
             {
-                //Thread.Sleep(1); // -- Important to make a little pause.
-                int length = _stream.ReadVarInt();
-                int id = _stream.ReadVarInt();
+                int length;
+                int id;
 
-                OnDataReceived(id, _stream.ReadByteArray(length - 1));
+                if (Classic)
+                {
+                    // Classic clients store PacketID in byte
+                    length = _stream.ReadVarInt();
+                    id = _stream.ReadByte();
+
+                    OnDataReceived(id, _stream.ReadByteArray(length - 1));
+                }
+                else
+                {
+                    length = _stream.ReadVarInt();
+                    id = _stream.ReadVarInt();
+
+                    OnDataReceived(id, _stream.ReadByteArray(length - 1));
+                }
             }
 
             return true;
@@ -117,11 +133,9 @@ namespace MineLib.Network
             while (_packetsToSend.Count > 0)
             {
                 Thread.Sleep(1); // -- Important to make a little pause.
-                // _packetsToSend.Dequeue().WritePacket(ref _stream);
-                IPacket packet = _packetsToSend.Dequeue();
+                var packet = _packetsToSend.Dequeue();
 
-                if (packet == null) 
-                    continue;
+                //if (packet == null) continue; // Some bug
 
                 _packetsSended.Add(packet);
                 packet.WritePacket(ref _stream);
@@ -136,6 +150,17 @@ namespace MineLib.Network
         {
             _preader.SetNewData(data);
 
+            if (Classic)
+            {
+                if (ServerResponseClassic.ServerResponse[id] == null)
+                    return;
+
+                var packet = ServerResponseClassic.ServerResponse[id]();
+                packet.ReadPacket(_preader);
+                RaisePacketHandledClassic(packet, id);
+                return;
+            }
+
             switch (_minecraft.State)
             {
                     #region Status
@@ -144,7 +169,7 @@ namespace MineLib.Network
                     if (ServerResponse.ServerStatusResponse[id] == null)
                         break;
 
-                    IPacket packetS = ServerResponse.ServerStatusResponse[id]();
+                    var packetS = ServerResponse.ServerStatusResponse[id]();
                     packetS.ReadPacket(_preader);
                     RaisePacketHandled(packetS, id, ServerState.Status);
 
@@ -158,12 +183,12 @@ namespace MineLib.Network
                     if (ServerResponse.ServerLoginResponse[id] == null)
                         break;
 
-                    IPacket packetL = ServerResponse.ServerLoginResponse[id]();
+                    var packetL = ServerResponse.ServerLoginResponse[id]();
                     packetL.ReadPacket(_preader);
                     RaisePacketHandled(packetL, id, ServerState.Login);
 
                     if (id == 1)
-                        EnableEncryption(packetL);
+                        EnableEncryption(packetL); // -- Encrypton handle in low-level "forgot that word".
 
                     break;
 
@@ -175,7 +200,7 @@ namespace MineLib.Network
                     if (ServerResponse.ServerPlayResponse[id] == null)
                         break;
 
-                    IPacket packetP = ServerResponse.ServerPlayResponse[id]();
+                    var packetP = ServerResponse.ServerPlayResponse[id]();
                     packetP.ReadPacket(_preader);
                     RaisePacketHandled(packetP, id, ServerState.Play);
 
@@ -195,9 +220,9 @@ namespace MineLib.Network
             hashlist.AddRange(request.SharedKey);
             hashlist.AddRange(request.PublicKey);
 
-            byte[] hashData = hashlist.ToArray();
+            var hashData = hashlist.ToArray();
 
-            string hash = Cryptography.JavaHexDigest(hashData);
+            var hash = Cryptography.JavaHexDigest(hashData);
 
             if (!Yggdrasil.ClientAuth(_minecraft.AccessToken, _minecraft.SelectedProfile, hash))
                 return;
@@ -205,7 +230,7 @@ namespace MineLib.Network
             // -- You pass it the key data and ask it to parse, and it will 
             // -- Extract the server's public key, then parse that into RSA for us.
             var keyParser = new AsnKeyParser(request.PublicKey);
-            RSAParameters dekey = keyParser.ParseRSAPublicKey();
+            var dekey = keyParser.ParseRSAPublicKey();
 
             // -- Now we create an encrypter, and encrypt the token sent to us by the server
             // -- as well as our newly made shared key (Which can then only be decrypted with the server's private key)
@@ -213,8 +238,8 @@ namespace MineLib.Network
             var cryptoService = new RSACryptoServiceProvider();
             cryptoService.ImportParameters(dekey);
 
-            byte[] encryptedSecret = cryptoService.Encrypt(request.SharedKey, false);
-            byte[] encryptedVerify = cryptoService.Encrypt(request.VerificationToken, false);
+            var encryptedSecret = cryptoService.Encrypt(request.SharedKey, false);
+            var encryptedVerify = cryptoService.Encrypt(request.VerificationToken, false);
 
             _stream.InitEncryption(request.SharedKey);
 

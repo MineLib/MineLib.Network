@@ -15,7 +15,7 @@ namespace MineLib.Network.Packets.Server
         {
             EntityID = stream.ReadInt();
             VehicleID = stream.ReadInt();
-            Leash = stream.ReadBool();
+            Leash = stream.ReadBoolean();
         }
 
         public void WritePacket(ref PacketStream stream)

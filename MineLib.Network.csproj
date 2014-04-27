@@ -46,9 +46,29 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseClients\StatusClient.Json.cs" />
+    <Compile Include="Classic\Enums\PacketsEnums.cs" />
+    <Compile Include="Classic\Packets\Client\Message.cs" />
+    <Compile Include="Classic\Packets\Client\PlayerIdentification.cs" />
+    <Compile Include="Classic\Packets\Client\PositionAndOrientation.cs" />
+    <Compile Include="Classic\Packets\Client\SetBlock.cs" />
+    <Compile Include="Classic\Packets\ServerResponse.cs" />
+    <Compile Include="Classic\Packets\Server\DespawnPlayer.cs" />
+    <Compile Include="Classic\Packets\Server\DisconnectPlayer.cs" />
+    <Compile Include="Classic\Packets\Server\LevelDataChunk.cs" />
+    <Compile Include="Classic\Packets\Server\LevelFinalize.cs" />
+    <Compile Include="Classic\Packets\Server\LevelInitialize.cs" />
+    <Compile Include="Classic\Packets\Server\Message.cs" />
+    <Compile Include="Classic\Packets\Server\OrientationUpdate.cs" />
+    <Compile Include="Classic\Packets\Server\Ping.cs" />
+    <Compile Include="Classic\Packets\Server\PositionAndOrientationTeleport.cs" />
+    <Compile Include="Classic\Packets\Server\PositionUpdate.cs" />
+    <Compile Include="Classic\Packets\Server\ServerIdentification.cs" />
+    <Compile Include="Classic\Packets\Server\SetBlock.cs" />
+    <Compile Include="Classic\Packets\Server\SpawnPlayer.cs" />
+    <Compile Include="Classic\Packets\Server\PositionAndOrientationUpdate.cs" />
+    <Compile Include="Classic\Packets\Server\UpdateUserType.cs" />
     <Compile Include="Cryptography.cs" />
     <Compile Include="Data\Coordinates.cs" />
-    <Compile Include="Data\Size2.cs" />
     <Compile Include="Enums\BlockActions.cs" />
     <Compile Include="Enums\EffectID.cs" />
     <Compile Include="IMinecraft.cs" />
@@ -61,7 +81,7 @@
     <Compile Include="Data\EntityMetadata\MetadataSlot.cs" />
     <Compile Include="Data\EntityMetadata\MetadataString.cs" />
     <Compile Include="Data\EntityProperty.cs" />
-    <Compile Include="Data\Size3.cs" />
+    <Compile Include="Data\Size.cs" />
     <Compile Include="Data\ItemStack.cs" />
     <Compile Include="Data\Vector3.cs" />
     <Compile Include="Enums\Animation.cs" />
@@ -87,8 +107,8 @@
     <Compile Include="Events\Events.cs" />
     <Compile Include="IO\PacketByteReader.cs" />
     <Compile Include="IO\PacketStream.Stream.cs" />
+    <Compile Include="NetworkHandler.Classic.Packets.cs" />
     <Compile Include="NetworkHandler.cs" />
-    <Compile Include="NetworkHandler.Events.cs" />
     <Compile Include="NetworkHandler.Packets.cs" />
     <Compile Include="Enums\PacketsEnums.cs" />
     <Compile Include="Packets\Client\ClientStatusPacket.cs" />

@@ -21,7 +21,7 @@ namespace MineLib.Network.Packets.Server
             Coordinates.Y = stream.ReadByte();
             Coordinates.Z = stream.ReadInt();
             Data = stream.ReadInt();
-            DisableRelativeVolume = stream.ReadBool();
+            DisableRelativeVolume = stream.ReadBoolean();
         }
 
         public void WritePacket(ref PacketStream stream)

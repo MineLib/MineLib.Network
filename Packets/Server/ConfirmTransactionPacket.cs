@@ -15,7 +15,7 @@ namespace MineLib.Network.Packets.Server
         {
             WindowId = stream.ReadByte();
             ActionNumber = stream.ReadShort();
-            Accepted = stream.ReadBool();
+            Accepted = stream.ReadBoolean();
         }
 
         public void WritePacket(ref PacketStream stream)

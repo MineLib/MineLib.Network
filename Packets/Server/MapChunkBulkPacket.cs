@@ -26,7 +26,7 @@ namespace MineLib.Network.Packets.Server
         {
             ChunkColumnCount = stream.ReadShort();
             var length = stream.ReadInt();
-            SkyLightSent = stream.ReadBool();
+            SkyLightSent = stream.ReadBoolean();
             ChunkData = stream.ReadByteArray(length);
 
             MetaInformation = new ChunkColumnMetadata[ChunkColumnCount];
