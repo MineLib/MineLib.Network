@@ -51,6 +51,13 @@
     <Compile Include="Classic\Packets\Client\PlayerIdentification.cs" />
     <Compile Include="Classic\Packets\Client\PositionAndOrientation.cs" />
     <Compile Include="Classic\Packets\Client\SetBlock.cs" />
+    <Compile Include="Classic\Packets\Extension\ExtAddPlayerName.cs" />
+    <Compile Include="Classic\Packets\Extension\SetClickDistance.cs" />
+    <Compile Include="Classic\Packets\Extension\CustomBlockSupportLevel.cs" />
+    <Compile Include="Classic\Packets\Extension\ExtEntry.cs" />
+    <Compile Include="Classic\Packets\Extension\ExtInfo.cs" />
+    <Compile Include="Classic\Packets\Extension\HoldThis.cs" />
+    <Compile Include="Classic\Packets\Extension\SetTextHotKey.cs" />
     <Compile Include="Classic\Packets\ServerResponse.cs" />
     <Compile Include="Classic\Packets\Server\DespawnPlayer.cs" />
     <Compile Include="Classic\Packets\Server\DisconnectPlayer.cs" />
@@ -107,6 +114,7 @@
     <Compile Include="Events\Events.cs" />
     <Compile Include="IO\PacketByteReader.cs" />
     <Compile Include="IO\PacketStream.Stream.cs" />
+    <Compile Include="NetworkHandler.Classic.cs" />
     <Compile Include="NetworkHandler.Classic.Packets.cs" />
     <Compile Include="NetworkHandler.cs" />
     <Compile Include="NetworkHandler.Packets.cs" />

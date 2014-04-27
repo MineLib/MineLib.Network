@@ -246,6 +246,11 @@ namespace MineLib.Network.Data
                 a / b.Z);
         }
 
+        public static Vector3 operator %(double a, Vector3 b)
+        {
+            return new Vector3(a % b.X, a % b.Y, a % b.Y);
+        }
+
         #endregion
 
         #region Constants

@@ -23,6 +23,7 @@ namespace MineLib.Network
 
         private delegate void DataReceived(int id, byte[] data);
         private event DataReceived OnDataReceived;
+        private event DataReceived OnDataReceivedClassic;
 
         public bool Connected {get { return _baseSock.Connected; }}
 
@@ -55,20 +56,28 @@ namespace MineLib.Network
                 _baseSock = new TcpClient();
                 _baseSock.Connect(_minecraft.ServerIP, _minecraft.ServerPort);
             }
-            catch (SocketException) { return false; }
+            catch (SocketException)
+            {
+                return false;
+            }
 
             // -- Create our Wrapped socket.
             _stream = new PacketStream(_baseSock.GetStream());
 
             // -- Subscribe to DataReceived event.
             OnDataReceived += HandlePacket;
+            OnDataReceivedClassic += HandlePacketClassic;
 
             // -- Start network parsing.
-            _listener = new Thread(StartReceiving) {Name = "PacketListener"};
+            _listener = Classic
+                ? new Thread(StartReceiving) {Name = "PacketListener"}
+                : new Thread(StartReceivingClassic) {Name = "PacketListener"};
             _listener.Start();
 
             // -- Start network sending.
-            _sender = new Thread(StartSending) {Name = "PacketSender"};
+            _sender = Classic
+                ? new Thread(StartSending) {Name = "PacketSender"}
+                : new Thread(StartSendingClassic) {Name = "PacketSender"};
             _sender.Start();
 
             return true;
@@ -92,24 +101,10 @@ namespace MineLib.Network
 
             while (_baseSock.Client.Available > 0)
             {
-                int length;
-                int id;
+                var length = _stream.ReadVarInt();
+                var id = _stream.ReadVarInt();
 
-                if (Classic)
-                {
-                    // Classic clients store PacketID in byte
-                    length = _stream.ReadVarInt();
-                    id = _stream.ReadByte();
-
-                    OnDataReceived(id, _stream.ReadByteArray(length - 1));
-                }
-                else
-                {
-                    length = _stream.ReadVarInt();
-                    id = _stream.ReadVarInt();
-
-                    OnDataReceived(id, _stream.ReadByteArray(length - 1));
-                }
+                OnDataReceived(id, _stream.ReadByteArray(length - 1));
             }
 
             return true;
@@ -149,17 +144,6 @@ namespace MineLib.Network
         private void HandlePacket(int id, byte[] data)
         {
             _preader.SetNewData(data);
-
-            if (Classic)
-            {
-                if (ServerResponseClassic.ServerResponse[id] == null)
-                    return;
-
-                var packet = ServerResponseClassic.ServerResponse[id]();
-                packet.ReadPacket(_preader);
-                RaisePacketHandledClassic(packet, id);
-                return;
-            }
 
             switch (_minecraft.State)
             {

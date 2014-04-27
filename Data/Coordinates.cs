@@ -4,8 +4,7 @@ namespace MineLib.Network.Data
 {
     public struct Coordinates2D
     {
-        public int X;
-        public int Z;
+        public int X, Z;
 
         public Coordinates2D(int value)
         {
@@ -32,6 +31,54 @@ namespace MineLib.Network.Data
         {
             return string.Format("X: {0}, Z: {1}", X, Z);
         }
+
+        #region Math
+
+        /// <summary>
+        /// Calculates the distance between two Coordinates2D objects.
+        /// </summary>
+        public double DistanceTo(Coordinates2D other)
+        {
+            return Math.Sqrt(Square(other.X - X) +
+                             Square(other.Z - Z));
+        }
+
+        /// <summary>
+        /// Calculates the square of a num.
+        /// </summary>
+        private int Square(int num)
+        {
+            return num * num;
+        }
+
+        /// <summary>
+        /// Finds the distance of this Coordinates2D from Coordinates2D.Zero
+        /// </summary>
+        public double Distance
+        {
+            get
+            {
+                return DistanceTo(Zero);
+            }
+        }
+
+        public static Coordinates2D Min(Coordinates2D value1, Coordinates2D value2)
+        {
+            return new Coordinates2D(
+                Math.Min(value1.X, value2.X),
+                Math.Min(value1.Z, value2.Z)
+                );
+        }
+
+        public static Coordinates2D Max(Coordinates2D value1, Coordinates2D value2)
+        {
+            return new Coordinates2D(
+                Math.Max(value1.X, value2.X),
+                Math.Max(value1.Z, value2.Z)
+                );
+        }
+
+        #endregion
 
         #region Operators
 
@@ -171,9 +218,7 @@ namespace MineLib.Network.Data
 
     public struct Coordinates3D : IEquatable<Coordinates3D>
     {
-        public int X;
-        public int Y;
-        public int Z;
+        public int X, Y, Z;
 
         public Coordinates3D(int value)
         {
@@ -210,21 +255,21 @@ namespace MineLib.Network.Data
         /// </summary>
         public double DistanceTo(Coordinates3D other)
         {
-            return Math.Sqrt(Square((double)other.X - (double)X) +
-                             Square((double)other.Y - (double)Y) +
-                             Square((double)other.Z - (double)Z));
+            return Math.Sqrt(Square(other.X - X) +
+                             Square(other.Y - Y) +
+                             Square(other.Z - Z));
         }
 
         /// <summary>
         /// Calculates the square of a num.
         /// </summary>
-        private double Square(double num)
+        private int Square(int num)
         {
             return num * num;
         }
 
         /// <summary>
-        /// Finds the distance of this vector from Coordinates3D.Zero
+        /// Finds the distance of this Coordinate3D from Coordinates3D.Zero
         /// </summary>
         public double Distance
         {
