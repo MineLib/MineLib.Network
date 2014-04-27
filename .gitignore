@@ -111,3 +111,5 @@ UpgradeLog*.XML
 !fNbt.dll
 !Newtonsoft.Json.pdb
 !Newtonsoft.Json.dll
+!BouncyCastle.Crypto.pdb
+!BouncyCastle.Crypto.dll

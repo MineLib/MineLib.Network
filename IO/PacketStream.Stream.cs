@@ -7,7 +7,10 @@ namespace MineLib.Network.IO
     {
         public override void Flush()
         {
-            throw new NotSupportedException();
+            if (EncEnabled)
+                _crypto.BaseStream.Flush();
+            else
+                _stream.Flush();
         }
 
         public override long Seek(long offset, SeekOrigin origin)
@@ -23,7 +26,7 @@ namespace MineLib.Network.IO
         public override int Read(byte[] buffer, int offset, int count)
         {
             if (EncEnabled)
-                return _crypto.DecryptStream.Read(buffer, offset, count);
+                return _crypto.Read(buffer, offset, count);
             else
                 return _stream.Read(buffer, offset, count);
         }
@@ -31,34 +34,29 @@ namespace MineLib.Network.IO
         public override void Write(byte[] buffer, int offset, int count)
         {
             if (EncEnabled)
-                _crypto.EncryptStream.Write(buffer, offset, count);
+                _crypto.Write(buffer, offset, count);
             else
                 _stream.Write(buffer, offset, count);
         }
 
         public override bool CanRead
         {
-            get { return EncEnabled ? _crypto.DecryptStream.CanRead : _stream.CanRead; }
+            get { return EncEnabled ? _crypto.BaseStream.CanRead : _stream.CanRead; }
         }
 
         public override bool CanSeek
         {
-            get { throw new NotSupportedException(); }
+            get { return false; }
         }
 
         public override bool CanWrite
         {
-            get { return EncEnabled ? _crypto.EncryptStream.CanWrite : _stream.CanWrite; }
+            get { return EncEnabled ? _crypto.BaseStream.CanWrite : _stream.CanWrite; }
         }
 
         public override long Length
         {
-            get
-            {
-                if (EncEnabled)
-                    throw new NotSupportedException();
-                return _stream.Length;
-            }
+            get { throw new NotSupportedException(); }
         }
 
         public override long Position 

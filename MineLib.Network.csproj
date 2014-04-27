@@ -34,6 +34,10 @@
     <RootNamespace>MineLib.Network</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BouncyCastle.Crypto, Version=1.7.4114.6375, Culture=neutral, PublicKeyToken=0e99375e54769942">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\BouncyCastle.Crypto.dll</HintPath>
+    </Reference>
     <Reference Include="fNbt, Version=0.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\fNbt.dll</HintPath>
@@ -229,6 +233,7 @@
     <Compile Include="Yggdrasil.Json.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Libraries\BouncyCastle.Crypto.dll" />
     <Content Include="Libraries\fNbt.dll" />
     <Content Include="Libraries\Newtonsoft.Json.dll" />
   </ItemGroup>

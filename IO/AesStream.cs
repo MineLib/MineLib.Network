@@ -1,43 +1,62 @@
+using System;
 using System.IO;
 using System.Security.Cryptography;
+using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Crypto.Engines;
+using Org.BouncyCastle.Crypto.Modes;
+using Org.BouncyCastle.Crypto.Parameters;
 
 namespace MineLib.Network.IO
 {
-    // -- Credits to umby24 for encryption support, as taken from CWrapped.
-    public class AesStream
+    public interface IAesStream
     {
-        public readonly CryptoStream DecryptStream;
-        public readonly CryptoStream EncryptStream;
-        private readonly Stream _baseStream;
+        Stream BaseStream { get; set; }
 
-        public AesStream(Stream stream, byte[] key)
+        int ReadByte();
+        int Read(byte[] myBytes, int p1, int value);
+
+        void Write(byte[] tempBuff, int i, int length);
+
+        void Dispose();
+    }
+
+    // Should be deleted later. I'll keep it for some time.
+    // -- Credits to umby24 for encryption support, as taken from CWrapped.
+    public class NativeAesStream : IAesStream
+    {
+        public Stream BaseStream { get; set; }
+
+        private readonly CryptoStream _decryptStream;
+        private readonly CryptoStream _encryptStream;
+
+        public NativeAesStream(Stream stream, byte[] key)
         {
-            _baseStream = stream;
+            BaseStream = stream;
 
-            var raj = GenerateAES(key);
+            var raj = GenerateAes(key);
             var encTrans = raj.CreateEncryptor();
             var decTrans = raj.CreateDecryptor();
 
-            EncryptStream = new CryptoStream(_baseStream, encTrans, CryptoStreamMode.Write);
-            DecryptStream = new CryptoStream(_baseStream, decTrans, CryptoStreamMode.Read);
+            _encryptStream = new CryptoStream(BaseStream, encTrans, CryptoStreamMode.Write);
+            _decryptStream = new CryptoStream(BaseStream, decTrans, CryptoStreamMode.Read);
         }
 
         public int ReadByte()
         {
-            return DecryptStream.ReadByte();
+            return _decryptStream.ReadByte();
         }
 
         public int Read(byte[] buffer, int offset, int count)
         {
-            return DecryptStream.Read(buffer, offset, count);
+            return _decryptStream.Read(buffer, offset, count);
         }
 
         public void Write(byte[] buffer, int offset, int count)
         {
-            EncryptStream.Write(buffer, offset, count);
+            _encryptStream.Write(buffer, offset, count);
         }
 
-        private Rijndael GenerateAES(byte[] key)
+        private static Rijndael GenerateAes(byte[] key)
         {
             var cipher = new RijndaelManaged
             {
@@ -54,14 +73,67 @@ namespace MineLib.Network.IO
 
         public void Dispose()
         {
-            if (DecryptStream != null)
-                DecryptStream.Dispose();
+            if (_decryptStream != null)
+                _decryptStream.Dispose();
 
-            if (EncryptStream != null)
-                EncryptStream.Dispose();
+            if (_encryptStream != null)
+                _encryptStream.Dispose();
 
-            if (_baseStream != null)
-                _baseStream.Dispose();
+            if (BaseStream != null)
+                BaseStream.Dispose();
+        }
+    }
+
+    public class BouncyAesStream : IAesStream
+    {
+        public Stream BaseStream { get; set; }
+
+        private readonly BufferedBlockCipher _decryptCipher;
+        private readonly BufferedBlockCipher _encryptCipher;
+
+        public BouncyAesStream(Stream stream, byte[] key)
+        {
+            BaseStream = stream;
+
+            _encryptCipher = new BufferedBlockCipher(new CfbBlockCipher(new AesFastEngine(), 8));
+            _encryptCipher.Init(true, new ParametersWithIV(
+                new KeyParameter(key), key, 0, 16));
+            _decryptCipher = new BufferedBlockCipher(new CfbBlockCipher(new AesFastEngine(), 8));
+            _decryptCipher.Init(false, new ParametersWithIV(
+                new KeyParameter(key), key, 0, 16));
+        }
+
+        public int ReadByte()
+        {
+            int value = BaseStream.ReadByte();
+            if (value == -1) return value;
+            return _decryptCipher.ProcessByte((byte)value)[0];
+        }
+
+        public int Read(byte[] buffer, int offset, int count)
+        {
+            int length = BaseStream.Read(buffer, offset, count);
+            var decrypted = _decryptCipher.ProcessBytes(buffer, offset, length);
+            Array.Copy(decrypted, 0, buffer, offset, decrypted.Length);
+            return length;
+        }
+
+        public void Write(byte[] buffer, int offset, int count)
+        {
+            var encrypted = _encryptCipher.ProcessBytes(buffer, offset, count);
+            BaseStream.Write(encrypted, 0, encrypted.Length);
+        }
+
+        public void Dispose()
+        {
+            if (_decryptCipher != null)
+                _decryptCipher.Reset();
+
+            if (_encryptCipher != null)
+                _encryptCipher.Reset();
+
+            if (BaseStream != null)
+                BaseStream.Dispose();
         }
     }
 }

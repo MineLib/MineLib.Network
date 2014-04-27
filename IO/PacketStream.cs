@@ -9,7 +9,7 @@ namespace MineLib.Network.IO
     {
         // -- Credits to SirCmpwn for encryption support, as taken from SMProxy.
         private readonly Stream _stream;
-        private AesStream _crypto;
+        private IAesStream _crypto;
         public bool EncEnabled;
         private byte[] _buffer;
 
@@ -20,7 +20,11 @@ namespace MineLib.Network.IO
 
         public void InitEncryption(byte[] key)
         {
-            _crypto = new AesStream(_stream, key);
+
+            if (Type.GetType("Mono.Runtime") != null) // -- Running on Mono
+                _crypto = new BouncyAesStream(_stream, key);
+            else
+                _crypto = new NativeAesStream(_stream, key);
         }
 
         // -- Strings
