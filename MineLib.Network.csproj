@@ -82,7 +82,7 @@
     <Compile Include="Data\Coordinates.cs" />
     <Compile Include="Enums\BlockActions.cs" />
     <Compile Include="Enums\EffectID.cs" />
-    <Compile Include="IMinecraft.cs" />
+    <Compile Include="IMinecraftClient.cs" />
     <Compile Include="Data\EntityMetadata\MetadataShort.cs" />
     <Compile Include="Data\EntityMetadata\MetadataByte.cs" />
     <Compile Include="Data\EntityMetadata\MetadataDictionary.cs" />

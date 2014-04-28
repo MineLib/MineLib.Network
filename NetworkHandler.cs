@@ -5,7 +5,6 @@ using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
-using MineLib.Network.Classic.Packets;
 using MineLib.Network.IO;
 using MineLib.Network.Enums;
 using MineLib.Network.Packets;
@@ -36,11 +35,11 @@ namespace MineLib.Network
         private Thread _listener;
         private Thread _sender;
 
-        private IMinecraft _minecraft;
+        private IMinecraftClient _minecraft;
 
         private readonly Queue<IPacket> _packetsToSend = new Queue<IPacket>();
 
-        public NetworkHandler(IMinecraft client)
+        public NetworkHandler(IMinecraftClient client)
         {
             _minecraft = client;
         }
@@ -128,11 +127,13 @@ namespace MineLib.Network
             while (_packetsToSend.Count > 0)
             {
                 Thread.Sleep(1); // -- Important to make a little pause.
-                var packet = _packetsToSend.Dequeue();
+                var packet = _packetsToSend.Dequeue(); // -- Send() is locking _packetsToSend.
 
+                // -- Debugging
                 //if (packet == null) continue; // Some bug
-
                 _packetsSended.Add(packet);
+                // -- Debugging
+
                 packet.WritePacket(ref _stream);
 
             }
@@ -241,7 +242,10 @@ namespace MineLib.Network
 
         public void Send(IPacket packet)
         {
-            _packetsToSend.Enqueue(packet);
+            lock (_packetsToSend)   // -- Solved...so...much..bugs...incredible
+            {                       // -- Be carefull, interfere packet sending.
+                _packetsToSend.Enqueue(packet);
+            }
         }
 
         /// <summary>

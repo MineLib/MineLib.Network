@@ -2,7 +2,7 @@
 
 namespace MineLib.Network
 {
-    public interface IMinecraft
+    public interface IMinecraftClient
     {
         string ServerIP { get; set; }
         short ServerPort { get; set; }

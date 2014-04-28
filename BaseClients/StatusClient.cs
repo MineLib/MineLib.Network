@@ -14,7 +14,7 @@ namespace MineLib.Network.BaseClients
         public long Ping;
     }
 
-    public partial class StatusClient : IMinecraft, IDisposable
+    public partial class StatusClient : IMinecraftClient, IDisposable
     {
         #region Variables
 
