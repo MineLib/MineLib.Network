@@ -7,12 +7,12 @@ using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Security.Permissions;
 using System.Text;
-using Org.BouncyCastle.Math; // BigInteger
+using Org.BouncyCastle.Math;
 
-namespace MineLib.Network
+namespace MineLib.Network.Cryptography
 {
     //Thanks to SirCmpwn!
-    public static class Cryptography
+    public static class JavaHelper
     {
         /// <summary>
         ///     Produces a Java-style SHA-1 hex digest of the given data.
@@ -2017,7 +2017,7 @@ namespace MineLib.Network
         }
     }
 
-    class AsnParser
+    internal class AsnParser
     {
         private List<byte> octets;
         private int initialCount;

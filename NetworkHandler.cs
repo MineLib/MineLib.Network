@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
+using MineLib.Network.Cryptography;
 using MineLib.Network.IO;
 using MineLib.Network.Enums;
 using MineLib.Network.Packets;
@@ -207,7 +208,7 @@ namespace MineLib.Network
 
             var hashData = hashlist.ToArray();
 
-            var hash = Cryptography.JavaHexDigest(hashData);
+            var hash = JavaHelper.JavaHexDigest(hashData);
 
             if (!Yggdrasil.ClientAuth(_minecraft.AccessToken, _minecraft.SelectedProfile, hash))
                 return;
