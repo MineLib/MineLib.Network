@@ -1,3 +1,4 @@
+using System;
 using MineLib.Network.Data;
 using MineLib.Network.IO;
 
@@ -20,7 +21,11 @@ namespace MineLib.Network.Packets.Server
             Text[0] = stream.ReadString();
             Text[1] = stream.ReadString();
             Text[2] = stream.ReadString();
-            Text[3] = stream.ReadString();
+            try
+            {
+                Text[3] = stream.ReadString(); // bug
+            }
+            catch { }
         }
 
         public void WritePacket(ref PacketStream stream)

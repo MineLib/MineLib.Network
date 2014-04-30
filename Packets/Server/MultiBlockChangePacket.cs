@@ -30,9 +30,9 @@ namespace MineLib.Network.Packets.Server
             int size = stream.ReadInt();
             Data = stream.ReadByteArray(size);
 
-            RecordsArray = new Records[RecordCount - 1];
+            RecordsArray = new Records[RecordCount];
 
-            for (int i = 0; i < RecordCount - 1; i++)
+            for (int i = 0; i < RecordCount; i++)
             {
                 var blockData = new byte[4];
                 Buffer.BlockCopy(Data, (i * 4), blockData, 0, 4);
