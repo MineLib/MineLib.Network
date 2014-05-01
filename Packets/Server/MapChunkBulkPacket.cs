@@ -10,6 +10,11 @@ namespace MineLib.Network.Packets.Server
         public ushort AddBitMap;
         public bool SkyLightSend;
         public bool GroundUp; // True in 0x26
+
+        // -- Debugging
+        public int[] PrimaryBitMapConverted { get { return Converter.ConvertUShort(PrimaryBitMap); } }
+        public int[] AddBitMapConverted { get { return Converter.ConvertUShort(AddBitMap); } }
+        // -- Debugging
     }
 
     public struct MapChunkBulkPacket : IPacket

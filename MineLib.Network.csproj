@@ -80,6 +80,7 @@
     <Compile Include="Classic\Packets\Server\UpdateUserType.cs" />
     <Compile Include="Cryptography.cs" />
     <Compile Include="Data\Coordinates.cs" />
+    <Compile Include="DebugHelpers.cs" />
     <Compile Include="Enums\BlockActions.cs" />
     <Compile Include="Enums\EffectID.cs" />
     <Compile Include="IMinecraftClient.cs" />

@@ -12,6 +12,11 @@ namespace MineLib.Network.Packets.Server
         public byte[] Data; // Maybe NbtByteArray?
         public bool SkyLightSend;
 
+        // -- Debugging
+        public int[] PrimaryBitMapConverted { get { return Converter.ConvertUShort(PrimaryBitMap); } }
+        public int[] AddBitMapConverted { get { return Converter.ConvertUShort(AddBitMap); } }
+        // -- Debugging
+
         public const byte PacketID = 0x21;
         public byte Id { get { return PacketID; } }
 
