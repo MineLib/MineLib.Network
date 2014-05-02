@@ -17,7 +17,7 @@ namespace MineLib.Network.Packets.Server
         {
             EntityID = stream.ReadInt();
             Slot = (EntityEquipmentSlot)stream.ReadShort();
-            Item = ItemStack.FromStream(ref stream);
+            Item = ItemStack.FromReader(stream);
         }
     
         public void WritePacket(ref PacketStream stream)

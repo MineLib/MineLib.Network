@@ -24,9 +24,9 @@ namespace MineLib.Network.Data.EntityMetadata
             Value = value;
         }
 
-        public override void FromStream(PacketByteReader stream)
+        public override void FromReader(PacketByteReader reader)
         {
-            Value = ItemStack.FromStream(ref stream);
+            Value = ItemStack.FromReader(reader);
         }
 
         public override void WriteTo(ref PacketStream stream, byte index)

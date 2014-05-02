@@ -20,7 +20,7 @@ namespace MineLib.Network.Packets.Client
             Coordinates.Y = stream.ReadByte();
             Coordinates.Z = stream.ReadInt();
             Direction = (Direction)stream.ReadByte();
-            Slot = ItemStack.FromStream(ref stream);
+            Slot = ItemStack.FromReader(stream);
             CursorVector3.X = stream.ReadByte();
             CursorVector3.Y = stream.ReadByte();
             CursorVector3.Z = stream.ReadByte();

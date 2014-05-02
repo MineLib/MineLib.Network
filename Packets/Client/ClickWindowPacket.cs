@@ -22,7 +22,7 @@ namespace MineLib.Network.Packets.Client
             Button = stream.ReadByte();
             ActionNumber = stream.ReadShort();
             Mode = stream.ReadByte();
-            ClickedItem = ItemStack.FromStream(ref stream);
+            ClickedItem = ItemStack.FromReader(stream);
         }
 
         public void WritePacket(ref PacketStream stream)

@@ -16,7 +16,7 @@ namespace MineLib.Network.Packets.Server
         {
             WindowId = stream.ReadByte();
             Slot = stream.ReadShort();
-            SlotData = ItemStack.FromStream(ref stream);
+            SlotData = ItemStack.FromReader(stream);
         }
     
         public void WritePacket(ref PacketStream stream)

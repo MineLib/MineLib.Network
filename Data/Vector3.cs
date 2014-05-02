@@ -7,15 +7,9 @@ namespace MineLib.Network.Data
     /// <summary>
     /// Represents the location of an object in 3D space.
     /// </summary>
-    [StructLayout(LayoutKind.Explicit)]
     public struct Vector3 : IEquatable<Vector3>
     {
-        [FieldOffset(0)]
-        public double X;
-        [FieldOffset(8)]
-        public double Y;
-        [FieldOffset(16)]
-        public double Z;
+        public double X, Y, Z;
 
         public Vector3(double value)
         {
@@ -68,7 +62,7 @@ namespace MineLib.Network.Data
         /// <summary>
         /// Calculates the square of a num.
         /// </summary>
-        private double Square(double num)
+        private static double Square(double num)
         {
             return num * num;
         }

@@ -14,7 +14,7 @@ namespace MineLib.Network.Packets.Client
         public void ReadPacket(PacketByteReader stream)
         {
             Slot = stream.ReadShort();
-            ClickedItem = ItemStack.FromStream(ref stream);
+            ClickedItem = ItemStack.FromReader(stream);
         }
 
         public void WritePacket(ref PacketStream stream)

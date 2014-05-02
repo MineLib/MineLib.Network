@@ -2,7 +2,7 @@
 
 namespace MineLib.Network.Data
 {
-    public struct Coordinates2D
+    public struct Coordinates2D : IEquatable<Coordinates2D>
     {
         public int X, Z;
 
@@ -46,7 +46,7 @@ namespace MineLib.Network.Data
         /// <summary>
         /// Calculates the square of a num.
         /// </summary>
-        private int Square(int num)
+        private static int Square(int num)
         {
             return num * num;
         }
@@ -263,7 +263,7 @@ namespace MineLib.Network.Data
         /// <summary>
         /// Calculates the square of a num.
         /// </summary>
-        private int Square(int num)
+        private static int Square(int num)
         {
             return num * num;
         }

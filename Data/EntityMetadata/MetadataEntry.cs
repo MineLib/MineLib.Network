@@ -10,7 +10,7 @@ namespace MineLib.Network.Data.EntityMetadata
         public abstract string FriendlyName { get; }
         internal byte Index { get; set; }
 
-        public abstract void FromStream(PacketByteReader stream);
+        public abstract void FromReader(PacketByteReader reader);
         public abstract void WriteTo(ref PacketStream stream, byte index);
 
         public static implicit operator MetadataEntry(byte value)

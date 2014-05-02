@@ -27,19 +27,19 @@ namespace MineLib.Network.Data.EntityMetadata
             set { _entries[index] = value; }
         }
 
-        public static MetadataDictionary FromStream(PacketByteReader stream)
+        public static MetadataDictionary FromReader(PacketByteReader reader)
         {
             var value = new MetadataDictionary();
             while (true)
             {
-                byte key = stream.ReadByte();
+                byte key = reader.ReadByte();
                 if (key == 127) break;
 
                 byte type = (byte)((key & 0xE0) >> 5);
                 byte index = (byte)(key & 0x1F);
 
                 var entry = EntryTypes[type]();
-                entry.FromStream(stream);
+                entry.FromReader(reader);
                 entry.Index = index;
 
                 value[index] = entry;

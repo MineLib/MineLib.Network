@@ -45,7 +45,7 @@ namespace MineLib.Network.Packets.Server
             Yaw = stream.ReadByte();
             Pitch = stream.ReadByte();
             CurrentItem = stream.ReadShort();
-            Metadata = MetadataDictionary.FromStream(stream);
+            Metadata = MetadataDictionary.FromReader(stream);
 
         }
     

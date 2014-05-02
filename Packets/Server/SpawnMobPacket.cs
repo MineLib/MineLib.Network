@@ -30,7 +30,7 @@ namespace MineLib.Network.Packets.Server
             VelocityX = stream.ReadShort();
             VelocityY = stream.ReadShort();
             VelocityZ = stream.ReadShort();
-            Metadata = MetadataDictionary.FromStream(stream);
+            Metadata = MetadataDictionary.FromReader(stream);
         }
     
         public void WritePacket(ref PacketStream stream)

@@ -17,7 +17,7 @@ namespace MineLib.Network.Packets.Server
             short count = stream.ReadShort();
             SlotData = new ItemStack[count];
             for (int i = 0; i < count; i++)
-                SlotData[i] = ItemStack.FromStream(ref stream);
+                SlotData[i] = ItemStack.FromReader(stream);
         }
     
         public void WritePacket(ref PacketStream stream)

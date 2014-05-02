@@ -69,19 +69,19 @@ namespace MineLib.Network.Data
 
         #region Network
 
-        public static ItemStack FromStream(ref PacketByteReader stream)
+        public static ItemStack FromReader(PacketByteReader reader)
         {
             var slot = EmptyStack;
-            slot.Id = stream.ReadShort();
+            slot.Id = reader.ReadShort();
             if (slot.Empty)
                 return slot;
-            slot.Count = stream.ReadSByte();
-            slot.Metadata = stream.ReadShort();
-            var length = stream.ReadShort();
+            slot.Count = reader.ReadSByte();
+            slot.Metadata = reader.ReadShort();
+            var length = reader.ReadShort();
             if (length == -1)
                 return slot;
             slot.Nbt = new NbtCompound();
-            var buffer = stream.ReadByteArray(length);
+            var buffer = reader.ReadByteArray(length);
             var nbt = new NbtFile();
             nbt.LoadFromBuffer(buffer, 0, length, NbtCompression.GZip, null);
             slot.Nbt = nbt.RootTag;
