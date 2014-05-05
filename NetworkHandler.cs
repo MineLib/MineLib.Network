@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Configuration;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
@@ -27,6 +28,8 @@ namespace MineLib.Network
 
         public bool Connected {get { return _baseSock.Connected; }}
 
+        public bool Crashed;
+
         public bool Classic { get; set; }
 
         private TcpClient _baseSock;
@@ -43,6 +46,7 @@ namespace MineLib.Network
         public NetworkHandler(IMinecraftClient client)
         {
             _minecraft = client;
+            Crashed = false;
         }
 
         /// <summary>
@@ -89,9 +93,16 @@ namespace MineLib.Network
         {
             _preader = new PacketByteReader(new MemoryStream(0));
 
-            do
+            try
             {
-            } while (PacketReceiver());
+                do
+                {
+                } while (PacketReceiver());
+            }
+            catch
+            {
+                Crashed = true;
+            }
         }
 
         private bool PacketReceiver()
@@ -112,9 +123,16 @@ namespace MineLib.Network
 
         private void StartSending()
         {
-            do
+            try
             {
-            } while (PacketSender());
+                do
+                {
+                } while (PacketSender());
+            }
+            catch
+            {
+                Crashed = true;
+            }
         }
 
         private bool PacketSender()
