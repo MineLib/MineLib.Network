@@ -52,7 +52,7 @@ namespace MineLib.Network
         /// <summary>
         ///     Starts the network handler.
         /// </summary>
-        public bool Start()
+        public void Start()
         {
             // -- Connect to server.
             try
@@ -62,7 +62,7 @@ namespace MineLib.Network
             }
             catch (SocketException)
             {
-                return false;
+                Crashed = true;
             }
 
             // -- Create our Wrapped socket.
@@ -83,8 +83,6 @@ namespace MineLib.Network
                 ? new Thread(StartSendingClassic) {Name = "PacketSender"}
                 : new Thread(StartSending) {Name = "PacketSender"};
             _sender.Start();
-
-            return true;
         }
 
         #region Sending and Receiving.
