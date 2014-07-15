@@ -24,3 +24,6 @@ Used repos:
 * https://github.com/pollyzoid/mclib
 * https://github.com/pdelvo/Pdelvo.Minecraft
 * https://github.com/SirCmpwn/Craft.Net
+
+
+Waiting 1.8 for next improvements. Currently focused on MineLib.GraphicClient
