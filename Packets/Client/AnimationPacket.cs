@@ -13,14 +13,14 @@ namespace MineLib.Network.Packets.Client
 
         public void ReadPacket(PacketByteReader stream)
         {
-            EntityID = stream.ReadVarInt();
+            EntityID = stream.ReadInt();
             Animation = (Animation)stream.ReadByte();
         }
 
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteVarInt(EntityID);
+            stream.WriteInt(EntityID);
             stream.WriteByte((byte)Animation);
             stream.Purge();
         }

@@ -30,13 +30,16 @@ namespace MineLib.Network.BaseClients
 
         #endregion Variables
 
-        private readonly NetworkHandler _handler;
+        private NetworkHandler _handler;
         private bool _connectionClosed;
 
-        public StatusClient(string ip, short port)
+        public StatusClient()
         {
             State = ServerState.Status;
+        }
 
+        public ResponseData GetServerInfo(string ip, short port, int protocolVersion)
+        {
             ServerIP = ip;
             ServerPort = port;
 
@@ -47,11 +50,9 @@ namespace MineLib.Network.BaseClients
 
             // -- Connect to the server and begin reading packets.
             _handler.Start();
-        }
 
-        public ResponseData GetServerInfo(int protocolVersion)
-        {
-            if (_connectionClosed) throw new Exception("Initialize new StatusClient");
+            if (_connectionClosed) 
+                throw new Exception("Initialize new StatusClient");
 
             bool Ready = false;
 
@@ -81,9 +82,21 @@ namespace MineLib.Network.BaseClients
             return new ResponseData {Info = Info, Ping = stopwatch.ElapsedMilliseconds};
         }
 
-        public ServerInfo GetInfo(int protocolVersion)
+        public ServerInfo GetInfo(string ip, short port, int protocolVersion)
         {
-            if (_connectionClosed) throw new Exception("Initialize new StatusClient");
+            ServerIP = ip;
+            ServerPort = port;
+
+            _handler = new NetworkHandler(this);
+
+            // -- Register our event handlers.
+            _handler.OnPacketHandled += RaisePacketHandled;
+
+            // -- Connect to the server and begin reading packets.
+            _handler.Start();
+
+            if (_connectionClosed) 
+                throw new Exception("Initialize new StatusClient");
 
             bool Ready = false;
 
@@ -108,9 +121,21 @@ namespace MineLib.Network.BaseClients
             return Info;
         }
 
-        public long GetPing(int protocolVersion)
+        public long GetPing(string ip, short port, int protocolVersion)
         {
-            if (_connectionClosed) throw new Exception("Initialize new StatusClient");
+            ServerIP = ip;
+            ServerPort = port;
+
+            _handler = new NetworkHandler(this);
+
+            // -- Register our event handlers.
+            _handler.OnPacketHandled += RaisePacketHandled;
+
+            // -- Connect to the server and begin reading packets.
+            _handler.Start();
+
+            if (_connectionClosed) 
+                throw new Exception("Initialize new StatusClient");
 
             bool Ready = false;
 
