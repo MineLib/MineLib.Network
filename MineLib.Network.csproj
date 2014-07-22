@@ -49,7 +49,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseClients\StatusClient.Json.cs" />
+    <Compile Include="BaseClients\ServerInfoParser.Json.cs" />
     <Compile Include="Classic\Enums\PacketsEnums.cs" />
     <Compile Include="Classic\Packets\Client\Message.cs" />
     <Compile Include="Classic\Packets\Client\PlayerIdentification.cs" />
@@ -225,9 +225,9 @@
     <Compile Include="Packets\Server\UseBedPacket.cs" />
     <Compile Include="Packets\Server\WindowItemsPacket.cs" />
     <Compile Include="Packets\Server\WindowPropertyPacket.cs" />
-    <Compile Include="BaseClients\StatusClient.cs" />
-    <Compile Include="BaseClients\StatusClient.Events.cs" />
-    <Compile Include="BaseClients\StatusClient.Packets.cs" />
+    <Compile Include="BaseClients\ServerInfoParser.cs" />
+    <Compile Include="BaseClients\ServerInfoParser.Events.cs" />
+    <Compile Include="BaseClients\ServerInfoParser.Packets.cs" />
     <Compile Include="IO\AesStream.cs" />
     <Compile Include="IO\PacketStream.cs" />
     <Compile Include="Yggdrasil.cs" />

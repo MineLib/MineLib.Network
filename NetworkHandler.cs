@@ -57,11 +57,13 @@ namespace MineLib.Network
             try
             {
                 _baseSock = new TcpClient();
-                _baseSock.Connect(_minecraft.ServerIP, _minecraft.ServerPort);
+                _baseSock.Connect(_minecraft.ServerHost, _minecraft.ServerPort);
+
             }
             catch (SocketException)
             {
                 Crashed = true;
+                return;
             }
 
             // -- Create our Wrapped socket.
@@ -96,7 +98,7 @@ namespace MineLib.Network
                 {
                 } while (PacketReceiver());
             }
-            catch
+            catch (SocketException)
             {
                 Crashed = true;
             }
@@ -126,7 +128,7 @@ namespace MineLib.Network
                 {
                 } while (PacketSender());
             }
-            catch
+            catch (SocketException)
             {
                 Crashed = true;
             }
@@ -142,17 +144,17 @@ namespace MineLib.Network
 
             while (_packetsToSend.Count > 0)
             {
-                Thread.Sleep(1); // -- Important to make a little pause.
+                Thread.Sleep(1); // -- Important to make a little pause before sending a new packet.
                 var packet = _packetsToSend.Dequeue(); // -- Send() is locking _packetsToSend.
 
-                // -- Debugging
-                //if (packet == null) continue; // Some bug
+#if DEBUG
                 _packetsSended.Add(packet);
-                // -- Debugging
+#endif
 
                 packet.WritePacket(ref _stream);
 
             }
+
             return true;
         }
 
@@ -172,6 +174,11 @@ namespace MineLib.Network
 
                     var packetS = ServerResponse.ServerStatusResponse[id]();
                     packetS.ReadPacket(_preader);
+
+#if DEBUG
+                    _packetsReceived.Add(packetS);
+#endif
+
                     RaisePacketHandled(packetS, id, ServerState.Status);
 
                     break;
@@ -186,6 +193,11 @@ namespace MineLib.Network
 
                     var packetL = ServerResponse.ServerLoginResponse[id]();
                     packetL.ReadPacket(_preader);
+
+#if DEBUG
+                    _packetsReceived.Add(packetL);
+#endif
+
                     RaisePacketHandled(packetL, id, ServerState.Login);
 
                     if (id == 1)
@@ -203,6 +215,12 @@ namespace MineLib.Network
 
                     var packetP = ServerResponse.ServerPlayResponse[id]();
                     packetP.ReadPacket(_preader);
+
+#if DEBUG
+                    _packetsReceived.Add(packetP);
+#endif
+
+
                     RaisePacketHandled(packetP, id, ServerState.Play);
 
                     break;

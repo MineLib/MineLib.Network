@@ -3,7 +3,7 @@ using MineLib.Network.Packets;
 
 namespace MineLib.Network.BaseClients
 {
-    public partial class StatusClient
+    public partial class ServerInfoParser
     {
         private void RaisePacketHandled(IPacket packet, int id, ServerState? state)
         {

@@ -54,9 +54,10 @@ namespace MineLib.Network
                 Thread.Sleep(1); // -- Important to make a little pause.
                 var packet = _packetsToSend.Dequeue();
 
-                //if (packet == null) continue; // Some bug
-
+#if DEBUG
                 _packetsSended.Add(packet);
+#endif
+
                 packet.WritePacket(ref _stream);
 
             }
@@ -74,6 +75,11 @@ namespace MineLib.Network
 
             var packet = ServerResponseClassic.ServerResponse[id]();
             packet.ReadPacket(_preader);
+
+#if DEBUG
+            _packetsReceived.Add(packet);
+#endif
+
             RaisePacketHandledClassic(packet, id);
         }
     }

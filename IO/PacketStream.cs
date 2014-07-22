@@ -222,53 +222,31 @@ namespace MineLib.Network.IO
         {
             if (!EncEnabled)
             {
-                var myBytes = new byte[value];
-
-                var bytesRead = _stream.Read(myBytes, 0, value);
-
+                var result = new byte[value];
+                if (value == 0) return result;
+                int n = value;
                 while (true)
                 {
-                    if (bytesRead != value)
-                    {
-                        var newSize = value - bytesRead;
-                        var bytesRead1 = _stream.Read(myBytes, bytesRead - 1, newSize);
-
-                        if (bytesRead1 != newSize)
-                        {
-                            value = newSize;
-                            bytesRead = bytesRead1;
-                        }
-                        else break;
-                    }
-                    else break;
+                    n -= _stream.Read(result, value - n, n);
+                    if (n == 0)
+                        break;
+                    //Thread.Sleep(1);
                 }
-
-                return myBytes;
+                return result;
             }
             else
             {
-                var myBytes = new byte[value];
-
-                var bytesRead = _crypto.Read(myBytes, 0, value);
-
+                var result = new byte[value];
+                if (value == 0) return result;
+                int n = value;
                 while (true)
                 {
-                    if (bytesRead != value)
-                    {
-                        var newSize = value - bytesRead;
-                        var bytesRead1 = _crypto.Read(myBytes, bytesRead - 1, newSize);
-
-                        if (bytesRead1 != newSize)
-                        {
-                            value = newSize;
-                            bytesRead = bytesRead1;
-                        }
-                        else break;
-                    }
-                    else break;
+                    n -= _crypto.Read(result, value - n, n);
+                    if (n == 0)
+                        break;
+                    //Thread.Sleep(1);
                 }
-
-                return myBytes;
+                return result;
             }
         }
 
