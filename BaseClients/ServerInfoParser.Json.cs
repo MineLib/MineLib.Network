@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace MineLib.Network.BaseClients
@@ -12,8 +13,7 @@ namespace MineLib.Network.BaseClients
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            // There is a dilemma: throw an exception and stop the app if data was corrupted or use it and decode it anyway.
-            var text = (string) reader.Value;// + "=";
+            var text = (string) reader.Value;
 
             // Cut non-used data
             text = text.Replace("data:image/png;base64,", "");
@@ -26,6 +26,15 @@ namespace MineLib.Network.BaseClients
             var bytes = (byte[])value;
             writer.WriteValue(Convert.ToBase64String(bytes));
         }
+    }
+
+    public struct Version
+    {
+        [JsonProperty("name")]
+        public string Name;
+
+        [JsonProperty("protocol")]
+        public int Protocol;
     }
 
     public struct Sample
@@ -46,31 +55,44 @@ namespace MineLib.Network.BaseClients
         public int Online;
 
         [JsonProperty("sample")]
-        public Sample[] Sample;
+        public List<Sample> Sample;
     }
 
-    public struct ServerVersion
+    public struct ModList
     {
-        [JsonProperty("name")]
-        public string Name;
+        [JsonProperty("modid")]
+        public string ModID;
 
-        [JsonProperty("protocol")]
-        public int Protocol;
+        [JsonProperty("version")]
+        public string Version;
     }
+
+    public struct ModInfo
+    {
+        [JsonProperty("type")]
+        public string Type;
+
+        [JsonProperty("modList")]
+        public List<ModList> ModList;
+    }
+
 
     public struct ServerInfo
     {
-        [JsonProperty("description")]
-        public string Description;
+        [JsonProperty("version")]
+        public Version Version;
 
         [JsonProperty("players")]
         public Players Players;
 
-        [JsonProperty("version")]
-        public ServerVersion Version;
+        [JsonProperty("description")]
+        public string Description;
 
         [JsonProperty("favicon")]
         public byte[] Favicon;
+
+        [JsonProperty("modinfo")]
+        public ModInfo? ModInfo;
     }
 
 }

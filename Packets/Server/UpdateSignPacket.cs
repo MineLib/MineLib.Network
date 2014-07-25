@@ -17,15 +17,12 @@ namespace MineLib.Network.Packets.Server
             Coordinates.X = stream.ReadInt();
             Coordinates.Y = stream.ReadShort();
             Coordinates.Z = stream.ReadInt();
-            Text = new string[3];
+            Text = new string[4];
             Text[0] = stream.ReadString();
             Text[1] = stream.ReadString();
             Text[2] = stream.ReadString();
-            try
-            {
-                Text[3] = stream.ReadString(); // bug
-            }
-            catch { }
+            Text[3] = stream.ReadString();
+           
         }
 
         public void WritePacket(ref PacketStream stream)

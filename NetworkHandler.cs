@@ -75,14 +75,14 @@ namespace MineLib.Network
 
             // -- Start network parsing.
             _listener = Classic
-                ? new Thread(StartReceivingClassic) {Name = "PacketListener"}
+                ? new Thread(StartReceivingClassic) { Name = "PacketListenerClassic" }
                 : new Thread(StartReceiving) {Name = "PacketListener"};
             _listener.Start();
 
             // -- Start network sending.
             _sender = Classic
-                ? new Thread(StartSendingClassic) {Name = "PacketSender"}
-                : new Thread(StartSending) {Name = "PacketSender"};
+                ? new Thread(StartSendingClassic) { Name = "PacketSenderClassic" }
+                : new Thread(StartSending) { Name = "PacketSender" };
             _sender.Start();
         }
 
@@ -131,6 +131,11 @@ namespace MineLib.Network
             catch (SocketException)
             {
                 Crashed = true;
+            }
+            catch (IOException)
+            {
+                Crashed = true;
+                //throw new Exception("Connection lost.");
             }
         }
 

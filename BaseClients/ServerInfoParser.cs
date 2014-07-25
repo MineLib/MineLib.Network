@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Net;
-using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Threading;
 using MineLib.Network.Enums;
@@ -18,11 +16,7 @@ namespace MineLib.Network.BaseClients
         public int Ping;
     }
 
-    // TODO: Ping isn't correct
     // TODO: Handle this mess
-    /// <summary>
-    /// Initiate new instance for each new server
-    /// </summary>
     public partial class ServerInfoParser : IMinecraftClient, IDisposable
     {
         #region Variables
@@ -50,9 +44,6 @@ namespace MineLib.Network.BaseClients
         private NetworkHandler _handler;
         private bool _connectionClosed { get { return !_handler.Connected; }}
 
-        private bool _responsePacketReceived;
-        private bool _pingPacketReceived;
-
 
         public ServerInfoParser()
         {
@@ -64,6 +55,7 @@ namespace MineLib.Network.BaseClients
             ServerHost = host;
             ServerPort = port;
 
+            var pingPacketReceived = false;
             var info = new ServerInfo();
 
             _handler = new NetworkHandler(this);
@@ -88,12 +80,11 @@ namespace MineLib.Network.BaseClients
                 SendPacket(new Packets.Client.Status.PingPacket { Time = DateTime.UtcNow.Millisecond });
 
                 info = ParseResponse(packet);
-                _responsePacketReceived = true;
             };
 
             FirePingPacket += packet =>
             {
-                _pingPacketReceived = true;
+                pingPacketReceived = true;
             };
 
             #endregion
@@ -102,16 +93,27 @@ namespace MineLib.Network.BaseClients
 
             #region Waiting for all packets handling and handling if something went wrong
 
-            while (!_pingPacketReceived)
+            var watch = Stopwatch.StartNew();
+            while (!pingPacketReceived)
             {
                 if (_handler == null || _handler.Crashed)
                 {
+                    watch.Stop();
                     Dispose();
                     return new ResponseData { Info = new ServerInfo(), Ping = int.MaxValue };
                 }
 
+                if (watch.ElapsedMilliseconds > 2000)
+                {
+                    watch.Stop();
+                    Dispose();
+                    return new ResponseData { Info = new ServerInfo { Version = new Version { Name = "Unsupported", Protocol = 0} }, Ping = (int)PingServer(host, port) };
+                }
+
                 Thread.Sleep(50);
             }
+
+            watch.Stop();
 
             #endregion
 
@@ -127,6 +129,7 @@ namespace MineLib.Network.BaseClients
             ServerHost = host;
             ServerPort = port;
 
+            bool responsePacketReceived = false;
             var info = new ServerInfo();
 
             _handler = new NetworkHandler(this);
@@ -148,7 +151,7 @@ namespace MineLib.Network.BaseClients
             FireResponsePacket += packet =>
             {
                 info = ParseResponse(packet);
-                _responsePacketReceived = true;
+                responsePacketReceived = true;
             };
 
             #endregion
@@ -157,7 +160,8 @@ namespace MineLib.Network.BaseClients
 
             #region Waiting for all packets handling and handling if something went wrong
 
-            while (!_responsePacketReceived)
+            var watch = Stopwatch.StartNew();
+            while (!responsePacketReceived)
             {
                 if (_handler != null && _handler.Crashed)
                 {
@@ -165,8 +169,17 @@ namespace MineLib.Network.BaseClients
                     return new ServerInfo();
                 }
 
+                if (watch.ElapsedMilliseconds > 2000)
+                {
+                    watch.Stop();
+                    Dispose();
+                    return new ServerInfo { Version = new Version { Name = "Unsupported", Protocol = 0 } };
+                }
+
                 Thread.Sleep(50);
             }
+
+            watch.Stop();
 
             #endregion
 
@@ -178,6 +191,8 @@ namespace MineLib.Network.BaseClients
         {
             ServerHost = host;
             ServerPort = port;
+
+            var pingPacketReceived = false;
 
             _handler = new NetworkHandler(this);
             _handler.OnPacketHandled += RaisePacketHandled;
@@ -200,7 +215,7 @@ namespace MineLib.Network.BaseClients
 
             FirePingPacket += packet =>
             {
-                _pingPacketReceived = true;
+                pingPacketReceived = true;
             };
 
             #endregion
@@ -209,13 +224,15 @@ namespace MineLib.Network.BaseClients
 
             #region Waiting for all packets handling and handling if something went wrong
 
-            while (!_pingPacketReceived)
+            while (!pingPacketReceived)
             {
                 if (_handler != null && _connectionClosed)
                 {
                     Dispose();
                     return int.MaxValue;
                 }
+
+                Thread.Sleep(50);
             }
 
             #endregion
@@ -255,9 +272,9 @@ namespace MineLib.Network.BaseClients
 
         private static long PingServer(string host, int port)
         {
-            Stopwatch watch = new Stopwatch();
+            var watch = new Stopwatch();
             watch.Start();
-            TcpClient client = new TcpClient(host, port);
+            var client = new TcpClient(host, port);
             watch.Stop();
             client.Close();
 

@@ -73,11 +73,11 @@ namespace MineLib.Network.IO
 
         public void Dispose()
         {
-            if (_decryptStream != null)
-                _decryptStream.Dispose();
+            //if (_decryptStream != null)
+            //    _decryptStream.Dispose();
 
-            if (_encryptStream != null)
-                _encryptStream.Dispose();
+            //if (_encryptStream != null)
+            //    _encryptStream.Dispose();
 
             if (BaseStream != null)
                 BaseStream.Dispose();

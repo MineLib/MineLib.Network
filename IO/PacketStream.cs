@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Threading;
 
 namespace MineLib.Network.IO
 {
@@ -230,7 +231,7 @@ namespace MineLib.Network.IO
                     n -= _stream.Read(result, value - n, n);
                     if (n == 0)
                         break;
-                    //Thread.Sleep(1);
+                    Thread.Sleep(1);
                 }
                 return result;
             }
@@ -244,7 +245,7 @@ namespace MineLib.Network.IO
                     n -= _crypto.Read(result, value - n, n);
                     if (n == 0)
                         break;
-                    //Thread.Sleep(1);
+                    Thread.Sleep(1);
                 }
                 return result;
             }
