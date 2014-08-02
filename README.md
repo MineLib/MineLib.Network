@@ -1,3 +1,5 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/hd0nmlppw6p4jo3j)](https://ci.appveyor.com/project/Aragas/minelib-network)
+
 MineLib.Network
 ===============
 
