@@ -1,6 +1,0 @@
-[submodule "CWrapped"]
-	path = CWrapped
-	url = https://github.com/Aragas/CWrapped.git
-[submodule "fNbt"]
-	path = fNbt
-	url = https://github.com/fragmer/fNbt.git
