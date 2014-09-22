@@ -1,27 +1,19 @@
 using MineLib.Network.IO;
-using MineLib.Network.Enums;
 
 namespace MineLib.Network.Packets.Client
 {
     public struct AnimationPacket : IPacket
     {
-        public int EntityID;
-        public Animation Animation;
-
         public const byte PacketID = 0x0A;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            EntityID = stream.ReadInt();
-            Animation = (Animation)stream.ReadByte();
         }
 
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteInt(EntityID);
-            stream.WriteByte((byte)Animation);
             stream.Purge();
         }
     }

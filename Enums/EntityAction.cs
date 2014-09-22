@@ -8,5 +8,4 @@
         StartSprinting  = 4,
         StopSprinting   = 5,
     }
-
 }

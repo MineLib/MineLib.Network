@@ -24,5 +24,4 @@
         ThrownExpBottle         = 75,
         FishingFloat            = 90
     }
-
 }

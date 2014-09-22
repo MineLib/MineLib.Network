@@ -2,7 +2,6 @@
 {
     public enum GameStateReason
     {
-        Nothing,
         InvalidBed          = 0,
         EndRaining          = 1,
         BeginRaining        = 2,
@@ -13,5 +12,4 @@
         FadeValue           = 7,
         FadeTime            = 8
     }
-
 }

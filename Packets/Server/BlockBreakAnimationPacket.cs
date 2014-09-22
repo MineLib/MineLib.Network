@@ -6,29 +6,25 @@ namespace MineLib.Network.Packets.Server
     public struct BlockBreakAnimationPacket : IPacket
     {
         public int EntityID;
-        public Coordinates3D Coordinates;
-        public byte DestroyStage;
+        public Position Location;
+        public sbyte DestroyStage;
 
         public const byte PacketID = 0x25;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            EntityID = stream.ReadVarInt();
-            Coordinates.X = stream.ReadInt();
-            Coordinates.Y = stream.ReadInt();
-            Coordinates.Z = stream.ReadInt();
-            DestroyStage = stream.ReadByte();
+            EntityID = reader.ReadVarInt();
+            Location = Position.FromReaderLong(reader);
+            DestroyStage = reader.ReadSByte();
         }
 
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
             stream.WriteVarInt(EntityID);
-            stream.WriteInt(Coordinates.X);
-            stream.WriteInt(Coordinates.Y);
-            stream.WriteInt(Coordinates.Z);
-            stream.WriteByte(DestroyStage);
+            Location.ToStreamLong(ref stream);
+            stream.WriteSByte(DestroyStage);
             stream.Purge();
         }
     }

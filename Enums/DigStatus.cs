@@ -9,5 +9,4 @@
         DropItem                    = 4,
         ShootArrowOrFinishEating    = 5
     }
-
 }

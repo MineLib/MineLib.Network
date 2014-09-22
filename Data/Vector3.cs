@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Runtime.InteropServices;
+using MineLib.Network.IO;
 
 // From https://github.com/SirCmpwn/Craft.Net
 namespace MineLib.Network.Data
 {
     /// <summary>
-    /// Represents the location of an object in 3D space.
+    /// Represents the location of an object in 3D space (double).
     /// </summary>
     public struct Vector3 : IEquatable<Vector3>
     {
@@ -29,6 +29,89 @@ namespace MineLib.Network.Data
             Y = v.Y;
             Z = v.Z;
         }
+
+        public static Vector3 FromFixedPoint(int x, int y, int z)
+        {
+            return new Vector3
+            {
+                X = x / 32.0,
+                Y = y / 32.0,
+                Z = z / 32.0
+            };
+        }
+
+        #region Network
+
+        public static Vector3 FromReaderByte(PacketByteReader reader)
+        {
+            return new Vector3
+            {
+                X = reader.ReadByte(),
+                Y = reader.ReadByte(),
+                Z = reader.ReadByte()
+            };
+        }
+
+        public static Vector3 FromReaderDouble(PacketByteReader reader)
+        {
+            return new Vector3
+            {
+                X = reader.ReadDouble(),
+                Y = reader.ReadDouble(),
+                Z = reader.ReadDouble()
+            };
+        }
+
+        public static Vector3 FromReaderSByteFixedPoint(PacketByteReader reader)
+        {
+            return new Vector3
+            {
+                X = reader.ReadSByte() / 32.0,
+                Y = reader.ReadSByte() / 32.0,
+                Z = reader.ReadSByte() / 32.0
+            };
+        }
+
+        public static Vector3 FromReaderIntFixedPoint(PacketByteReader reader)
+        {
+            return new Vector3
+            {
+                X = reader.ReadInt() / 32.0,
+                Y = reader.ReadInt() / 32.0,
+                Z = reader.ReadInt() / 32.0
+            };
+        }
+
+
+        public void ToStreamByte(ref PacketStream stream)
+        {
+            stream.WriteByte((byte)X);
+            stream.WriteByte((byte)Y);
+            stream.WriteByte((byte)Z);
+        }
+
+        public void ToStreamDouble(ref PacketStream stream)
+        {
+            stream.WriteDouble(X);
+            stream.WriteDouble(Y);
+            stream.WriteDouble(Z);
+        }
+        // TODO: Check that
+        public void ToStreamSByteFixedPoint(ref PacketStream stream)
+        {
+            stream.WriteSByte((sbyte)(X * 32));
+            stream.WriteSByte((sbyte)(Y * 32));
+            stream.WriteSByte((sbyte)(Z * 32));
+        }
+        // TODO: Check that
+        public void ToStreamIntFixedPoint(ref PacketStream stream)
+        {
+            stream.WriteInt((int)X * 32);
+            stream.WriteInt((int)Y * 32);
+            stream.WriteInt((int)Z * 32);
+        }
+
+        #endregion
 
         /// <summary>
         /// Converts this Vector3 to a string.
@@ -249,8 +332,8 @@ namespace MineLib.Network.Data
 
         #region Constants
 
-        public static readonly Vector3 Zero = new Vector3(0);
-        public static readonly Vector3 One = new Vector3(1);
+        public static readonly Vector3 Zero = new Vector3(0, 0, 0);
+        public static readonly Vector3 One = new Vector3(1, 1, 1);
 
         public static readonly Vector3 Up = new Vector3(0, 1, 0);
         public static readonly Vector3 Down = new Vector3(0, -1, 0);

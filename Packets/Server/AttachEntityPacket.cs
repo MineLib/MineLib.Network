@@ -11,11 +11,11 @@ namespace MineLib.Network.Packets.Server
         public const byte PacketID = 0x1B;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            EntityID = stream.ReadInt();
-            VehicleID = stream.ReadInt();
-            Leash = stream.ReadBoolean();
+            EntityID = reader.ReadInt();
+            VehicleID = reader.ReadInt();
+            Leash = reader.ReadBoolean();
         }
 
         public void WritePacket(ref PacketStream stream)
@@ -23,7 +23,7 @@ namespace MineLib.Network.Packets.Server
             stream.WriteVarInt(Id);
             stream.WriteInt(EntityID);
             stream.WriteInt(VehicleID);
-            stream.WriteBool(Leash);
+            stream.WriteBoolean(Leash);
             stream.Purge();
         }
     }

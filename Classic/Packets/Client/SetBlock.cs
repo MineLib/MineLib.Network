@@ -6,7 +6,7 @@ namespace MineLib.Network.Classic.Packets.Client
 {
     public struct SetBlockPacket : IPacket
     {
-        public Coordinates3D Coordinates;
+        public Position Coordinates;
         public byte Mode;
         public byte BlockType;
 

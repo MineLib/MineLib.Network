@@ -6,5 +6,4 @@
         OverWorld   = 0,
         TheEnd      = 1
     }
-
 }

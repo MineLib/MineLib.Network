@@ -1,5 +1,4 @@
 using MineLib.Network.IO;
-using MineLib.Network.Enums;
 
 namespace MineLib.Network.Packets.Client
 {
@@ -9,20 +8,18 @@ namespace MineLib.Network.Packets.Client
         public byte ViewDistance;
         public byte ChatFlags;
         public bool ChatColours;
-        public Difficulty Difficulty;
-        public bool ShowCape;
+        public byte DisplayedSkinParts;
 
         public const byte PacketID = 0x15;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            Locale = stream.ReadString();
-            ViewDistance = stream.ReadByte();
-            ChatFlags = stream.ReadByte();
-            ChatColours = stream.ReadBoolean();
-            Difficulty = (Difficulty)stream.ReadByte();
-            ShowCape = stream.ReadBoolean();
+            Locale = reader.ReadString();
+            ViewDistance = reader.ReadByte();
+            ChatFlags = reader.ReadByte();
+            ChatColours = reader.ReadBoolean();
+            DisplayedSkinParts = reader.ReadByte();
         }
 
         public void WritePacket(ref PacketStream stream)
@@ -31,9 +28,8 @@ namespace MineLib.Network.Packets.Client
             stream.WriteString(Locale);
             stream.WriteByte(ViewDistance);
             stream.WriteByte(ChatFlags);
-            stream.WriteBool(ChatColours);
-            stream.WriteByte((byte)Difficulty);
-            stream.WriteBool(ShowCape);
+            stream.WriteBoolean(ChatColours);
+            stream.WriteByte(DisplayedSkinParts);
             stream.Purge();
         }
     }

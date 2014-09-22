@@ -12,20 +12,20 @@ namespace MineLib.Network.Packets.Server
 
         public const byte PacketID = 0x04;
         public byte Id { get { return PacketID; } }
-    
-        public void ReadPacket(PacketByteReader stream)
+
+        public void ReadPacket(PacketByteReader reader)
         {
-            EntityID = stream.ReadInt();
-            Slot = (EntityEquipmentSlot)stream.ReadShort();
-            Item = ItemStack.FromReader(stream);
+            EntityID = reader.ReadVarInt();
+            Slot = (EntityEquipmentSlot) reader.ReadShort();
+            Item = ItemStack.FromReader(reader);
         }
     
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteInt(EntityID);
-            stream.WriteShort((short)Slot);
-            Item.WriteTo(ref stream);
+            stream.WriteVarInt(EntityID);
+            stream.WriteShort((short) Slot);
+            Item.ToStream(ref stream);
             stream.Purge();
         }
     }

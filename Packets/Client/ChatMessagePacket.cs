@@ -9,9 +9,9 @@ namespace MineLib.Network.Packets.Client
         public const byte PacketID = 0x01;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            Message = stream.ReadString();
+            Message = reader.ReadString();
         }
 
         public void WritePacket(ref PacketStream stream)

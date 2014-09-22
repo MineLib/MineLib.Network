@@ -10,10 +10,10 @@ namespace MineLib.Network.Packets.Client
         public const byte PacketID = 0x11;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            WindowId = stream.ReadByte();
-            Enchantment = stream.ReadByte();
+            WindowId = reader.ReadByte();
+            Enchantment = reader.ReadByte();
         }
 
         public void WritePacket(ref PacketStream stream)

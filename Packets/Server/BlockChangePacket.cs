@@ -5,30 +5,23 @@ namespace MineLib.Network.Packets.Server
 {
     public struct BlockChangePacket : IPacket
     {
-        public Coordinates3D Coordinates;
+        public Position Location;
         public int BlockID;
-        public byte BlockMetadata;
 
         public const byte PacketID = 0x23;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            Coordinates.X = stream.ReadInt();
-            Coordinates.Y = stream.ReadByte();
-            Coordinates.Z = stream.ReadInt();
-            BlockID = stream.ReadVarInt();
-            BlockMetadata = stream.ReadByte();
+            Location = Position.FromReaderLong(reader);
+            BlockID = reader.ReadVarInt();
         }
 
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteInt(Coordinates.X);
-            stream.WriteByte((byte)Coordinates.Y);
-            stream.WriteInt(Coordinates.Z);
+            Location.ToStreamLong(ref stream);
             stream.WriteVarInt(BlockID);
-            stream.WriteByte(BlockMetadata);
             stream.Purge();
         }
     }

@@ -2,6 +2,8 @@
 using System.IO;
 using System.Text;
 using System.Threading;
+using Ionic.Zlib;
+using Org.BouncyCastle.Math;
 
 namespace MineLib.Network.IO
 {
@@ -11,7 +13,9 @@ namespace MineLib.Network.IO
         // -- Credits to SirCmpwn for encryption support, as taken from SMProxy.
         private readonly Stream _stream;
         private IAesStream _crypto;
-        public bool EncEnabled;
+        public bool EncryptionEnabled;
+        public bool CompressionEnabled;
+        public int CompressionThreshold;
         private byte[] _buffer;
 
         public PacketStream(Stream stream)
@@ -19,13 +23,24 @@ namespace MineLib.Network.IO
             _stream = stream;
         }
 
-        public void InitEncryption(byte[] key)
+        public void InitializeEncryption(byte[] key)
         {
-
             if (Type.GetType("Mono.Runtime") != null) // -- Running on Mono
                 _crypto = new BouncyAesStream(_stream, key);
             else
                 _crypto = new NativeAesStream(_stream, key);
+        }
+
+        public void SetCompression(int threshold)
+        {
+            if (threshold == -1)
+            {
+                CompressionEnabled = false;
+                CompressionThreshold = 0;
+            }
+
+            CompressionEnabled = true;
+            CompressionThreshold = threshold;
         }
 
         // -- Strings
@@ -132,6 +147,16 @@ namespace MineLib.Network.IO
             WriteByteArray(bytes);
         }
 
+        // -- BigInteger
+
+        public void WriteBigInteger(BigInteger value)
+        {
+            var bytes = value.ToByteArray();
+            Array.Reverse(bytes);
+
+            WriteByteArray(bytes);
+        }
+
         // -- Doubles
 
         public void WriteDouble(double value)
@@ -173,9 +198,9 @@ namespace MineLib.Network.IO
 
         }
 
-        // -- Bool
+        // -- Boolean
 
-        public void WriteBool(bool value)
+        public void WriteBoolean(bool value)
         {
             SendSingleByte(Convert.ToByte(value));
 
@@ -221,7 +246,7 @@ namespace MineLib.Network.IO
 
         public byte[] ReadByteArray(int value)
         {
-            if (!EncEnabled)
+            if (!EncryptionEnabled)
             {
                 var result = new byte[value];
                 if (value == 0) return result;
@@ -271,7 +296,7 @@ namespace MineLib.Network.IO
 
         private byte ReadSingleByte()
         {
-            if (EncEnabled)
+            if (EncryptionEnabled)
                 return (byte) _crypto.ReadByte();
             return (byte) _stream.ReadByte();
         }
@@ -294,6 +319,14 @@ namespace MineLib.Network.IO
 
         public void Purge()
         {
+            if (CompressionEnabled)
+                PurgeC();
+            else
+                PurgeNonC();
+        }
+
+        public void PurgeNonC()
+        {
             var lenBytes = GetVarIntBytes(_buffer.Length);
 
             var tempBuff = new byte[_buffer.Length + lenBytes.Length];
@@ -301,10 +334,62 @@ namespace MineLib.Network.IO
             Buffer.BlockCopy(lenBytes, 0, tempBuff, 0, lenBytes.Length);
             Buffer.BlockCopy(_buffer, 0, tempBuff, lenBytes.Length, _buffer.Length);
 
-            if (EncEnabled)
+            if (EncryptionEnabled)
                 _crypto.Write(tempBuff, 0, tempBuff.Length);
             else
                 _stream.Write(tempBuff, 0, tempBuff.Length);
+
+            _buffer = null;
+        }
+
+        private static byte[] ReadFully(Stream input)
+        {
+            byte[] buffer = new byte[16 * 1024];
+            using (MemoryStream ms = new MemoryStream())
+            {
+                int read;
+                while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    ms.Write(buffer, 0, read);
+                }
+                return ms.ToArray();
+            }
+        }
+
+        public void PurgeC()
+        {
+            int packetLength = 0; // data.Length + GetVarIntBytes(data.Length).Length
+            int dataLength = 0; // UncompressedData.Length
+            byte[] data = _buffer;
+
+            packetLength = _buffer.Length + GetVarIntBytes(_buffer.Length).Length; // Get first Packet length
+            if (CompressionEnabled)
+            {
+                if (packetLength >= CompressionThreshold) // if Packet length > threshold, compress
+                {
+                    var compressStream = new ZlibStream(new MemoryStream(_buffer), CompressionMode.Compress, CompressionLevel.BestSpeed);
+                    data = ReadFully(compressStream);
+
+                    dataLength = data.Length;
+
+                    packetLength = dataLength + GetVarIntBytes(data.Length).Length; // calculate new packet length
+                }
+            }
+
+            var lenBytes1 = GetVarIntBytes(packetLength);
+            var lenBytes2 = GetVarIntBytes(dataLength);
+
+            var tempBuf = new byte[data.Length + lenBytes1.Length + lenBytes2.Length];
+
+            Buffer.BlockCopy(lenBytes1, 0, tempBuf, 0, lenBytes1.Length);
+            Buffer.BlockCopy(lenBytes2, 0, tempBuf, lenBytes1.Length, lenBytes2.Length);
+
+            Buffer.BlockCopy(data, 0, tempBuf, lenBytes1.Length + lenBytes2.Length, data.Length);
+
+            if (EncryptionEnabled)
+                _crypto.Write(tempBuf, 0, tempBuf.Length);
+            else
+                _stream.Write(tempBuf, 0, tempBuf.Length);
 
             _buffer = null;
         }

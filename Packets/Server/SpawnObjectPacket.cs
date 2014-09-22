@@ -9,48 +9,38 @@ namespace MineLib.Network.Packets.Server
         public int EntityID;
         public Objects Type;
         public Vector3 Vector3;
-        public int Data; // Maybe new data-type ObjectData?
-        public short? SpeedX, SpeedY, SpeedZ;
         public byte Yaw, Pitch;
+        public short SpeedX;
+        public short SpeedY;
+        public short SpeedZ;
 
         public const byte PacketID = 0x0E;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            EntityID = stream.ReadVarInt();
-            Type = (Objects)stream.ReadByte();
-            Vector3.X = stream.ReadInt() / 32;
-            Vector3.Y = stream.ReadInt() / 32;
-            Vector3.Z = stream.ReadInt() / 32;
-            Yaw = stream.ReadByte();
-            Pitch = stream.ReadByte();
-            Data = stream.ReadInt();
-            if (Data != 0)
-            {
-                SpeedX = stream.ReadShort();
-                SpeedY = stream.ReadShort();
-                SpeedZ = stream.ReadShort();
-            }
+            EntityID = reader.ReadVarInt();
+            Type = (Objects) reader.ReadByte();
+            Vector3 = Vector3.FromReaderIntFixedPoint(reader);
+            Yaw = reader.ReadByte();
+            Pitch = reader.ReadByte();
+            SpeedX = reader.ReadShort();
+            SpeedY = reader.ReadShort();
+            SpeedZ = reader.ReadShort();
         }
+
 
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
             stream.WriteVarInt(EntityID);
-            stream.WriteByte((byte)Type);
-            stream.WriteInt((int)(Vector3.X * 32));
-            stream.WriteInt((int)(Vector3.Y * 32));
-            stream.WriteInt((int)(Vector3.Z * 32));
+            stream.WriteByte((byte) Type);
+            Vector3.ToStreamIntFixedPoint(ref stream);
             stream.WriteByte(Yaw);
             stream.WriteByte(Pitch);
-            stream.WriteInt(Data);
-            if (Data != 0)
-            {
-                stream.WriteShort(SpeedX.Value);
-                stream.WriteShort(SpeedY.Value);
-                stream.WriteShort(SpeedZ.Value);
-            }
+            stream.WriteShort(SpeedX);
+            stream.WriteShort(SpeedY);
+            stream.WriteShort(SpeedZ);
             stream.Purge();
         }
     }

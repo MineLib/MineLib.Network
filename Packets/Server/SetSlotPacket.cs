@@ -5,26 +5,26 @@ namespace MineLib.Network.Packets.Server
 {
     public struct SetSlotPacket : IPacket
     {
-        public byte WindowId;
+        public sbyte WindowId;
         public short Slot;
         public ItemStack SlotData;
 
         public const byte PacketID = 0x2F;
         public byte Id { get { return PacketID; } }
-    
-        public void ReadPacket(PacketByteReader stream)
+
+        public void ReadPacket(PacketByteReader reader)
         {
-            WindowId = stream.ReadByte();
-            Slot = stream.ReadShort();
-            SlotData = ItemStack.FromReader(stream);
+            WindowId = reader.ReadSByte();
+            Slot = reader.ReadShort();
+            SlotData = ItemStack.FromReader(reader);
         }
     
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteByte(WindowId);
+            stream.WriteSByte(WindowId);
             stream.WriteShort(Slot);
-            SlotData.WriteTo(ref stream);
+            SlotData.ToStream(ref stream);
             stream.Purge();
         }
     }

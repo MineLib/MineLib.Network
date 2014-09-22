@@ -7,25 +7,24 @@ namespace MineLib.Network.Packets.Server
     {
         public int EntityID;
         public Vector3 DeltaVector3;
+        public bool OnGround;
 
         public const byte PacketID = 0x15;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            EntityID = stream.ReadInt();
-            DeltaVector3.X = (double)stream.ReadSByte() / 32;
-            DeltaVector3.Y = (double)stream.ReadSByte() / 32;
-            DeltaVector3.Z = (double)stream.ReadSByte() / 32;
+            EntityID = reader.ReadVarInt();
+            DeltaVector3 = Vector3.FromReaderSByteFixedPoint(reader);
+            OnGround = reader.ReadBoolean();
         }
 
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteInt(EntityID);
-            stream.WriteSByte((sbyte)(DeltaVector3.X * 32)); // Check that.
-            stream.WriteSByte((sbyte)(DeltaVector3.Y * 32)); // Check that.
-            stream.WriteSByte((sbyte)(DeltaVector3.Z * 32)); // Check that.
+            stream.WriteVarInt(EntityID);
+            DeltaVector3.ToStreamSByteFixedPoint(ref stream);
+            stream.WriteBoolean(OnGround);
             stream.Purge();
         }
     }

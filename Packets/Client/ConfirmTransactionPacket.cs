@@ -1,27 +1,29 @@
 using MineLib.Network.IO;
-using MineLib.Network.Data;
 
 namespace MineLib.Network.Packets.Client
 {
     public struct ConfirmTransactionPacket : IPacket
     {
+        public byte WindowID;
         public short Slot;
-        public ItemStack ClickedItem;
+        public bool Accepted;
 
         public const byte PacketID = 0x0F;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            Slot = stream.ReadShort();
-            ClickedItem = ItemStack.FromReader(stream);
+            WindowID = reader.ReadByte();
+            Slot = reader.ReadShort();
+            Accepted = reader.ReadBoolean();
         }
 
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
+            stream.WriteByte(WindowID);
             stream.WriteShort(Slot);
-            ClickedItem.WriteTo(ref stream);
+            stream.WriteBoolean(Accepted);
             stream.Purge();
         }
     }

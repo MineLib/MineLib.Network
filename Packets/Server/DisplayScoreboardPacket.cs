@@ -11,16 +11,16 @@ namespace MineLib.Network.Packets.Server
         public const byte PacketID = 0x3D;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            Position = (ScoreboardPosition)stream.ReadByte();
-            ScoreName = stream.ReadString();
+            Position = (ScoreboardPosition) reader.ReadSByte();
+            ScoreName = reader.ReadString();
         }
 
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteByte((byte)Position);
+            stream.WriteSByte((sbyte) Position);
             stream.WriteString(ScoreName);
             stream.Purge();
         }

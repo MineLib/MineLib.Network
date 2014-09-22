@@ -7,7 +7,7 @@ namespace MineLib.Network.Classic.Packets.Client
     public struct PositionAndOrientationPacket : IPacket
     {
         public byte PlayerID;
-        public Coordinates3D Coordinates;
+        public Position Coordinates;
         public byte Yaw;
         public byte Pitch;
 

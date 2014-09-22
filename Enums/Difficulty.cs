@@ -7,5 +7,4 @@
         Normal      = 2,
         Hard        = 3
     }
-
 }

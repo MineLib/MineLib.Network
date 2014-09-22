@@ -5,25 +5,25 @@ namespace MineLib.Network.Packets.Server
     public struct SetExperiencePacket : IPacket
     {
         public float ExperienceBar;
-        public short Level;
-        public short TotalExperience;
+        public int Level;
+        public int TotalExperience;
 
         public const byte PacketID = 0x1F;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            ExperienceBar = stream.ReadFloat();
-            Level = stream.ReadShort();
-            TotalExperience = stream.ReadShort();
+            ExperienceBar = reader.ReadFloat();
+            Level = reader.ReadVarInt();
+            TotalExperience = reader.ReadVarInt();
         }
 
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
             stream.WriteFloat(ExperienceBar);
-            stream.WriteShort(Level);
-            stream.WriteShort(TotalExperience);
+            stream.WriteVarInt(Level);
+            stream.WriteVarInt(TotalExperience);
             stream.Purge();
         }
     }

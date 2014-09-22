@@ -13,7 +13,8 @@ namespace MineLib.Network.Packets
         {
             () => new LoginDisconnectPacket(),      // 0x00
             () => new EncryptionRequestPacket(),    // 0x01
-            () => new LoginSuccessPacket()          // 0x02
+            () => new LoginSuccessPacket(),         // 0x02
+            () => new Server.Login.SetCompressionPacket()        // 0x03
         };
         #endregion
 
@@ -66,7 +67,7 @@ namespace MineLib.Network.Packets
             () => new BlockChangePacket(),                  // 0x23
             () => new BlockActionPacket(),                  // 0x24
             () => new BlockBreakAnimationPacket(),          // 0x25
-            () => new MapChunkBulkPacket(),                 // 0x26
+            null,//() => new MapChunkBulkPacket(),                 // 0x26
             () => new ExplosionPacket(),                    // 0x27
             () => new EffectPacket(),                       // 0x28
             () => new SoundEffectPacket(),                  // 0x29
@@ -93,15 +94,15 @@ namespace MineLib.Network.Packets
             () => new TeamsPacket(),                        // 0x3E
             () => new PluginMessagePacket(),                // 0x3F
             () => new DisconnectPacket(),                   // 0x40
-            null, // 0x41
-            null, // 0x42
-            null, // 0x43
-            null, // 0x44
-            null, // 0x45
-            null, // 0x46
-            null, // 0x47
-            null, // 0x48
-            null, // 0x49
+            () => new ServerDifficultyPacket(),             // 0x41
+            () => new CombatEventPacket(),                  // 0x42
+            () => new CameraPacket(),                       // 0x43
+            () => new WorldBorderPacket(),                  // 0x44
+            () => new TitlePacket(),                        // 0x45
+            () => new Server.SetCompressionPacket(),        // 0x46
+            () => new PlayerListHeaderFooterPacket(),       // 0x47
+            () => new ResourcePackSendPacket(),             // 0x48
+            () => new UpdateEntityNBTPacket(),              // 0x49
             null, // 0x4A
             null, // 0x4B
             null, // 0x4C

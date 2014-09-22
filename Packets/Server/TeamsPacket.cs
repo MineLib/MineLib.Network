@@ -3,6 +3,7 @@ using MineLib.Network.Enums;
 
 namespace MineLib.Network.Packets.Server
 {
+    // TODO: Shit
     public class TeamsPacket : IPacket
     {
         public string TeamName;
@@ -11,33 +12,37 @@ namespace MineLib.Network.Packets.Server
         public string TeamPrefix;
         public string TeamSuffix;
         public byte FriendlyFire;
+        public string NameTagVisibility;
+        public byte Color;
         public short PlayerCount;
         public string[] Players;
 
         public const byte PacketID = 0x3E;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            TeamName = stream.ReadString();
-            Mode = (TeamMode)stream.ReadByte();
+            TeamName = reader.ReadString();
+            Mode = (TeamMode) reader.ReadByte();
 
-            if (Mode == TeamMode.UpdateTeam || Mode == TeamMode.CreateTeam)
+            if (Mode == TeamMode.CreateTeam || Mode == TeamMode.UpdateTeam)
             {
-                TeamDisplayName = stream.ReadString();
-                TeamPrefix = stream.ReadString();
-                TeamSuffix = stream.ReadString();
-                FriendlyFire = stream.ReadByte();
+                TeamDisplayName = reader.ReadString();
+                TeamPrefix = reader.ReadString();
+                TeamSuffix = reader.ReadString();
+                FriendlyFire = reader.ReadByte();
+                NameTagVisibility = reader.ReadString();
+                Color = reader.ReadByte();
             }
 
             if (Mode == TeamMode.CreateTeam || Mode == TeamMode.AddPlayers || Mode == TeamMode.RemovePlayers)
             {
-                PlayerCount = stream.ReadShort();
+                PlayerCount = reader.ReadShort();
 
                 Players = new string[PlayerCount];
                 for (int i = 0; i < PlayerCount; i++)
                 {
-                    Players[i] = stream.ReadString();
+                    Players[i] = reader.ReadString();
                 }
             }
         }
@@ -47,18 +52,21 @@ namespace MineLib.Network.Packets.Server
             stream.WriteVarInt(Id);
 
             stream.WriteString(TeamName);
-            stream.WriteByte((byte)Mode);
-            if (Mode == TeamMode.UpdateTeam || Mode == TeamMode.CreateTeam)
+            stream.WriteByte((byte) Mode);
+
+            if (Mode == TeamMode.CreateTeam || Mode == TeamMode.UpdateTeam)
             {
                 stream.WriteString(TeamDisplayName);
                 stream.WriteString(TeamPrefix);
                 stream.WriteString(TeamSuffix);
                 stream.WriteByte(FriendlyFire);
+                stream.WriteString(NameTagVisibility);
+                stream.WriteByte(Color);
             }
 
             if (Mode == TeamMode.CreateTeam || Mode == TeamMode.AddPlayers || Mode == TeamMode.RemoveTeam)
             {
-                stream.WriteShort((short)Players.Length);
+                stream.WriteShort((short) Players.Length);
                 stream.WriteStringArray(Players);
             }
         }

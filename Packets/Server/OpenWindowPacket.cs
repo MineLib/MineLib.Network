@@ -5,35 +5,32 @@ namespace MineLib.Network.Packets.Server
     public struct OpenWindowPacket : IPacket
     {
         public byte WindowID;
-        public byte InventoryType;
+        public string InventoryType;
         public string WindowTitle;
         public byte NumberOfSlots;
-        public bool UseProvidedTitle;
         public int? EntityID;
 
         public const byte PacketID = 0x2D;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            WindowID = stream.ReadByte();
-            InventoryType = stream.ReadByte();
-            WindowTitle = stream.ReadString();
-            NumberOfSlots = stream.ReadByte();
-            UseProvidedTitle = stream.ReadBoolean();
-            if (InventoryType == 11)
-                EntityID = stream.ReadInt();
+            WindowID = reader.ReadByte();
+            InventoryType = reader.ReadString();
+            WindowTitle = reader.ReadString();
+            NumberOfSlots = reader.ReadByte();
+            if (InventoryType == "EntityHorse")
+                EntityID = reader.ReadInt();
         }
 
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
             stream.WriteByte(WindowID);
-            stream.WriteByte(InventoryType);
+            stream.WriteString(InventoryType);
             stream.WriteString(WindowTitle);
             stream.WriteByte(NumberOfSlots);
-            stream.WriteBool(UseProvidedTitle);
-            if (InventoryType == 11)
+            if (InventoryType == "EntityHorse")
                 stream.WriteInt(EntityID.GetValueOrDefault());
             stream.Purge();
         }

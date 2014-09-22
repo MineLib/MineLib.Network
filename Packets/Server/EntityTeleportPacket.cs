@@ -7,30 +7,29 @@ namespace MineLib.Network.Packets.Server
     {
         public int EntityID;
         public Vector3 Vector3;
-        public byte Yaw, Pitch;
+        public sbyte Yaw, Pitch;
+        public bool OnGround;
 
         public const byte PacketID = 0x18;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            EntityID = stream.ReadInt();
-            Vector3.X = stream.ReadInt() / 32;
-            Vector3.Y = stream.ReadInt() / 32;
-            Vector3.Z = stream.ReadInt() / 32;
-            Yaw = stream.ReadByte();
-            Pitch = stream.ReadByte();
+            EntityID = reader.ReadVarInt();
+            Vector3 = Vector3.FromReaderIntFixedPoint(reader);
+            Yaw = reader.ReadSByte();
+            Pitch = reader.ReadSByte();
+            OnGround = reader.ReadBoolean();
         }
 
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteInt(EntityID);
-            stream.WriteInt((int)(Vector3.X * 32));
-            stream.WriteInt((int)(Vector3.Y * 32));
-            stream.WriteInt((int)(Vector3.Z * 32));
-            stream.WriteByte(Yaw);
-            stream.WriteByte(Pitch);
+            stream.WriteVarInt(EntityID);
+            Vector3.ToStreamIntFixedPoint(ref stream);
+            stream.WriteSByte(Yaw);
+            stream.WriteSByte(Pitch);
+            stream.WriteBoolean(OnGround);
             stream.Purge();
         }
     }

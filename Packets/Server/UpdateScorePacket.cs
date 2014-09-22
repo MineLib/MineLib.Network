@@ -12,14 +12,14 @@ namespace MineLib.Network.Packets.Server
         public const byte PacketID = 0x3C;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            ItemName = stream.ReadString();
-            RemoveItem = stream.ReadBoolean();
+            ItemName = reader.ReadString();
+            RemoveItem = reader.ReadBoolean();
             if (!RemoveItem)
             {
-                ScoreName = stream.ReadString();
-                Value = stream.ReadInt();
+                ScoreName = reader.ReadString();
+                Value = reader.ReadInt();
             }
         }
 
@@ -27,7 +27,7 @@ namespace MineLib.Network.Packets.Server
         {
             stream.WriteVarInt(Id);
             stream.WriteString(ItemName);
-            stream.WriteBool(RemoveItem);
+            stream.WriteBoolean(RemoveItem);
             if (!RemoveItem)
             {
                 stream.WriteString(ScoreName);

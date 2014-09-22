@@ -11,11 +11,11 @@ namespace MineLib.Network.Packets.Client
         public const byte PacketID = 0x05;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            Yaw = stream.ReadFloat();
-            Pitch = stream.ReadFloat();
-            OnGround = stream.ReadBoolean();
+            Yaw = reader.ReadFloat();
+            Pitch = reader.ReadFloat();
+            OnGround = reader.ReadBoolean();
         }
 
         public void WritePacket(ref PacketStream stream)
@@ -23,7 +23,7 @@ namespace MineLib.Network.Packets.Client
             stream.WriteVarInt(Id);
             stream.WriteFloat(Yaw);
             stream.WriteFloat(Pitch);
-            stream.WriteBool(OnGround);
+            stream.WriteBoolean(OnGround);
             stream.Purge();
         }
     }

@@ -5,5 +5,4 @@
         Status  = 1,
         Login   = 2
     }
-
 }

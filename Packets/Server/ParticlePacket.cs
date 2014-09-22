@@ -1,35 +1,53 @@
+using MineLib.Network.Enums;
 using MineLib.Network.IO;
 
 namespace MineLib.Network.Packets.Server
 {
     public struct ParticlePacket : IPacket
     {
-        public string ParticleName;
+        public Particle ParticleID;
+        public bool LongDistance;
         public float X, Y, Z;
         public float OffsetX, OffsetY, OffsetZ;
         public float ParticleData;
         public int NumberOfParticles;
+        public int[] Data;
 
         public const byte PacketID = 0x2A;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            ParticleName = stream.ReadString();
-            X = stream.ReadFloat();
-            Y = stream.ReadFloat();
-            Z = stream.ReadFloat();
-            OffsetX = stream.ReadFloat();
-            OffsetY = stream.ReadFloat();
-            OffsetZ = stream.ReadFloat();
-            ParticleData = stream.ReadFloat();
-            NumberOfParticles = stream.ReadInt();
+            ParticleID = (Particle) reader.ReadInt();
+            LongDistance = reader.ReadBoolean();
+            X = reader.ReadFloat();
+            Y = reader.ReadFloat();
+            Z = reader.ReadFloat();
+            OffsetX = reader.ReadFloat();
+            OffsetY = reader.ReadFloat();
+            OffsetZ = reader.ReadFloat();
+            ParticleData = reader.ReadFloat();
+            NumberOfParticles = reader.ReadInt();
+
+            switch (ParticleID)
+            {
+                case Particle.ITEM_CRACK:
+                case Particle.BLOCK_CRACK:
+                case Particle.BLOCK_DUST:
+                    Data = reader.ReadVarIntArray(2);
+                    break;
+
+                default:
+                    Data = reader.ReadVarIntArray(0);
+                    break;
+            }
         }
 
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteString(ParticleName);
+            stream.WriteInt((int) ParticleID);
+            stream.WriteBoolean(LongDistance);
             stream.WriteFloat(X);
             stream.WriteFloat(Y);
             stream.WriteFloat(Z);
@@ -38,6 +56,7 @@ namespace MineLib.Network.Packets.Server
             stream.WriteFloat(OffsetZ);
             stream.WriteFloat(ParticleData);
             stream.WriteInt(NumberOfParticles);
+            stream.WriteVarIntArray(Data);
         }
     }
 }

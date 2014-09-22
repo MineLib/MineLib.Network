@@ -13,13 +13,13 @@ namespace MineLib.Network.Packets.Server.Login
         public const byte PacketID = 0x01;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            ServerId = stream.ReadString();
-            var pkLength = stream.ReadShort();
-            PublicKey = stream.ReadByteArray(pkLength);
-            var vtLength = stream.ReadShort();
-            VerificationToken = stream.ReadByteArray(vtLength);
+            ServerId = reader.ReadString();
+            var pkLength = reader.ReadVarInt();
+            PublicKey = reader.ReadByteArray(pkLength);
+            var vtLength = reader.ReadVarInt();
+            VerificationToken = reader.ReadByteArray(vtLength);
 
             SharedKey = new byte[16];
 
@@ -31,9 +31,9 @@ namespace MineLib.Network.Packets.Server.Login
         {
             stream.WriteVarInt(Id);
             stream.WriteString(ServerId);
-            stream.WriteShort((short)PublicKey.Length);
+            stream.WriteVarInt(PublicKey.Length);
             stream.WriteByteArray(PublicKey);
-            stream.WriteShort((short)VerificationToken.Length);
+            stream.WriteVarInt(VerificationToken.Length);
             stream.WriteByteArray(VerificationToken);
             stream.Purge();
         }

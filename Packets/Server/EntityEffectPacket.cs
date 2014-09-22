@@ -7,27 +7,30 @@ namespace MineLib.Network.Packets.Server
     {
         public int EntityID;
         public EffectID EffectID;
-        public byte Amplifier;
-        public short Duration;
+        public sbyte Amplifier;
+        public int Duration;
+        public bool HideParticles;
 
         public const byte PacketID = 0x1D;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            EntityID = stream.ReadInt();
-            EffectID = (EffectID)stream.ReadByte();
-            Amplifier = stream.ReadByte();
-            Duration = stream.ReadShort();
+            EntityID = reader.ReadVarInt();
+            EffectID = (EffectID) reader.ReadSByte();
+            Amplifier = reader.ReadSByte();
+            Duration = reader.ReadVarInt();
+            HideParticles = reader.ReadBoolean();
         }
 
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteInt(EntityID);
-            stream.WriteByte((byte)EffectID);
-            stream.WriteByte(Amplifier);
-            stream.WriteShort(Duration);
+            stream.WriteVarInt(EntityID);
+            stream.WriteSByte((sbyte) EffectID);
+            stream.WriteSByte(Amplifier);
+            stream.WriteVarInt(Duration);
+            stream.WriteBoolean(HideParticles);
             stream.Purge();
         }
     }

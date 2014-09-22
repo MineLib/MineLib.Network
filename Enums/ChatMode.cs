@@ -6,5 +6,4 @@
         CommandsOnly    = 1,
         Hidden          = 2
     }
-
 }

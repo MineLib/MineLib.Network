@@ -1,3 +1,4 @@
+using MineLib.Network.Enums;
 using MineLib.Network.IO;
 
 namespace MineLib.Network.Packets.Client
@@ -6,18 +7,16 @@ namespace MineLib.Network.Packets.Client
     {
         public float Sideways;
         public float Forward;
-        public bool Jump;
-        public bool Unmount;
+        public SteerVehicle Flags;
 
         public const byte PacketID = 0x0C;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            Sideways = stream.ReadFloat();
-            Forward = stream.ReadFloat();
-            Jump = stream.ReadBoolean();
-            Unmount = stream.ReadBoolean();
+            Sideways = reader.ReadFloat();
+            Forward = reader.ReadFloat();
+            Flags = (SteerVehicle) reader.ReadByte();
         }
 
         public void WritePacket(ref PacketStream stream)
@@ -25,8 +24,7 @@ namespace MineLib.Network.Packets.Client
             stream.WriteVarInt(Id);
             stream.WriteFloat(Sideways);
             stream.WriteFloat(Forward);
-            stream.WriteBool(Jump);
-            stream.WriteBool(Unmount);
+            stream.WriteByte((byte) Flags);
             stream.Purge();
         }
     }

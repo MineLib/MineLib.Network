@@ -1,4 +1,5 @@
 using MineLib.Network.Data;
+using MineLib.Network.Enums;
 using MineLib.Network.IO;
 
 namespace MineLib.Network.Packets.Server
@@ -7,30 +8,26 @@ namespace MineLib.Network.Packets.Server
     {
         public Vector3 Vector3;
         public float Yaw, Pitch;
-        public bool OnGround;
+        public PlayerPositionAndLookFlags Flags;
 
         public const byte PacketID = 0x08;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            Vector3.X = stream.ReadDouble();
-            Vector3.Y = stream.ReadDouble();
-            Vector3.Z = stream.ReadDouble();
-            Yaw = stream.ReadFloat();
-            Pitch = stream.ReadFloat();
-            OnGround = stream.ReadBoolean();
+            Vector3 = Vector3.FromReaderDouble(reader);
+            Yaw = reader.ReadFloat();
+            Pitch = reader.ReadFloat();
+            Flags = (PlayerPositionAndLookFlags) reader.ReadSByte();
         }
 
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteDouble(Vector3.X);
-            stream.WriteDouble(Vector3.Y);
-            stream.WriteDouble(Vector3.Z);
+            Vector3.ToStreamDouble(ref stream);
             stream.WriteFloat(Yaw);
             stream.WriteFloat(Pitch);
-            stream.WriteBool(OnGround);
+            stream.WriteSByte((sbyte) Flags);
             stream.Purge();
         }
     }

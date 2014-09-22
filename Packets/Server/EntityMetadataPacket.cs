@@ -1,27 +1,27 @@
+using MineLib.Network.Data;
 using MineLib.Network.IO;
-using MineLib.Network.Data.EntityMetadata;
 
 namespace MineLib.Network.Packets.Server
 {
     public struct EntityMetadataPacket : IPacket
     {
         public int EntityID;
-        public MetadataDictionary Metadata;
+        public EntityMetadata Metadata;
 
         public const byte PacketID = 0x1C;
         public byte Id { get { return PacketID; } }
-    
-        public void ReadPacket(PacketByteReader stream)
+
+        public void ReadPacket(PacketByteReader reader)
         {
-            EntityID = stream.ReadInt();
-            Metadata = MetadataDictionary.FromReader(stream);
+            EntityID = reader.ReadVarInt();
+            Metadata = EntityMetadata.FromReader(reader);
         }
     
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteInt(EntityID);
-            Metadata.WriteTo(ref stream);
+            stream.WriteVarInt(EntityID);
+            Metadata.ToStream(ref stream);
             stream.Purge();
         }
     }

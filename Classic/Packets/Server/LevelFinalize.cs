@@ -6,7 +6,7 @@ namespace MineLib.Network.Classic.Packets.Server
 {
     public struct LevelFinalizePacket : IPacket
     {
-        public Coordinates3D Coordinates;
+        public Position Coordinates;
 
         public const byte PacketID = 0x04;
         public byte Id { get { return PacketID; } }

@@ -7,23 +7,23 @@ namespace MineLib.Network.Packets.Server
         public float X, Y, Z;
         public float Radius;
         public int RecordCount;
-        public byte[] Records;
+        public byte[] Records; // TODO: Records in ExplosionPacket
         public float PlayerMotionX, PlayerMotionY, PlayerMotionZ;
 
         public const byte PacketID = 0x27;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            X = stream.ReadFloat();
-            Y = stream.ReadFloat();
-            Z = stream.ReadFloat();
-            Radius = stream.ReadFloat();
-            RecordCount = stream.ReadInt();
-            Records = stream.ReadByteArray(RecordCount * 3);
-            PlayerMotionX = stream.ReadFloat();
-            PlayerMotionY = stream.ReadFloat();
-            PlayerMotionZ = stream.ReadFloat();
+            X = reader.ReadFloat();
+            Y = reader.ReadFloat();
+            Z = reader.ReadFloat();
+            Radius = reader.ReadFloat();
+            RecordCount = reader.ReadInt();
+            Records = reader.ReadByteArray(3 * RecordCount);
+            PlayerMotionX = reader.ReadFloat();
+            PlayerMotionY = reader.ReadFloat();
+            PlayerMotionZ = reader.ReadFloat();
         }
 
         public void WritePacket(ref PacketStream stream)

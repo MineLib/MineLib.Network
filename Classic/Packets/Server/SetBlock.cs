@@ -6,7 +6,7 @@ namespace MineLib.Network.Classic.Packets.Server
 {
     public struct SetBlockPacket : IPacket
     {
-        public Coordinates3D Coordinates;
+        public Position Coordinates;
         public byte BlockType;
 
         public const byte PacketID = 0x06;

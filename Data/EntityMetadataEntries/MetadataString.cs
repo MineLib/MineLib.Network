@@ -1,8 +1,11 @@
 ﻿using System;
 using MineLib.Network.IO;
 
-namespace MineLib.Network.Data.EntityMetadata
+namespace MineLib.Network.Data.EntityMetadataEntries
 {
+    /// <summary>
+    /// String Metadata
+    /// </summary>
     public class MetadataString : MetadataEntry
     {
         public override byte Identifier { get { return 4; } }
@@ -33,7 +36,7 @@ namespace MineLib.Network.Data.EntityMetadata
             Value = reader.ReadString();
         }
 
-        public override void WriteTo(ref PacketStream stream, byte index)
+        public override void ToStream(ref PacketStream stream, byte index)
         {
             stream.WriteByte(GetKey(index));
             stream.WriteString(Value);

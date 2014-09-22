@@ -21,5 +21,4 @@
         AFireworkExploding                                              = 17,
         FallInLoveWithHuman                                             = 18
     }
-
 }

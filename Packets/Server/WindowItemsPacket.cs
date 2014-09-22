@@ -6,27 +6,22 @@ namespace MineLib.Network.Packets.Server
     public struct WindowItemsPacket : IPacket
     {
         public byte WindowId;
-        public ItemStack[] SlotData;
+        public ItemStackArray SlotData;
 
         public const byte PacketID = 0x30;
         public byte Id { get { return PacketID; } }
     
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            WindowId = stream.ReadByte();
-            short count = stream.ReadShort();
-            SlotData = new ItemStack[count];
-            for (int i = 0; i < count; i++)
-                SlotData[i] = ItemStack.FromReader(stream);
+            WindowId = reader.ReadByte();
+            SlotData = ItemStackArray.FromReader(reader);
         }
     
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
             stream.WriteByte(WindowId);
-            stream.WriteShort((short)SlotData.Length);
-            for (int i = 0; i < SlotData.Length; i++)
-                SlotData[i].WriteTo(ref stream);
+            SlotData.ToStream(ref stream);
             stream.Purge();
         }
     }

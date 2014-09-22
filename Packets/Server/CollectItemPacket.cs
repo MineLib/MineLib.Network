@@ -10,17 +10,17 @@ namespace MineLib.Network.Packets.Server
         public const byte PacketID = 0x0D;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            CollectedEntityID = stream.ReadInt();
-            CollectorEntityID = stream.ReadInt();
+            CollectedEntityID = reader.ReadVarInt();
+            CollectorEntityID = reader.ReadVarInt();
         }
 
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteInt(CollectedEntityID);
-            stream.WriteInt(CollectorEntityID);
+            stream.WriteVarInt(CollectedEntityID);
+            stream.WriteVarInt(CollectorEntityID);
             stream.Purge();
         }
     }

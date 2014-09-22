@@ -32,5 +32,4 @@
         Horse           = 100,
         Villager        = 120
     }
-
 }

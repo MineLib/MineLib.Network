@@ -9,10 +9,6 @@
         BassDrum        = 4
     }
 
-    public enum NoteBlockPitch
-    {
-    }
-
 
     public enum PistonState
     {
@@ -30,11 +26,6 @@
         East    = 5
     }
 
-
-    public enum Chest
-    {
-        NotUsed = 1
-    }
 
     public enum ChestState
     {

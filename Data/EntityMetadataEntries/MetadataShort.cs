@@ -1,7 +1,10 @@
 ﻿using MineLib.Network.IO;
 
-namespace MineLib.Network.Data.EntityMetadata
+namespace MineLib.Network.Data.EntityMetadataEntries
 {
+    /// <summary>
+    /// Short Metadata
+    /// </summary>
     public class MetadataShort : MetadataEntry
     {
         public override byte Identifier { get { return 1; } }
@@ -28,7 +31,7 @@ namespace MineLib.Network.Data.EntityMetadata
             Value = reader.ReadShort();
         }
 
-        public override void WriteTo(ref PacketStream stream, byte index)
+        public override void ToStream(ref PacketStream stream, byte index)
         {
             stream.WriteByte(GetKey(index));
             stream.WriteShort(Value);

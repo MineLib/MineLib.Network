@@ -6,26 +6,22 @@ namespace MineLib.Network.Packets.Server
     public struct UseBedPacket : IPacket
     {
         public int EntityID;
-        public Coordinates3D Coordinates;
+        public Position Location;
 
         public const byte PacketID = 0x0A;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            EntityID = stream.ReadInt();
-            Coordinates.X = stream.ReadInt();
-            Coordinates.Y = stream.ReadByte();
-            Coordinates.Z = stream.ReadInt();
+            EntityID = reader.ReadVarInt();
+            Location = Position.FromReaderLong(reader);
         }
 
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteInt(EntityID);
-            stream.WriteInt(Coordinates.X);
-            stream.WriteByte((byte)Coordinates.Y);
-            stream.WriteInt(Coordinates.Z);
+            stream.WriteVarInt(EntityID);
+            Location.ToStreamLong(ref stream);
             stream.Purge();
         }
     }

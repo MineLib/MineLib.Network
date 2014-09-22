@@ -4,20 +4,20 @@ namespace MineLib.Network.Packets.Server
 {
     public struct HeldItemChangePacket : IPacket
     {
-        public byte Slot;
+        public sbyte Slot;
 
         public const byte PacketID = 0x09;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            Slot = stream.ReadByte();
+            Slot = reader.ReadSByte();
         }
 
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteByte(Slot);
+            stream.WriteSByte(Slot);
             stream.Purge();
         }
     }

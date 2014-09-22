@@ -5,22 +5,22 @@ namespace MineLib.Network.Packets.Server
     public struct EntityHeadLookPacket : IPacket
     {
         public int EntityID;
-        public byte HeadYaw;
+        public sbyte HeadYaw;
 
         public const byte PacketID = 0x19;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            EntityID = stream.ReadInt();
-            HeadYaw = stream.ReadByte();
+            EntityID = reader.ReadVarInt();
+            HeadYaw = reader.ReadSByte();
         }
 
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteInt(EntityID);
-            stream.WriteByte(HeadYaw);
+            stream.WriteVarInt(EntityID);
+            stream.WriteSByte(HeadYaw);
             stream.Purge();
         }
     }

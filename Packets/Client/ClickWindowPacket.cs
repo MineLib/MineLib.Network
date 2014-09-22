@@ -15,14 +15,14 @@ namespace MineLib.Network.Packets.Client
         public const byte PacketID = 0x0E;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            WindowID = stream.ReadByte();
-            Slot = stream.ReadShort();
-            Button = stream.ReadByte();
-            ActionNumber = stream.ReadShort();
-            Mode = stream.ReadByte();
-            ClickedItem = ItemStack.FromReader(stream);
+            WindowID = reader.ReadByte();
+            Slot = reader.ReadShort();
+            Button = reader.ReadByte();
+            ActionNumber = reader.ReadShort();
+            Mode = reader.ReadByte();
+            ClickedItem = ItemStack.FromReader(reader);
         }
 
         public void WritePacket(ref PacketStream stream)
@@ -33,7 +33,7 @@ namespace MineLib.Network.Packets.Client
             stream.WriteByte(Button);
             stream.WriteShort(ActionNumber);
             stream.WriteByte(Mode);
-            ClickedItem.WriteTo(ref stream);
+            ClickedItem.ToStream(ref stream);
             stream.Purge();
         }
     }

@@ -4,15 +4,16 @@ namespace MineLib.Network.Packets.Server.Login
 {
     public struct LoginSuccessPacket : IPacket
     {
-        public string UUID, Username;
+        public string UUID;
+        public string Username;
 
         public const byte PacketID = 0x02;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            UUID = stream.ReadString();
-            Username = stream.ReadString();
+            UUID = reader.ReadString();
+            Username = reader.ReadString();
         }
 
         public void WritePacket(ref PacketStream stream)

@@ -10,18 +10,18 @@ namespace MineLib.Network.Packets.Server
         public const byte PacketID = 0x12;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            EntityID = stream.ReadInt();
-            VelocityX = stream.ReadShort();
-            VelocityY = stream.ReadShort();
-            VelocityZ = stream.ReadShort();
+            EntityID = reader.ReadVarInt();
+            VelocityX = reader.ReadShort();
+            VelocityY = reader.ReadShort();
+            VelocityZ = reader.ReadShort();
         }
 
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteInt(EntityID);
+            stream.WriteVarInt(EntityID);
             stream.WriteShort(VelocityX);
             stream.WriteShort(VelocityY);
             stream.WriteShort(VelocityZ);

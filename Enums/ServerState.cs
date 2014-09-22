@@ -6,5 +6,4 @@
         Play    = 1,
         Status  = 2,
     }
-
 }

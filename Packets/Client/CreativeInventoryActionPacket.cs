@@ -1,29 +1,27 @@
 using MineLib.Network.IO;
+using MineLib.Network.Data;
 
 namespace MineLib.Network.Packets.Client
 {
     public struct CreativeInventoryActionPacket : IPacket
     {
-        public byte WindowId;
-        public short ActionNumber;
-        public bool Accepted;
+        public short Slot;
+        public ItemStack ClickedItem;
 
         public const byte PacketID = 0x10;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            WindowId = stream.ReadByte();
-            ActionNumber = stream.ReadShort();
-            Accepted = stream.ReadBoolean();
+            Slot = reader.ReadShort();
+            ClickedItem = ItemStack.FromReader(reader);
         }
 
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteByte(WindowId);
-            stream.WriteShort(ActionNumber);
-            stream.WriteBool(Accepted);
+            stream.WriteShort(Slot);
+            ClickedItem.ToStream(ref stream);
             stream.Purge();
         }
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using Org.BouncyCastle.Math;
 
 namespace MineLib.Network.IO
 {
@@ -96,6 +97,16 @@ namespace MineLib.Network.IO
             Array.Reverse(bytes);
 
             return BitConverter.ToInt64(bytes, 0);
+        }
+
+        // -- BigInteger
+
+        public BigInteger ReadBigInteger()
+        {
+            var bytes = ReadByteArray(16);
+            Array.Reverse(bytes);
+
+            return new BigInteger(bytes);
         }
 
         // -- Doubles

@@ -2,8 +2,10 @@
 {
     public enum EntityEquipmentSlot
     {
-        HeldItem = 0,
-        Footwear = 4
+        Held    = 0,
+        Boots       = 1,
+        Leggings    = 2,
+        Chestplate  = 3,
+        Helmet      = 4
     }
-
 }

@@ -7,7 +7,7 @@ namespace MineLib.Network.IO
     {
         public override void Flush()
         {
-            if (EncEnabled)
+            if (EncryptionEnabled)
                 _crypto.BaseStream.Flush();
             else
                 _stream.Flush();
@@ -25,7 +25,7 @@ namespace MineLib.Network.IO
 
         public override int Read(byte[] buffer, int offset, int count)
         {
-            if (EncEnabled)
+            if (EncryptionEnabled)
                 return _crypto.Read(buffer, offset, count);
             else
                 return _stream.Read(buffer, offset, count);
@@ -33,7 +33,7 @@ namespace MineLib.Network.IO
 
         public override void Write(byte[] buffer, int offset, int count)
         {
-            if (EncEnabled)
+            if (EncryptionEnabled)
                 _crypto.Write(buffer, offset, count);
             else
                 _stream.Write(buffer, offset, count);
@@ -41,7 +41,7 @@ namespace MineLib.Network.IO
 
         public override bool CanRead
         {
-            get { return EncEnabled ? _crypto.BaseStream.CanRead : _stream.CanRead; }
+            get { return EncryptionEnabled ? _crypto.BaseStream.CanRead : _stream.CanRead; }
         }
 
         public override bool CanSeek
@@ -51,7 +51,7 @@ namespace MineLib.Network.IO
 
         public override bool CanWrite
         {
-            get { return EncEnabled ? _crypto.BaseStream.CanWrite : _stream.CanWrite; }
+            get { return EncryptionEnabled ? _crypto.BaseStream.CanWrite : _stream.CanWrite; }
         }
 
         public override long Length
@@ -63,13 +63,13 @@ namespace MineLib.Network.IO
         {
             get
             {
-                if (EncEnabled) 
+                if (EncryptionEnabled) 
                     throw new NotSupportedException();
                 return _stream.Position;
             }
             set
             {
-                if (EncEnabled)
+                if (EncryptionEnabled)
                     throw new NotSupportedException();
                 _stream.Position = value;
             }

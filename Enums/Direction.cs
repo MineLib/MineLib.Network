@@ -12,5 +12,4 @@
         North       = 7,
         NorthWest   = 8
     }
-
 }

@@ -33,6 +33,8 @@
         ClientSettings              = 0x15,
         ClientStatus                = 0x16,
         PluginMessage               = 0x17,
+        Spectate                    = 0x18,
+        ResourcePackStatus          = 0x19,
 
         Disconnect                  = 0x40
     }
@@ -42,6 +44,7 @@
         LoginDisconnect = 0x00,
         EncryptionRequest = 0x01,
         LoginSuccess = 0x02,
+        SetCompressionLogin = 0x03,
 
         Response = 0x00,
         Ping = 0x01,
@@ -110,8 +113,16 @@
         DisplayScoreboard           = 0x3D,
         Teams                       = 0x3E,
         PluginMessage               = 0x3F,
-        Disconnect                  = 0x40
+        Disconnect                  = 0x40,
+        ServerDifficulty            = 0x41,
+        CombatEvent                 = 0x42,
+        Camera                      = 0x43,
+        WorldBorder                 = 0x44,
+        Title                       = 0x45,
+        SetCompressionPlay          = 0x46,
+        PlayerListHeaderFooter      = 0x47,
+        ResourcePackSend            = 0x48,
+        UpdateEntityNBT             = 0x49
     }
-
 }
 

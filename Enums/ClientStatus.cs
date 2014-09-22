@@ -2,9 +2,8 @@
 {
     public enum ClientStatus
     {
-        Respawn                 = 0,
-        RequestStats            = 1,
-        InventoryAchievement    = 2
+        Respawn                     = 0,
+        RequestStats                = 1,
+        OpenInventoryAchievement    = 2
     }
-
 }

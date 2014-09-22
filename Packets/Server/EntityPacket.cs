@@ -9,15 +9,15 @@ namespace MineLib.Network.Packets.Server
         public const byte PacketID = 0x14;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            EntityID = stream.ReadInt();
+            EntityID = reader.ReadVarInt();
         }
 
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteInt(EntityID);
+            stream.WriteVarInt(EntityID);
             stream.Purge();
         }
     }

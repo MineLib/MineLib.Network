@@ -8,7 +8,7 @@ namespace MineLib.Network.Classic.Packets.Server
     {
         public sbyte PlayerID;
         public string PlayerName;
-        public Coordinates3D Coordinates;
+        public Position Coordinates;
         public byte Yaw;
         public byte Pitch;
 

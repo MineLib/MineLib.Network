@@ -7,20 +7,18 @@ namespace MineLib.Network.Packets.Server
     {
         public int EntityID;
         public string Title;
-        public Coordinates3D Coordinates;
+        public Position Location;
         public int Direction;
 
         public const byte PacketID = 0x10;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            EntityID = stream.ReadVarInt();
-            Title = stream.ReadString();
-            Coordinates.X = stream.ReadInt();
-            Coordinates.Y = stream.ReadInt();
-            Coordinates.Z = stream.ReadInt();
-            Direction = stream.ReadInt();
+            EntityID = reader.ReadVarInt();
+            Title = reader.ReadString();
+            Location = Position.FromReaderLong(reader);
+            Direction = reader.ReadInt();
         }
 
         public void WritePacket(ref PacketStream stream)
@@ -28,9 +26,7 @@ namespace MineLib.Network.Packets.Server
             stream.WriteVarInt(Id);
             stream.WriteVarInt(EntityID);
             stream.WriteString(Title);
-            stream.WriteInt(Coordinates.X);
-            stream.WriteInt(Coordinates.Y);
-            stream.WriteInt(Coordinates.Z);
+            Location.ToStreamLong(ref stream);
             stream.WriteInt(Direction);
             stream.Purge();
         }

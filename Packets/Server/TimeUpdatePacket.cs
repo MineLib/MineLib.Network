@@ -10,10 +10,10 @@ namespace MineLib.Network.Packets.Server
         public const byte PacketID = 0x03;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            AgeOfTheWorld = stream.ReadLong();
-            TimeOfDay = stream.ReadLong();
+            AgeOfTheWorld = reader.ReadLong();
+            TimeOfDay = reader.ReadLong();
         }
 
         public void WritePacket(ref PacketStream stream)

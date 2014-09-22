@@ -9,5 +9,4 @@
         North   = 4,
         South   = 5
     }
-
 }

@@ -5,17 +5,17 @@ namespace MineLib.Network.Packets.Client
     public struct PlayerAbilitiesPacket : IPacket
     {
         public byte Flags;
-        private float FlyingSpeed;
+        public float FlyingSpeed;
         public float WalkingSpeed;
 
         public const byte PacketID = 0x13;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            Flags = stream.ReadByte();
-            FlyingSpeed = stream.ReadFloat();
-            WalkingSpeed = stream.ReadFloat();
+            Flags = reader.ReadByte();
+            FlyingSpeed = reader.ReadFloat();
+            WalkingSpeed = reader.ReadFloat();
         }
 
         public void WritePacket(ref PacketStream stream)

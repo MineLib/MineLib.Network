@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
+using Ionic.Zlib;
 using MineLib.Network.Cryptography;
 using MineLib.Network.IO;
 using MineLib.Network.Enums;
@@ -25,7 +26,10 @@ namespace MineLib.Network
         private event DataReceived OnDataReceived;
         private event DataReceived OnDataReceivedClassic;
 
-        public bool Connected {get { return _baseSock.Connected; }}
+        public bool Connected { get { return _baseSock.Connected; }}
+
+        public bool CompressionEnabled { get { return _stream.CompressionEnabled; }}
+        public int CompressionThreshold { get { return _stream.CompressionThreshold; } }
 
         public bool Crashed;
 
@@ -111,10 +115,44 @@ namespace MineLib.Network
 
             while (_baseSock.Client.Available > 0)
             {
-                var length = _stream.ReadVarInt();
-                var id = _stream.ReadVarInt();
+                if (!CompressionEnabled)
+                {
+                    var length = _stream.ReadVarInt();
+                    var id = _stream.ReadVarInt();
 
-                OnDataReceived(id, _stream.ReadByteArray(length - 1));
+                    OnDataReceived(id, _stream.ReadByteArray(length - 1));
+                }
+                else
+                {
+                    var packetLength = _stream.ReadVarInt();
+                    var dataLength = _stream.ReadVarInt();
+                    int id = 0;
+
+                    if (dataLength == 0) 
+                    {
+                        if (packetLength >= CompressionThreshold)
+                            throw new Exception("Received uncompressed message of size " + packetLength + " greater than threshold " + CompressionThreshold);
+
+                        id = _stream.ReadVarInt();
+
+                        //var packetLengthBytes = PacketStream.GetVarIntBytes(packetLength).Length;
+                        //var dataLengthBytes = PacketStream.GetVarIntBytes(dataLength).Length;
+                        OnDataReceived(id, _stream.ReadByteArray(packetLength - 2)); // TODO: What is 2 here? (packetLength - packetLengthBytes - dataLengthBytes)?
+                    }
+                    else // (dataLength > 0)
+                    {
+                        var dataLengthBytes = PacketStream.GetVarIntBytes(dataLength).Length;
+
+                        var tempBuff = _stream.ReadByteArray(packetLength - dataLengthBytes);
+                        tempBuff = ZlibStream.UncompressBuffer(tempBuff);
+                        id = tempBuff[0]; // TODO: Will be broken when ID will be more than 256.
+
+                        var data = new byte[tempBuff.Length -  1];
+                        Buffer.BlockCopy(tempBuff, 1, data, 0, data.Length);
+
+                        OnDataReceived(id, data);
+                    }
+                }
             }
 
             return true;
@@ -150,7 +188,14 @@ namespace MineLib.Network
             while (_packetsToSend.Count > 0)
             {
                 Thread.Sleep(1); // -- Important to make a little pause before sending a new packet.
-                var packet = _packetsToSend.Dequeue(); // -- Send() is locking _packetsToSend.
+
+                IPacket packet;
+                
+                lock (_packetsToSend)   
+                {                       
+                    packet = _packetsToSend.Dequeue(); // -- Send() is locking _packetsToSend.
+
+                }
 
 #if DEBUG
                 _packetsSended.Add(packet);
@@ -206,7 +251,10 @@ namespace MineLib.Network
                     RaisePacketHandled(packetL, id, ServerState.Login);
 
                     if (id == 1)
-                        EnableEncryption(packetL); // -- Encrypton handle in low-level "forgot that word".
+                        EnableEncryption(packetL);  // -- Encrypton handle in low-level "forgot that word".
+
+                    if (id == 3)
+                        SetCompression(packetL); // -- Compression handle in low-level "forgot that word".
 
                     break;
 
@@ -225,8 +273,10 @@ namespace MineLib.Network
                     _packetsReceived.Add(packetP);
 #endif
 
-
                     RaisePacketHandled(packetP, id, ServerState.Play);
+
+                    if (id == 70)
+                        SetCompression(packetP); // -- Compression handle in low-level "forgot that word".
 
                     break;
 
@@ -265,7 +315,7 @@ namespace MineLib.Network
             var encryptedSecret = cryptoService.Encrypt(request.SharedKey, false);
             var encryptedVerify = cryptoService.Encrypt(request.VerificationToken, false);
 
-            _stream.InitEncryption(request.SharedKey);
+            _stream.InitializeEncryption(request.SharedKey);
 
             // Directly send packet because i have troubles with synchronizing "make EncEnabled after sending this packet".
             var packetToSend = new EncryptionResponsePacket
@@ -276,7 +326,15 @@ namespace MineLib.Network
 
             packetToSend.WritePacket(ref _stream);
 
-            _stream.EncEnabled = true;
+            _stream.EncryptionEnabled = true;
+        }
+
+        private void SetCompression(IPacket packet)
+        {
+            // From libMC.NET
+            var request = (SetCompressionPacket)packet;
+
+            _stream.SetCompression(request.Threshold);
         }
 
         public void Send(IPacket packet)

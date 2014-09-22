@@ -2,7 +2,7 @@
 using System.Reflection;
 using MineLib.Network.IO;
 
-namespace MineLib.Network.Data.EntityMetadata
+namespace MineLib.Network.Data.EntityMetadataEntries
 {
     public abstract class MetadataEntry
     {
@@ -11,7 +11,7 @@ namespace MineLib.Network.Data.EntityMetadata
         internal byte Index { get; set; }
 
         public abstract void FromReader(PacketByteReader reader);
-        public abstract void WriteTo(ref PacketStream stream, byte index);
+        public abstract void ToStream(ref PacketStream stream, byte index);
 
         public static implicit operator MetadataEntry(byte value)
         {
@@ -41,6 +41,16 @@ namespace MineLib.Network.Data.EntityMetadata
         public static implicit operator MetadataEntry(ItemStack value)
         {
             return new MetadataSlot(value);
+        }
+
+        public static implicit operator MetadataEntry(Position value)
+        {
+            return new MetadataVector(value);
+        }
+
+        public static implicit operator MetadataEntry(Rotation value)
+        {
+            return new MetadataRotation(value);
         }
 
         protected byte GetKey(byte index)

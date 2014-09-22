@@ -5,24 +5,20 @@ namespace MineLib.Network.Packets.Server
 {
     public struct SpawnPositionPacket : IPacket
     {
-        public Coordinates3D Coordinates;
+        public Position Location;
 
         public const byte PacketID = 0x05;
         public byte Id { get { return PacketID; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public void ReadPacket(PacketByteReader reader)
         {
-            Coordinates.X = stream.ReadInt();
-            Coordinates.Y = stream.ReadInt();
-            Coordinates.Z = stream.ReadInt();
+            Location = Position.FromReaderLong(reader);
         }
 
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteInt(Coordinates.X);
-            stream.WriteInt(Coordinates.Y);
-            stream.WriteInt(Coordinates.Z);
+            Location.ToStreamLong(ref stream);
             stream.Purge();
         }
     }
