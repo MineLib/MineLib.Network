@@ -6,7 +6,7 @@ Library for handling network connection with Minecraft server.
 
 My implementation of How-it-should-be.
 
-All server and clients packets for 1.8 are supported. Compression is fully supported.
+Not all server and clients packets for 1.8 are fully supported yet. Few have some problems. Compression is fully supported.
 
 You can use Events based packet handling (use RaisePacketHandledUnUsed() in NetworkHandler.Packets.cs) or handle dat stuff manually (use OnPacketHandled for that).
 
