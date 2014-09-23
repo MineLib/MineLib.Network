@@ -41,13 +41,13 @@
 
     public enum PacketsServer : byte
     {
-        LoginDisconnect = 0x00,
-        EncryptionRequest = 0x01,
-        LoginSuccess = 0x02,
-        SetCompressionLogin = 0x03,
+        LoginDisconnect             = 0x00,
+        EncryptionRequest           = 0x01,
+        LoginSuccess                = 0x02,
+        SetCompressionLogin         = 0x03,
 
-        Response = 0x00,
-        Ping = 0x01,
+        Response                    = 0x00,
+        Ping                        = 0x01,
 
         KeepAlive                   = 0x00,
         JoinGame                    = 0x01,

@@ -2,10 +2,10 @@
 {
     public enum PacketsClient : byte
     {
-        PlayerIdentification    = 0x00,
-        SetBlock                = 0x05,
-        PositionAndOrientation  = 0x08,
-        Message                 = 0x0D
+        PlayerIdentification            = 0x00,
+        SetBlock                        = 0x05,
+        PositionAndOrientation          = 0x08,
+        Message                         = 0x0D
     }
 
     public enum PacketsServer : byte

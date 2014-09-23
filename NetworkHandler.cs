@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
-using Ionic.Zlib;
+using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 using MineLib.Network.Cryptography;
 using MineLib.Network.IO;
 using MineLib.Network.Enums;
@@ -44,7 +45,8 @@ namespace MineLib.Network
 
         private IMinecraftClient _minecraft;
 
-        private readonly Queue<IPacket> _packetsToSend = new Queue<IPacket>();
+        private readonly BlockingCollection<IPacket> _packetsToSend = new BlockingCollection<IPacket>();
+
 
         public NetworkHandler(IMinecraftClient client)
         {
@@ -144,7 +146,14 @@ namespace MineLib.Network
                         var dataLengthBytes = PacketStream.GetVarIntBytes(dataLength).Length;
 
                         var tempBuff = _stream.ReadByteArray(packetLength - dataLengthBytes);
-                        tempBuff = ZlibStream.UncompressBuffer(tempBuff);
+
+                        using (var outputStream = new MemoryStream())
+                        using (var inputStream = new InflaterInputStream(new MemoryStream(tempBuff)))
+                        {
+                            inputStream.CopyTo(outputStream);
+                            tempBuff = outputStream.ToArray();
+                        }
+
                         id = tempBuff[0]; // TODO: Will be broken when ID will be more than 256.
 
                         var data = new byte[tempBuff.Length -  1];
@@ -186,23 +195,14 @@ namespace MineLib.Network
                 return true;
 
             while (_packetsToSend.Count > 0)
-            {
-                Thread.Sleep(1); // -- Important to make a little pause before sending a new packet.
-
-                IPacket packet;
-                
-                lock (_packetsToSend)   
-                {                       
-                    packet = _packetsToSend.Dequeue(); // -- Send() is locking _packetsToSend.
-
-                }
+            {                  
+                var packet = _packetsToSend.Take();
 
 #if DEBUG
                 _packetsSended.Add(packet);
 #endif
 
                 packet.WritePacket(ref _stream);
-
             }
 
             return true;
@@ -210,9 +210,15 @@ namespace MineLib.Network
 
         #endregion Sending and Receiving.
 
+        /// <summary>
+        /// Packets are handled here. Compression and encryption are handled here too
+        /// </summary>
+        /// <param name="id">Packet ID</param>
+        /// <param name="data">Packet byte[] data</param>
         private void HandlePacket(int id, byte[] data)
         {
             _preader.SetNewData(data);
+            IPacket packet = null;
 
             switch (_minecraft.State)
             {
@@ -222,14 +228,14 @@ namespace MineLib.Network
                     if (ServerResponse.ServerStatusResponse[id] == null)
                         break;
 
-                    var packetS = ServerResponse.ServerStatusResponse[id]();
-                    packetS.ReadPacket(_preader);
+                    packet = ServerResponse.ServerStatusResponse[id]();
+                    packet.ReadPacket(_preader);
 
 #if DEBUG
-                    _packetsReceived.Add(packetS);
+                    _packetsReceived.Add(packet);
 #endif
 
-                    RaisePacketHandled(packetS, id, ServerState.Status);
+                    RaisePacketHandled(packet, id, ServerState.Status);
 
                     break;
 
@@ -241,20 +247,20 @@ namespace MineLib.Network
                     if (ServerResponse.ServerLoginResponse[id] == null)
                         break;
 
-                    var packetL = ServerResponse.ServerLoginResponse[id]();
-                    packetL.ReadPacket(_preader);
+                    packet = ServerResponse.ServerLoginResponse[id]();
+                    packet.ReadPacket(_preader);
 
 #if DEBUG
-                    _packetsReceived.Add(packetL);
+                    _packetsReceived.Add(packet);
 #endif
 
-                    RaisePacketHandled(packetL, id, ServerState.Login);
+                    RaisePacketHandled(packet, id, ServerState.Login);
 
                     if (id == 1)
-                        EnableEncryption(packetL);  // -- Encrypton handle in low-level "forgot that word".
+                        EnableEncryption(packet);  // -- Encrypton handle in low-level "forgot that word".
 
                     if (id == 3)
-                        SetCompression(packetL); // -- Compression handle in low-level "forgot that word".
+                        SetCompression(packet); // -- Compression handle in low-level "forgot that word".
 
                     break;
 
@@ -266,17 +272,17 @@ namespace MineLib.Network
                     if (ServerResponse.ServerPlayResponse[id] == null)
                         break;
 
-                    var packetP = ServerResponse.ServerPlayResponse[id]();
-                    packetP.ReadPacket(_preader);
+                    packet = ServerResponse.ServerPlayResponse[id]();
+                    packet.ReadPacket(_preader);
 
 #if DEBUG
-                    _packetsReceived.Add(packetP);
+                    _packetsReceived.Add(packet);
 #endif
 
-                    RaisePacketHandled(packetP, id, ServerState.Play);
+                    RaisePacketHandled(packet, id, ServerState.Play);
 
                     if (id == 70)
-                        SetCompression(packetP); // -- Compression handle in low-level "forgot that word".
+                        SetCompression(packet); // -- Compression handle in low-level "forgot that word".
 
                     break;
 
@@ -339,10 +345,7 @@ namespace MineLib.Network
 
         public void Send(IPacket packet)
         {
-            lock (_packetsToSend)   // -- Solved...so...much..bugs...incredible
-            {                       // -- Be carefull, interfere packet sending.
-                _packetsToSend.Enqueue(packet);
-            }
+            _packetsToSend.Add(packet);
         }
 
         /// <summary>

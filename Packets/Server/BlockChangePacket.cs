@@ -14,7 +14,7 @@ namespace MineLib.Network.Packets.Server
         public void ReadPacket(PacketByteReader reader)
         {
             Location = Position.FromReaderLong(reader);
-            BlockID = reader.ReadVarInt();
+            BlockID = reader.ReadVarInt(); // TODO: What means 'id << 4 | data'?
         }
 
         public void WritePacket(ref PacketStream stream)

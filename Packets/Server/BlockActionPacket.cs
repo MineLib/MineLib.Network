@@ -27,7 +27,7 @@ namespace MineLib.Network.Packets.Server
 
         public IBlockAction FromReader(PacketByteReader reader)
         {
-            throw new System.NotImplementedException();
+            return null;
         }
 
         public void ToStream(ref PacketStream stream)
@@ -54,7 +54,7 @@ namespace MineLib.Network.Packets.Server
 
         public IBlockAction FromReader(PacketByteReader reader)
         {
-            throw new System.NotImplementedException();
+            return null;
         }
 
         public void ToStream(ref PacketStream stream)
@@ -81,7 +81,7 @@ namespace MineLib.Network.Packets.Server
 
         public IBlockAction FromReader(PacketByteReader reader)
         {
-            throw new System.NotImplementedException();
+            return null;
         }
 
         public void ToStream(ref PacketStream stream)

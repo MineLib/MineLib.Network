@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Threading;
 using MineLib.Network.Classic.Packets;
 using MineLib.Network.IO;
 
@@ -51,15 +50,13 @@ namespace MineLib.Network
 
             while (_packetsToSend.Count > 0)
             {
-                Thread.Sleep(1); // -- Important to make a little pause.
-                var packet = _packetsToSend.Dequeue();
+                var packet = _packetsToSend.Take();
 
 #if DEBUG
                 _packetsSended.Add(packet);
 #endif
 
                 packet.WritePacket(ref _stream);
-
             }
             return true;
         }

@@ -1,12 +1,13 @@
 using System.Collections.Generic;
+using MineLib.Network.Enums;
 using MineLib.Network.IO;
 using Org.BouncyCastle.Math;
 
 namespace MineLib.Network.Packets.Server
 {
-    public interface IPlayerListAction
+    public interface IPlayerList
     {
-        IPlayerListAction FromReader(PacketByteReader reader);
+        IPlayerList FromReader(PacketByteReader reader);
 
         void ToStream(ref PacketStream stream);
     }
@@ -76,7 +77,7 @@ namespace MineLib.Network.Packets.Server
         }
     }
 
-    public struct PlayerListActionAddPlayer : IPlayerListAction
+    public struct PlayerListActionAddPlayer : IPlayerList
     {
         public string Name;
         public PlayerListActionProperties Properties;
@@ -85,7 +86,7 @@ namespace MineLib.Network.Packets.Server
         public bool HasDisplayName;
         public string DisplayName;
 
-        public IPlayerListAction FromReader(PacketByteReader reader)
+        public IPlayerList FromReader(PacketByteReader reader)
         {
             Name = reader.ReadString();
             Properties = PlayerListActionProperties.FromReader(reader);
@@ -96,7 +97,7 @@ namespace MineLib.Network.Packets.Server
             if (HasDisplayName)
                 DisplayName = reader.ReadString();
 
-            return this; // Hope works
+            return this;
         }
 
         public void ToStream(ref PacketStream stream)
@@ -112,15 +113,15 @@ namespace MineLib.Network.Packets.Server
         }
     }
 
-    public struct PlayerListActionUpdateGamemode : IPlayerListAction
+    public struct PlayerListActionUpdateGamemode : IPlayerList
     {
         public int Gamemode;
 
-        public IPlayerListAction FromReader(PacketByteReader reader)
+        public IPlayerList FromReader(PacketByteReader reader)
         {
             Gamemode = reader.ReadVarInt();
             
-            return this; // Hope works
+            return this;
         }
 
         public void ToStream(ref PacketStream stream)
@@ -129,15 +130,15 @@ namespace MineLib.Network.Packets.Server
         }
     }
 
-    public struct PlayerListActionUpdateLatency : IPlayerListAction
+    public struct PlayerListActionUpdateLatency : IPlayerList
     {
         public int Ping;
 
-        public IPlayerListAction FromReader(PacketByteReader reader)
+        public IPlayerList FromReader(PacketByteReader reader)
         {
             Ping = reader.ReadVarInt();
 
-            return this; // Hope works
+            return this;
         }
 
         public void ToStream(ref PacketStream stream)
@@ -146,17 +147,17 @@ namespace MineLib.Network.Packets.Server
         }
     }
 
-    public struct PlayerListActionUpdateDisplayName : IPlayerListAction
+    public struct PlayerListActionUpdateDisplayName : IPlayerList
     {
         public bool HasDisplayName;
         public string DisplayName;
 
-        public IPlayerListAction FromReader(PacketByteReader reader)
+        public IPlayerList FromReader(PacketByteReader reader)
         {
             HasDisplayName = reader.ReadBoolean();
             DisplayName = reader.ReadString();
 
-            return this; // Hope works
+            return this;
         }
 
         public void ToStream(ref PacketStream stream)
@@ -166,9 +167,9 @@ namespace MineLib.Network.Packets.Server
         }
     }
 
-    public struct PlayerListActionRemovePlayer : IPlayerListAction
+    public struct PlayerListActionRemovePlayer : IPlayerList
     {
-        public IPlayerListAction FromReader(PacketByteReader reader)
+        public IPlayerList FromReader(PacketByteReader reader)
         {
             return this;
         }
@@ -180,36 +181,36 @@ namespace MineLib.Network.Packets.Server
 
     public struct PlayerListItemPacket : IPacket
     {
-        public int Action;
+        public PlayerListAction Action;
         public int Length;
         public BigInteger UUID;
-        public IPlayerListAction PlayerListAction;
+        public IPlayerList PlayerList;
 
         public const byte PacketID = 0x38;
         public byte Id { get { return PacketID; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
-            Action = reader.ReadVarInt();
+            Action = (PlayerListAction) reader.ReadVarInt();
             Length = reader.ReadVarInt();
             UUID = reader.ReadBigInteger();
 
             switch (Action)
             {
-                case 0:
-                    PlayerListAction = new PlayerListActionAddPlayer().FromReader(reader);
+                case PlayerListAction.AddPlayer:
+                    PlayerList = new PlayerListActionAddPlayer().FromReader(reader);
                     break;
-                case 1:
-                    PlayerListAction = new PlayerListActionUpdateGamemode().FromReader(reader);
+                case PlayerListAction.UpdateGamemode:
+                    PlayerList = new PlayerListActionUpdateGamemode().FromReader(reader);
                     break;
-                case 2:
-                    PlayerListAction = new PlayerListActionUpdateLatency().FromReader(reader);
+                case PlayerListAction.UpdateLatency:
+                    PlayerList = new PlayerListActionUpdateLatency().FromReader(reader);
                     break;
-                case 3:
-                    PlayerListAction = new PlayerListActionUpdateDisplayName().FromReader(reader);
+                case PlayerListAction.UpdateDisplayName:
+                    PlayerList = new PlayerListActionUpdateDisplayName().FromReader(reader);
                     break;
-                case 4:
-                    PlayerListAction = new PlayerListActionRemovePlayer().FromReader(reader);
+                case PlayerListAction.RemovePlayer:
+                    PlayerList = new PlayerListActionRemovePlayer().FromReader(reader);
                     break;
             }
         }
@@ -217,10 +218,10 @@ namespace MineLib.Network.Packets.Server
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteVarInt(Action);
+            stream.WriteVarInt((byte) Action);
             stream.WriteVarInt(Length);
             stream.WriteBigInteger(UUID);
-            PlayerListAction.ToStream(ref stream);
+            PlayerList.ToStream(ref stream);
             stream.Purge();
         }
     }

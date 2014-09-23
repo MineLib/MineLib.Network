@@ -1,6 +1,6 @@
 ﻿namespace MineLib.Network.Enums
 {
-    public enum TeamMode
+    public enum TeamAction
     {
         CreateTeam      = 0,
         RemoveTeam      = 1,

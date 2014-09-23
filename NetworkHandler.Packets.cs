@@ -1,4 +1,5 @@
-﻿using MineLib.Network.Enums;
+﻿using System;
+using MineLib.Network.Enums;
 using MineLib.Network.Events;
 using MineLib.Network.Packets;
 
@@ -12,6 +13,11 @@ namespace MineLib.Network
         {
             if (OnPacketHandled != null)
                 OnPacketHandled(packet, id, state);
+
+#if DEBUG
+            if(packet == null)
+                throw new Exception("Null packet");
+#endif
         }
     }
 }

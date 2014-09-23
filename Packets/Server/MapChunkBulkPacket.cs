@@ -6,7 +6,6 @@ namespace MineLib.Network.Packets.Server
     public struct MapChunkBulkPacket : IPacket
     {
         public bool SkyLightSent;
-        public int ChunkColumnCount;
         public ChunkColumnMetadata MetaInformation;
         public byte[] ChunkData;
 
@@ -16,7 +15,6 @@ namespace MineLib.Network.Packets.Server
         public void ReadPacket(PacketByteReader reader)
         {
             SkyLightSent = reader.ReadBoolean();
-            ChunkColumnCount = reader.ReadVarInt();
             MetaInformation = ChunkColumnMetadata.FromReader(reader);
 
             var length = reader.ReadVarInt();
@@ -27,7 +25,6 @@ namespace MineLib.Network.Packets.Server
         {
             stream.WriteVarInt(Id);
             stream.WriteBoolean(SkyLightSent);
-            stream.WriteVarInt(ChunkColumnCount);
             MetaInformation.ToStream(ref stream);
             stream.WriteVarInt(ChunkData.Length);
             stream.WriteByteArray(ChunkData);

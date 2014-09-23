@@ -67,7 +67,7 @@ namespace MineLib.Network.Packets
             () => new BlockChangePacket(),                  // 0x23
             () => new BlockActionPacket(),                  // 0x24
             () => new BlockBreakAnimationPacket(),          // 0x25
-            null,//() => new MapChunkBulkPacket(),                 // 0x26
+            () => new MapChunkBulkPacket(),                 // 0x26
             () => new ExplosionPacket(),                    // 0x27
             () => new EffectPacket(),                       // 0x28
             () => new SoundEffectPacket(),                  // 0x29

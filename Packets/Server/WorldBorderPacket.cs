@@ -1,4 +1,5 @@
-﻿using MineLib.Network.IO;
+﻿using MineLib.Network.Enums;
+using MineLib.Network.IO;
 
 namespace MineLib.Network.Packets.Server
 {
@@ -16,7 +17,7 @@ namespace MineLib.Network.Packets.Server
         {
             Radius = reader.ReadDouble();
 
-            return this; // Hope works
+            return this;
         }
 
         public void ToStream(ref PacketStream stream)
@@ -37,7 +38,7 @@ namespace MineLib.Network.Packets.Server
             NewRadius = reader.ReadDouble();
             //Speed = stream.ReadVarLong(); TODO: VarLong
 
-            return this; // Hope works
+            return this;
         }
 
         public void ToStream(ref PacketStream stream)
@@ -57,7 +58,7 @@ namespace MineLib.Network.Packets.Server
             X = reader.ReadDouble();
             Z = reader.ReadDouble();
 
-            return this; // Hope works
+            return this;
         }
 
         public void ToStream(ref PacketStream stream)
@@ -89,7 +90,7 @@ namespace MineLib.Network.Packets.Server
             WarningTime = reader.ReadVarInt();
             WarningBlocks = reader.ReadVarInt();
 
-            return this; // Hope works
+            return this;
         }
 
         public void ToStream(ref PacketStream stream)
@@ -114,7 +115,7 @@ namespace MineLib.Network.Packets.Server
         {
             WarningTime = reader.ReadVarInt();
 
-            return this; // Hope works
+            return this;
         }
 
         public void ToStream(ref PacketStream stream)
@@ -131,7 +132,7 @@ namespace MineLib.Network.Packets.Server
         {
             WarningBlocks = reader.ReadVarInt();
 
-            return this; // Hope works
+            return this;
         }
 
         public void ToStream(ref PacketStream stream)
@@ -142,36 +143,36 @@ namespace MineLib.Network.Packets.Server
 
     public struct WorldBorderPacket : IPacket
     {
-        public int Action;
+        public WorldBorderAction Action;
 
-        public IWorldBorder WorldBorderAction;
+        public IWorldBorder WorldBorder;
 
         public const byte PacketID = 0x44;
         public byte Id { get { return PacketID; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
-            Action = reader.ReadVarInt();
+            Action = (WorldBorderAction) reader.ReadVarInt();
 
             switch (Action)
             {
-                case 0:
-                    WorldBorderAction = new WorldBorderSetSize().FromReader(reader);
+                case WorldBorderAction.SetSize:
+                    WorldBorder = new WorldBorderSetSize().FromReader(reader);
                     break;
-                case 1:
-                    WorldBorderAction = new WorldBorderLerpSize().FromReader(reader);
+                case WorldBorderAction.LerpSize:
+                    WorldBorder = new WorldBorderLerpSize().FromReader(reader);
                     break;
-                case 2:
-                    WorldBorderAction = new WorldBorderSetCenter().FromReader(reader);
+                case WorldBorderAction.SetCenter:
+                    WorldBorder = new WorldBorderSetCenter().FromReader(reader);
                     break;
-                case 3:
-                    WorldBorderAction = new WorldBorderInitialize().FromReader(reader);
+                case WorldBorderAction.Initialize:
+                    WorldBorder = new WorldBorderInitialize().FromReader(reader);
                     break;
-                case 4:
-                    WorldBorderAction = new WorldBorderSetWarningTime().FromReader(reader);
+                case WorldBorderAction.SetWarningTime:
+                    WorldBorder = new WorldBorderSetWarningTime().FromReader(reader);
                     break;
-                case 5:
-                    WorldBorderAction = new WorldBorderSetWarningBlocks().FromReader(reader);
+                case WorldBorderAction.SetWarningBlocks:
+                    WorldBorder = new WorldBorderSetWarningBlocks().FromReader(reader);
                     break;
             }
         }
@@ -179,8 +180,8 @@ namespace MineLib.Network.Packets.Server
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteVarInt(Action);
-            WorldBorderAction.ToStream(ref stream);
+            stream.WriteVarInt((byte) Action);
+            WorldBorder.ToStream(ref stream);
             stream.Purge();
         }
     }

@@ -2,7 +2,8 @@
 using System.IO;
 using System.Text;
 using System.Threading;
-using Ionic.Zlib;
+using ICSharpCode.SharpZipLib.Zip.Compression;
+using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 using Org.BouncyCastle.Math;
 
 namespace MineLib.Network.IO
@@ -256,7 +257,6 @@ namespace MineLib.Network.IO
                     n -= _stream.Read(result, value - n, n);
                     if (n == 0)
                         break;
-                    Thread.Sleep(1);
                 }
                 return result;
             }
@@ -270,7 +270,6 @@ namespace MineLib.Network.IO
                     n -= _crypto.Read(result, value - n, n);
                     if (n == 0)
                         break;
-                    Thread.Sleep(1);
                 }
                 return result;
             }
@@ -320,12 +319,12 @@ namespace MineLib.Network.IO
         public void Purge()
         {
             if (CompressionEnabled)
-                PurgeC();
+                PurgeWithCompression();
             else
-                PurgeNonC();
+                PurgeWithoutCompression();
         }
 
-        public void PurgeNonC()
+        private void PurgeWithoutCompression()
         {
             var lenBytes = GetVarIntBytes(_buffer.Length);
 
@@ -342,21 +341,7 @@ namespace MineLib.Network.IO
             _buffer = null;
         }
 
-        private static byte[] ReadFully(Stream input)
-        {
-            byte[] buffer = new byte[16 * 1024];
-            using (MemoryStream ms = new MemoryStream())
-            {
-                int read;
-                while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
-                {
-                    ms.Write(buffer, 0, read);
-                }
-                return ms.ToArray();
-            }
-        }
-
-        public void PurgeC()
+        private void PurgeWithCompression()
         {
             int packetLength = 0; // data.Length + GetVarIntBytes(data.Length).Length
             int dataLength = 0; // UncompressedData.Length
@@ -367,11 +352,16 @@ namespace MineLib.Network.IO
             {
                 if (packetLength >= CompressionThreshold) // if Packet length > threshold, compress
                 {
-                    var compressStream = new ZlibStream(new MemoryStream(_buffer), CompressionMode.Compress, CompressionLevel.BestSpeed);
-                    data = ReadFully(compressStream);
+                    using (var outputStream = new MemoryStream())
+                    using (var inputStream = new DeflaterOutputStream(outputStream, new Deflater(0)))
+                    {
+                        inputStream.Write(_buffer, 0, _buffer.Length);
+                        inputStream.Close();
+
+                        data = outputStream.ToArray();
+                    }
 
                     dataLength = data.Length;
-
                     packetLength = dataLength + GetVarIntBytes(data.Length).Length; // calculate new packet length
                 }
             }

@@ -1,22 +1,23 @@
-﻿using MineLib.Network.IO;
+﻿using MineLib.Network.Enums;
+using MineLib.Network.IO;
 
 namespace MineLib.Network.Packets.Server
 {
-    public interface ITitleAction
+    public interface ITitle
     {
-        ITitleAction FromReader(PacketByteReader reader);
+        ITitle FromReader(PacketByteReader reader);
         void ToStream(ref PacketStream stream);
     }
 
-    public struct TitleTitle : ITitleAction
+    public struct TitleTitle : ITitle
     {
         public string Text;
 
-        public ITitleAction FromReader(PacketByteReader reader)
+        public ITitle FromReader(PacketByteReader reader)
         {
             Text = reader.ReadString();
 
-            return this; // Hope works
+            return this;
         }
 
         public void ToStream(ref PacketStream stream)
@@ -25,15 +26,15 @@ namespace MineLib.Network.Packets.Server
         }
     }
 
-    public struct TitleSubtitle : ITitleAction
+    public struct TitleSubtitle : ITitle
     {
         public string Text;
 
-        public ITitleAction FromReader(PacketByteReader reader)
+        public ITitle FromReader(PacketByteReader reader)
         {
             Text = reader.ReadString();
 
-            return this; // Hope works
+            return this;
         }
 
         public void ToStream(ref PacketStream stream)
@@ -42,19 +43,19 @@ namespace MineLib.Network.Packets.Server
         }
     }
 
-    public struct TitleTimes : ITitleAction
+    public struct TitleTimes : ITitle
     {
         public int FadeIn;
         public int Stay;
         public int FadeOut;
 
-        public ITitleAction FromReader(PacketByteReader reader)
+        public ITitle FromReader(PacketByteReader reader)
         {
             FadeIn = reader.ReadInt();
             Stay = reader.ReadInt();
             FadeOut = reader.ReadInt();
 
-            return this; // Hope works
+            return this;
         }
 
         public void ToStream(ref PacketStream stream)
@@ -65,11 +66,11 @@ namespace MineLib.Network.Packets.Server
         }
     }
 
-    public struct TitleClear : ITitleAction
+    public struct TitleClear : ITitle
     {
-        public ITitleAction FromReader(PacketByteReader reader)
+        public ITitle FromReader(PacketByteReader reader)
         {
-            return this; // Hope works
+            return this;
         }
 
         public void ToStream(ref PacketStream stream)
@@ -77,11 +78,11 @@ namespace MineLib.Network.Packets.Server
         }
     }
 
-    public struct TitleReset : ITitleAction
+    public struct TitleReset : ITitle
     {
-        public ITitleAction FromReader(PacketByteReader reader)
+        public ITitle FromReader(PacketByteReader reader)
         {
-            return this; // Hope works
+            return this;
         }
 
         public void ToStream(ref PacketStream stream)
@@ -91,37 +92,37 @@ namespace MineLib.Network.Packets.Server
 
     public struct TitlePacket : IPacket
     {
-        public int Action;
-        public ITitleAction TitleAction;
+        public TitleAction Action;
+        public ITitle Title;
 
         public const byte PacketID = 0x45;
         public byte Id { get { return PacketID; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
-            Action = reader.ReadVarInt();
+            Action = (TitleAction) reader.ReadVarInt();
 
             switch (Action)
             {
-                case 0:
-                    TitleAction = new TitleTitle();
-                    TitleAction.FromReader(reader);
+                case TitleAction.Title:
+                    Title = new TitleTitle();
+                    Title.FromReader(reader);
                     break;
-                case 1:
-                    TitleAction = new TitleSubtitle();
-                    TitleAction.FromReader(reader);
+                case TitleAction.Subtitle:
+                    Title = new TitleSubtitle();
+                    Title.FromReader(reader);
                     break;
-                case 2:
-                    TitleAction = new TitleTimes();
-                    TitleAction.FromReader(reader);
+                case TitleAction.Times:
+                    Title = new TitleTimes();
+                    Title.FromReader(reader);
                     break;
-                case 3:
-                    TitleAction = new TitleClear();
-                    TitleAction.FromReader(reader);
+                case TitleAction.Clear:
+                    Title = new TitleClear();
+                    Title.FromReader(reader);
                     break;
-                case 4:
-                    TitleAction = new TitleReset();
-                    TitleAction.FromReader(reader);
+                case TitleAction.Reset:
+                    Title = new TitleReset();
+                    Title.FromReader(reader);
                     break;
             }
         }
@@ -129,8 +130,8 @@ namespace MineLib.Network.Packets.Server
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteVarInt(Action);
-            TitleAction.ToStream(ref  stream);
+            stream.WriteVarInt((byte) Action);
+            Title.ToStream(ref  stream);
             stream.Purge();
         }
     }

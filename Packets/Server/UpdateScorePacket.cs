@@ -4,9 +4,9 @@ namespace MineLib.Network.Packets.Server
 {
     public struct UpdateScorePacket : IPacket
     {
-        public string ItemName;
-        public bool RemoveItem; // Will be converted to byte 0-1
         public string ScoreName;
+        public bool RemoveItem; // Will be converted to byte 0-1
+        public string ObjectiveName;
         public int? Value;
 
         public const byte PacketID = 0x3C;
@@ -14,11 +14,11 @@ namespace MineLib.Network.Packets.Server
 
         public void ReadPacket(PacketByteReader reader)
         {
-            ItemName = reader.ReadString();
+            ScoreName = reader.ReadString();
             RemoveItem = reader.ReadBoolean();
             if (!RemoveItem)
             {
-                ScoreName = reader.ReadString();
+                ObjectiveName = reader.ReadString();
                 Value = reader.ReadInt();
             }
         }
@@ -26,11 +26,11 @@ namespace MineLib.Network.Packets.Server
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteVarInt(Id);
-            stream.WriteString(ItemName);
+            stream.WriteString(ScoreName);
             stream.WriteBoolean(RemoveItem);
             if (!RemoveItem)
             {
-                stream.WriteString(ScoreName);
+                stream.WriteString(ObjectiveName);
                 stream.WriteInt(Value.Value);
             }
             stream.Purge();

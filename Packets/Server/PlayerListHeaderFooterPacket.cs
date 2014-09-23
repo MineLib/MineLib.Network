@@ -1,6 +1,6 @@
 ﻿using MineLib.Network.IO;
 
-namespace MineLib.Network.Packets.Server.Login
+namespace MineLib.Network.Packets.Server
 {
     public struct PlayerListHeaderFooterPacket : IPacket
     {
