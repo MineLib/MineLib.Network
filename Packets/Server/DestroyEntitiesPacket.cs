@@ -6,8 +6,7 @@ namespace MineLib.Network.Packets.Server
     {
         public int[] EntityIDs;
 
-        public const byte PacketID = 0x13;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return 0x13; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
@@ -17,7 +16,7 @@ namespace MineLib.Network.Packets.Server
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             stream.WriteVarInt(EntityIDs.Length);
             stream.WriteVarIntArray(EntityIDs);
             stream.Purge();

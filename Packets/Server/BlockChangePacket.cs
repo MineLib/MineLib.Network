@@ -6,22 +6,21 @@ namespace MineLib.Network.Packets.Server
     public struct BlockChangePacket : IPacket
     {
         public Position Location;
-        public int BlockID;
+        public int BlockIDMeta;
 
-        public const byte PacketID = 0x23;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return 0x23; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
-            Location = Position.FromReaderLong(reader);
-            BlockID = reader.ReadVarInt(); // TODO: What means 'id << 4 | data'?
+            Location = Position.FromLong(reader.ReadLong());
+            BlockIDMeta = reader.ReadVarInt();
         }
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             Location.ToStreamLong(ref stream);
-            stream.WriteVarInt(BlockID);
+            stream.WriteVarInt(BlockIDMeta);
             stream.Purge();
         }
     }

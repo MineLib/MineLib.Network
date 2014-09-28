@@ -6,8 +6,7 @@ namespace MineLib.Network.Packets.Server
 {
     public interface IBlockAction
     {
-        // Is not used
-        IBlockAction FromReader(PacketByteReader reader);
+        IBlockAction FromReader(PacketByteReader reader); // --- Is not used
         void ToStream(ref PacketStream stream);
     }
 
@@ -101,8 +100,7 @@ namespace MineLib.Network.Packets.Server
 
         public IBlockAction BlockAction;
 
-        public const byte PacketID = 0x24;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return 0x24; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
@@ -133,7 +131,7 @@ namespace MineLib.Network.Packets.Server
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             Location.ToStreamLong(ref stream);
             BlockAction.ToStream(ref stream);
             stream.Purge();

@@ -13,14 +13,13 @@ namespace MineLib.Network.IO
         Stream BaseStream { get; set; }
 
         int ReadByte();
-        int Read(byte[] myBytes, int p1, int value);
+        int Read(byte[] buffer, int offset, int count);
 
-        void Write(byte[] tempBuff, int i, int length);
+        void Write(byte[] buffer, int offset, int count);
 
         void Dispose();
     }
 
-    // Should be deleted later. I'll keep it for some time.
     // -- Credits to umby24 for encryption support, as taken from CWrapped.
     public class NativeAesStream : IAesStream
     {
@@ -96,11 +95,10 @@ namespace MineLib.Network.IO
             BaseStream = stream;
 
             _encryptCipher = new BufferedBlockCipher(new CfbBlockCipher(new AesFastEngine(), 8));
-            _encryptCipher.Init(true, new ParametersWithIV(
-                new KeyParameter(key), key, 0, 16));
+            _encryptCipher.Init(true, new ParametersWithIV(new KeyParameter(key), key, 0, 16));
+
             _decryptCipher = new BufferedBlockCipher(new CfbBlockCipher(new AesFastEngine(), 8));
-            _decryptCipher.Init(false, new ParametersWithIV(
-                new KeyParameter(key), key, 0, 16));
+            _decryptCipher.Init(false, new ParametersWithIV(new KeyParameter(key), key, 0, 16));
         }
 
         public int ReadByte()

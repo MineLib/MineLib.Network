@@ -13,8 +13,7 @@ namespace MineLib.Network.Packets.Server
         public string LevelType;
         public bool ReducedDebugInfo;
 
-        public const byte PacketID = 0x01;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return 0x01; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
@@ -29,7 +28,7 @@ namespace MineLib.Network.Packets.Server
     
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             stream.WriteInt(EntityID);
             stream.WriteVarInt((byte) GameMode);
             stream.WriteSByte((sbyte) Dimension);

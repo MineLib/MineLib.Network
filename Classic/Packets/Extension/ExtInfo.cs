@@ -9,7 +9,7 @@ namespace MineLib.Network.Classic.Packets.Extension
         public short ExtensionCount;
 
         public const byte PacketID = 0x10;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return PacketID; } }
 
         public void ReadPacket(PacketByteReader stream)
         {
@@ -19,7 +19,7 @@ namespace MineLib.Network.Classic.Packets.Extension
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteByte(Id);
+            stream.WriteByte(ID);
             stream.WriteString(AppName);
             stream.WriteShort(ExtensionCount);
             stream.Purge();

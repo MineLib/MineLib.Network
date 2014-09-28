@@ -7,8 +7,7 @@ namespace MineLib.Network.Packets.Server
     {
         public Position Location;
 
-        public const byte PacketID = 0x36;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return 0x36; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
@@ -17,7 +16,7 @@ namespace MineLib.Network.Packets.Server
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             Location.ToStreamLong(ref stream);
             stream.Purge();
         }

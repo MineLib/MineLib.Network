@@ -5,20 +5,19 @@ namespace MineLib.Network.Packets.Server
 {
     public struct StatisticsPacket : IPacket
     {
-        public StatisticsEntry Entries;
+        public StatisticsEntryList StatisticsEntryList;
 
-        public const byte PacketID = 0x37;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return 0x37; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
-            Entries = StatisticsEntry.FromReader(reader);
+            StatisticsEntryList = StatisticsEntryList.FromReader(reader);
         }
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
-            Entries.ToStream(ref stream);
+            stream.WriteVarInt(ID);
+            StatisticsEntryList.ToStream(ref stream);
             stream.Purge();
         }
     }

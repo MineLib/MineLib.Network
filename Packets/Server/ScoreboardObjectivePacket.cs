@@ -9,8 +9,7 @@ namespace MineLib.Network.Packets.Server
         public string ObjectiveValue;
         public string Type;
 
-        public const byte PacketId = 0x3B;
-        public byte Id { get { return PacketId; } }
+        public byte ID { get { return 0x3B; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
@@ -22,7 +21,7 @@ namespace MineLib.Network.Packets.Server
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             stream.WriteString(ObjectiveName);
             stream.WriteSByte(Mode);
             stream.WriteString(ObjectiveValue);

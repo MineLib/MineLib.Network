@@ -13,10 +13,9 @@ namespace MineLib.Network.Packets.Server
         public sbyte Pitch;
         public sbyte HeadPitch;
         public short VelocityX, VelocityY, VelocityZ;
-        public EntityMetadata Metadata;
+        public EntityMetadata EntityMetadata;
 
-        public const byte PacketID = 0x0F;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return 0x0F; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
@@ -29,12 +28,12 @@ namespace MineLib.Network.Packets.Server
             VelocityX = reader.ReadShort();
             VelocityY = reader.ReadShort();
             VelocityZ = reader.ReadShort();
-            Metadata = EntityMetadata.FromReader(reader);
+            EntityMetadata = EntityMetadata.FromReader(reader);
         }
     
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             stream.WriteVarInt(EntityID);
             stream.WriteByte((byte) Type);
             Vector3.ToStreamIntFixedPoint(ref stream);
@@ -44,7 +43,7 @@ namespace MineLib.Network.Packets.Server
             stream.WriteShort(VelocityX);
             stream.WriteShort(VelocityY);
             stream.WriteShort(VelocityZ);
-            Metadata.ToStream(ref stream);
+            EntityMetadata.ToStream(ref stream);
             stream.Purge();
         }
     }

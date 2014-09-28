@@ -1,21 +1,46 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using MineLib.Network.IO;
 
 namespace MineLib.Network.Data
 {
-    public struct Icon
+    public struct Icon : IEquatable<Icon>
     {
         public byte Direction;
         public byte Type;
         public int X;
         public int Y;
+
+        public bool Equals(Icon other)
+        {
+            return other.Direction.Equals(Direction) && other.Type.Equals(Type) && other.X.Equals(X) && other.Y.Equals(Y);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (obj.GetType() != typeof(Icon)) return false;
+            return Equals((Icon)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var result = Direction.GetHashCode();
+                result = (result * 397) ^ Type.GetHashCode();
+                result = (result * 397) ^ X.GetHashCode();
+                result = (result * 397) ^ Y.GetHashCode();
+                return result;
+            }
+        }
     }
 
-    public class Icons
+    public class IconList
     {
         private readonly List<Icon> _entries;
 
-        public Icons()
+        public IconList()
         {
             _entries = new List<Icon>();
         }
@@ -31,19 +56,18 @@ namespace MineLib.Network.Data
             set { _entries.Insert(index, value); }
         }
 
-        public static Icons FromReader(PacketByteReader reader)
+        public static IconList FromReader(PacketByteReader reader)
         {
-            var value = new Icons();
+            var value = new IconList();
 
             var count = reader.ReadVarInt();
             for (var i = 0; i < count; i++)
             {
                 var icon = new Icon();
 
-                byte comb = reader.ReadByte();
-
-                //icon.Direction = 
-                //icon.Type = 
+                var comb = reader.ReadByte();
+                icon.Direction = (byte)(comb & 0xF0);
+                icon.Type = (byte)(comb & 0x0F);
 
                 icon.X = reader.ReadByte();
                 icon.Y = reader.ReadByte();

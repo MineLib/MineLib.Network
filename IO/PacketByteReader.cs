@@ -25,11 +25,6 @@ namespace MineLib.Network.IO
             _stream = stream;
         }
 
-        public void SetNewData(byte[] data)
-        {
-            _stream = new MemoryStream(data);
-        }
-
         // -- Strings
 
         public string ReadString()

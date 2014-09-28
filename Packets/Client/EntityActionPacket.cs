@@ -8,8 +8,7 @@ namespace MineLib.Network.Packets.Client
         public int EntityID;
         public EntityAction Action;
 
-        public const byte PacketID = 0x0B;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return 0x0B; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
@@ -19,7 +18,7 @@ namespace MineLib.Network.Packets.Client
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             stream.WriteVarInt(EntityID);
             stream.WriteByte((byte) Action);
             stream.Purge();

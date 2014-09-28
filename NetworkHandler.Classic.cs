@@ -10,8 +10,6 @@ namespace MineLib.Network
 
         private void StartReceivingClassic()
         {
-            _preader = new PacketByteReader(new MemoryStream(0));
-
             do
             {
             } while (PacketReceiverClassic());
@@ -65,13 +63,13 @@ namespace MineLib.Network
 
         private void HandlePacketClassic(int id, byte[] data)
         {
-            _preader.SetNewData(data);
+            _reader = new PacketByteReader(data);
 
             if (ServerResponseClassic.ServerResponse[id] == null)
                 return;
 
             var packet = ServerResponseClassic.ServerResponse[id]();
-            packet.ReadPacket(_preader);
+            packet.ReadPacket(_reader);
 
 #if DEBUG
             _packetsReceived.Add(packet);

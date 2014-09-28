@@ -3,19 +3,19 @@ using MineLib.Network.IO;
 
 namespace MineLib.Network.Data
 {
-    public struct Entry
+    public struct StatisticsEntry
     {
         public string StatisticsName;
         public int Value;
     }
 
-    public class StatisticsEntry
+    public class StatisticsEntryList
     {
-        private readonly List<Entry> _entries;
+        private readonly List<StatisticsEntry> _entries;
 
-        public StatisticsEntry()
+        public StatisticsEntryList()
         {
-            _entries = new List<Entry>();
+            _entries = new List<StatisticsEntry>();
         }
 
         public int Count
@@ -23,20 +23,20 @@ namespace MineLib.Network.Data
             get { return _entries.Count; }
         }
 
-        public Entry this[int index]
+        public StatisticsEntry this[int index]
         {
             get { return _entries[index]; }
             set { _entries.Insert(index, value); }
         }
 
-        public static StatisticsEntry FromReader(PacketByteReader reader)
+        public static StatisticsEntryList FromReader(PacketByteReader reader)
         {
             var count = reader.ReadVarInt();
 
-            var value = new StatisticsEntry();
+            var value = new StatisticsEntryList();
             for (var i = 0; i < count; i++)
             {
-                var entry = new Entry();
+                var entry = new StatisticsEntry();
 
                 entry.StatisticsName = reader.ReadString();
                 entry.Value = reader.ReadVarInt();

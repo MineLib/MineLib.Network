@@ -10,8 +10,7 @@ namespace MineLib.Network.Packets.Server
         public sbyte Yaw, Pitch;
         public bool OnGround;
 
-        public const byte PacketID = 0x18;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return 0x18; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
@@ -24,7 +23,7 @@ namespace MineLib.Network.Packets.Server
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             stream.WriteVarInt(EntityID);
             Vector3.ToStreamIntFixedPoint(ref stream);
             stream.WriteSByte(Yaw);

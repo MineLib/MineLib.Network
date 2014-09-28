@@ -10,8 +10,7 @@ namespace MineLib.Network.Packets.Server
         public float Volume;
         public byte Pitch;
 
-        public const byte PacketID = 0x29;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return 0x29; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
@@ -23,7 +22,7 @@ namespace MineLib.Network.Packets.Server
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             stream.WriteString(SoundName);
             Coordinates.ToStreamInt(ref stream);
             stream.WriteFloat(Volume);

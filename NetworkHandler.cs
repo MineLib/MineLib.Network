@@ -38,7 +38,7 @@ namespace MineLib.Network
 
         private TcpClient _baseSock;
         private PacketStream _stream;
-        private PacketByteReader _preader;
+        private PacketByteReader _reader;
 
         private Thread _listener;
         private Thread _sender;
@@ -96,7 +96,7 @@ namespace MineLib.Network
 
         private void StartReceiving()
         {
-            _preader = new PacketByteReader(new MemoryStream(0));
+            _reader = new PacketByteReader(new MemoryStream(0));
 
             try
             {
@@ -137,8 +137,9 @@ namespace MineLib.Network
 
                         id = _stream.ReadVarInt();
 
-                        //var packetLengthBytes = PacketStream.GetVarIntBytes(packetLength).Length;
-                        //var dataLengthBytes = PacketStream.GetVarIntBytes(dataLength).Length;
+                        var packetLengthBytes = PacketStream.GetVarIntBytes(packetLength).Length;
+                        var dataLengthBytes = PacketStream.GetVarIntBytes(dataLength).Length;
+                        var t = packetLengthBytes + dataLengthBytes;
                         OnDataReceived(id, _stream.ReadByteArray(packetLength - 2)); // TODO: What is 2 here? (packetLength - packetLengthBytes - dataLengthBytes)?
                     }
                     else // (dataLength > 0)
@@ -217,19 +218,19 @@ namespace MineLib.Network
         /// <param name="data">Packet byte[] data</param>
         private void HandlePacket(int id, byte[] data)
         {
-            _preader.SetNewData(data);
-            IPacket packet = null;
+            _reader = new PacketByteReader(data);
+            IPacket packet;
 
             switch (_minecraft.State)
             {
                     #region Status
 
                 case ServerState.Status:
-                    if (ServerResponse.ServerStatusResponse[id] == null)
+                    if (ServerResponse.Status[id] == null)
                         break;
 
-                    packet = ServerResponse.ServerStatusResponse[id]();
-                    packet.ReadPacket(_preader);
+                    packet = ServerResponse.Status[id]();
+                    packet.ReadPacket(_reader);
 
 #if DEBUG
                     _packetsReceived.Add(packet);
@@ -244,11 +245,11 @@ namespace MineLib.Network
                     #region Login
 
                 case ServerState.Login:
-                    if (ServerResponse.ServerLoginResponse[id] == null)
+                    if (ServerResponse.Login[id] == null)
                         break;
 
-                    packet = ServerResponse.ServerLoginResponse[id]();
-                    packet.ReadPacket(_preader);
+                    packet = ServerResponse.Login[id]();
+                    packet.ReadPacket(_reader);
 
 #if DEBUG
                     _packetsReceived.Add(packet);
@@ -257,10 +258,10 @@ namespace MineLib.Network
                     RaisePacketHandled(packet, id, ServerState.Login);
 
                     if (id == 1)
-                        EnableEncryption(packet);  // -- Encrypton handle in low-level "forgot that word".
+                        EnableEncryption(packet);  // -- Low-level encryption handle
 
                     if (id == 3)
-                        SetCompression(packet); // -- Compression handle in low-level "forgot that word".
+                        SetCompression(packet); // -- Low-level compression handle
 
                     break;
 
@@ -269,11 +270,11 @@ namespace MineLib.Network
                     #region Play
 
                 case ServerState.Play:
-                    if (ServerResponse.ServerPlayResponse[id] == null)
+                    if (ServerResponse.Play[id] == null)
                         break;
 
-                    packet = ServerResponse.ServerPlayResponse[id]();
-                    packet.ReadPacket(_preader);
+                    packet = ServerResponse.Play[id]();
+                    packet.ReadPacket(_reader);
 
 #if DEBUG
                     _packetsReceived.Add(packet);
@@ -282,7 +283,7 @@ namespace MineLib.Network
                     RaisePacketHandled(packet, id, ServerState.Play);
 
                     if (id == 70)
-                        SetCompression(packet); // -- Compression handle in low-level "forgot that word".
+                        SetCompression(packet); // -- Low-level compression handle
 
                     break;
 
@@ -337,8 +338,7 @@ namespace MineLib.Network
 
         private void SetCompression(IPacket packet)
         {
-            // From libMC.NET
-            var request = (SetCompressionPacket)packet;
+            var request = (ISetCompression) packet;
 
             _stream.SetCompression(request.Threshold);
         }
@@ -365,8 +365,8 @@ namespace MineLib.Network
             if (_stream != null)
                 _stream.Dispose();
 
-            if (_preader != null)
-                _preader.Dispose();
+            if (_reader != null)
+                _reader.Dispose();
 
                 _minecraft = null;
         }

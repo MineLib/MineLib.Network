@@ -12,20 +12,20 @@ namespace MineLib.Network.Data
         public sbyte Operation;
     }
 
-    public class Property
+    public class EntityProperty
     {
         public string Key;
         public double Value;
         public Modifiers[] Modifiers;
     }
 
-    public class EntityProperty : IEquatable<EntityProperty>
+    public class EntityPropertyList : IEquatable<EntityPropertyList>
     {
-        private readonly List<Property> _entries;
+        private readonly List<EntityProperty> _entries;
 
-        public EntityProperty()
+        public EntityPropertyList()
         {
-            _entries = new List<Property>();
+            _entries = new List<EntityProperty>();
         }
 
         public int Count
@@ -33,7 +33,7 @@ namespace MineLib.Network.Data
             get { return _entries.Count; }
         }
 
-        public Property this[int index]
+        public EntityProperty this[int index]
         {
             get { return _entries[index]; }
             set { _entries.Insert(index, value); }
@@ -41,14 +41,14 @@ namespace MineLib.Network.Data
 
         #region Network
 
-        public static EntityProperty FromReader(PacketByteReader reader)
+        public static EntityPropertyList FromReader(PacketByteReader reader)
         {
             var count = reader.ReadInt();
 
-            var value = new EntityProperty();
+            var value = new EntityPropertyList();
             for (var i = 0; i < count; i++)
             {
-                var property = new Property();
+                var property = new EntityProperty();
 
                 property.Key = reader.ReadString();
                 property.Value = reader.ReadDouble();
@@ -94,14 +94,14 @@ namespace MineLib.Network.Data
 
         #endregion
 
-        public bool Equals(EntityProperty other)
+        public bool Equals(EntityPropertyList other)
         {
-            if (other.Count != Count)
+            if (!other.Count.Equals(Count))
                 return false;
 
             for (byte i = 0; i < (byte)Count; i++)
             {
-                if (other[i] != this[i])
+                if (!other[i].Equals(this[i]))
                     return false;
             }
 
@@ -111,8 +111,8 @@ namespace MineLib.Network.Data
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
-            if (obj.GetType() != typeof(EntityProperty)) return false;
-            return Equals((EntityProperty)obj);
+            if (obj.GetType() != typeof(EntityPropertyList)) return false;
+            return Equals((EntityPropertyList)obj);
         }
 
         public override int GetHashCode()

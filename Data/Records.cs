@@ -6,16 +6,16 @@ namespace MineLib.Network.Data
 {
     public struct Record
     {
-        public int BlockID;
+        public int BlockIDMeta;
         public Position Coordinates;
     }
 
     // TODO: Records bitmask
-    public class RecordsArray
+    public class RecordList
     {
         private readonly List<Record> _entries;
 
-        public RecordsArray()
+        public RecordList()
         {
             _entries = new List<Record>();
         }
@@ -31,25 +31,23 @@ namespace MineLib.Network.Data
             set { _entries.Insert(index, value); }
         }
 
-        public static RecordsArray FromReader(PacketByteReader reader)
+        public static RecordList FromReader(PacketByteReader reader)
         {
-            var value = new RecordsArray();
+            var value = new RecordList();
 
             var count = reader.ReadVarInt();
-            var data = reader.ReadByteArray(count);
 
             for (var i = 0; i < count; i++)
             {
                 var record = new Record();
 
-                var blockData = new byte[4];
-                Buffer.BlockCopy(data, (i * 4), blockData, 0, 4);
+                short coordinates = reader.ReadShort();
+                var y = coordinates & 0xFF;
+                var z = (coordinates >> 8) & 0xf; 
+                var x = (coordinates >> 12) & 0xf;
 
-                record.BlockID = (blockData[2] << 4) | ((blockData[3] & 0xF0) >> 4);
-                record.Coordinates.Y = (blockData[1]);
-                record.Coordinates.Z = (blockData[0] & 0x0f);
-                record.Coordinates.X = (blockData[0] >> 4) & 0x0f;
-                //record.Metadata = blockData[3] & 0xF;
+                record.BlockIDMeta = reader.ReadVarInt();
+                record.Coordinates = new Position(x, y, z);
 
                 value[i] = record;
             }
@@ -64,6 +62,11 @@ namespace MineLib.Network.Data
             foreach (var entry in _entries)
             {
             }
+        }
+
+        public Record[] GetRecords()
+        {
+            return _entries.ToArray();
         }
     }
 }

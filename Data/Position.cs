@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using MineLib.Network.IO;
 
 namespace MineLib.Network.Data
@@ -6,9 +7,12 @@ namespace MineLib.Network.Data
     /// <summary>
     /// Represents the location of an object in 3D space (int).
     /// </summary>
+    [StructLayout(LayoutKind.Auto)]
     public struct Position : IEquatable<Position>
     {
-        public int X, Y, Z;
+        public int X;
+        public int Y;
+        public int Z;
 
         public Position(int value)
         {
@@ -33,15 +37,15 @@ namespace MineLib.Network.Data
         {
             return new Position
             {
-                X = (int) value >> 38,
-                Y = (int) value << 26 >> 52,
+                X = (int) (value >> 38),
+                Y = (int) (value >> 26) & 0xFFF,
                 Z = (int) value << 38 >> 38
             };
         }
 
         public long ToLong()
         {
-            return (X & 0x3FFFFFF) << 38 | (Y & 0xFFF) << 26 | (Z & 0x3FFFFFF);
+            return ((X & 0x3FFFFFF) << 38) | ((Y & 0xFFF) << 26) | (Z & 0x3FFFFFF);
         }
 
         #region Network

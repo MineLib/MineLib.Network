@@ -7,8 +7,7 @@ namespace MineLib.Network.Packets.Server.Login
         public string URL;
         public string Hash;
 
-        public const byte PacketID = 0x48;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return 0x48; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
@@ -18,7 +17,7 @@ namespace MineLib.Network.Packets.Server.Login
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             stream.WriteString(URL);
             stream.WriteString(Hash);
             stream.Purge();

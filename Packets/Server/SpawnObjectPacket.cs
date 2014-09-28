@@ -4,6 +4,7 @@ using MineLib.Network.Enums;
 
 namespace MineLib.Network.Packets.Server
 {
+    // TODO: Object data problems?
     public struct SpawnObjectPacket : IPacket
     {
         public int EntityID;
@@ -14,8 +15,7 @@ namespace MineLib.Network.Packets.Server
         public short SpeedY;
         public short SpeedZ;
 
-        public const byte PacketID = 0x0E;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return 0x0E; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
@@ -24,15 +24,19 @@ namespace MineLib.Network.Packets.Server
             Vector3 = Vector3.FromReaderIntFixedPoint(reader);
             Yaw = reader.ReadByte();
             Pitch = reader.ReadByte();
-            SpeedX = reader.ReadShort();
-            SpeedY = reader.ReadShort();
-            SpeedZ = reader.ReadShort();
+            var data = reader.ReadInt();
+            if (data > 0)
+            {
+                SpeedX = reader.ReadShort();
+                SpeedY = reader.ReadShort();
+                SpeedZ = reader.ReadShort();
+            }
         }
 
 
-        public void WritePacket(ref PacketStream stream)
+        public void WritePacket(ref PacketStream stream) // TODO: Complete
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             stream.WriteVarInt(EntityID);
             stream.WriteByte((byte) Type);
             Vector3.ToStreamIntFixedPoint(ref stream);

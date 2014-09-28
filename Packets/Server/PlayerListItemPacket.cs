@@ -8,7 +8,6 @@ namespace MineLib.Network.Packets.Server
     public interface IPlayerList
     {
         IPlayerList FromReader(PacketByteReader reader);
-
         void ToStream(ref PacketStream stream);
     }
 
@@ -186,8 +185,7 @@ namespace MineLib.Network.Packets.Server
         public BigInteger UUID;
         public IPlayerList PlayerList;
 
-        public const byte PacketID = 0x38;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return 0x38; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
@@ -217,7 +215,7 @@ namespace MineLib.Network.Packets.Server
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             stream.WriteVarInt((byte) Action);
             stream.WriteVarInt(Length);
             stream.WriteBigInteger(UUID);

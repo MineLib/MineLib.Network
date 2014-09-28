@@ -141,14 +141,13 @@ namespace MineLib.Network.Packets.Server
         }
     }
 
-    public class TeamsPacket : IPacket
+    public struct TeamsPacket : IPacket
     {
         public string TeamName;
         public TeamAction Action;
         public ITeam Team;
 
-        public const byte PacketID = 0x3E;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return 0x3E; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
@@ -177,7 +176,7 @@ namespace MineLib.Network.Packets.Server
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             stream.WriteString(TeamName);
             stream.WriteByte((byte) Action);
             Team.ToStream(ref stream);

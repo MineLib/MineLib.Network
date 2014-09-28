@@ -10,7 +10,7 @@ namespace MineLib.Network.Classic.Packets.Server
         public byte PercentComplete;
 
         public const byte PacketID = 0x03;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return PacketID; } }
 
         public void ReadPacket(PacketByteReader stream)
         {
@@ -21,7 +21,7 @@ namespace MineLib.Network.Classic.Packets.Server
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteByte(Id);
+            stream.WriteByte(ID);
             stream.WriteShort(ChunkLength);
             stream.WriteByteArray(ChunkData);
             stream.WriteByte(PercentComplete);

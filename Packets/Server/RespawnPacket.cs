@@ -10,8 +10,7 @@ namespace MineLib.Network.Packets.Server
         public GameMode GameMode;
         public string LevelType;
     
-        public const byte PacketId = 0x07;
-        public byte Id { get { return PacketId; } }
+        public byte ID { get { return 0x07; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
@@ -23,7 +22,7 @@ namespace MineLib.Network.Packets.Server
     
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             stream.WriteInt((int) Dimension);
             stream.WriteByte((byte) Difficulty);
             stream.WriteByte((byte) GameMode);

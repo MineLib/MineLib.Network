@@ -14,6 +14,7 @@ namespace MineLib.Network.Data.EntityMetadataEntries
 
         public MetadataRotation()
         {
+            Rotation = new Rotation(0,0,0);
         }
 
         public MetadataRotation(float pitch, float yaw, int roll)

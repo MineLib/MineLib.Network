@@ -7,8 +7,7 @@ namespace MineLib.Network.Packets.Server
         public long AgeOfTheWorld;
         public long TimeOfDay;
 
-        public const byte PacketID = 0x03;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return 0x03; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
@@ -18,7 +17,7 @@ namespace MineLib.Network.Packets.Server
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             stream.WriteLong(AgeOfTheWorld);
             stream.WriteLong(TimeOfDay);
             stream.Purge();

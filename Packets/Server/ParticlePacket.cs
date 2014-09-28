@@ -13,8 +13,7 @@ namespace MineLib.Network.Packets.Server
         public int NumberOfParticles;
         public int[] Data;
 
-        public const byte PacketID = 0x2A;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return 0x2A; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
@@ -33,7 +32,7 @@ namespace MineLib.Network.Packets.Server
             {
                 case Particle.ITEM_CRACK:
                 case Particle.BLOCK_CRACK:
-                case Particle.BLOCK_DUST:
+                //case Particle.BLOCK_DUST:
                     Data = reader.ReadVarIntArray(2);
                     break;
 
@@ -45,7 +44,7 @@ namespace MineLib.Network.Packets.Server
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             stream.WriteInt((int) ParticleID);
             stream.WriteBoolean(LongDistance);
             stream.WriteFloat(X);

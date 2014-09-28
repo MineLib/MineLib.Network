@@ -4,8 +4,7 @@ namespace MineLib.Network.Packets.Client
 {
     public struct AnimationPacket : IPacket
     {
-        public const byte PacketID = 0x0A;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return 0x0A; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
@@ -13,7 +12,7 @@ namespace MineLib.Network.Packets.Client
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             stream.Purge();
         }
     }

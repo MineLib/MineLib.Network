@@ -7,8 +7,7 @@ namespace MineLib.Network.Packets.Client
         public double X, FeetY, Z;
         public bool OnGround;
 
-        public const byte PacketID = 0x04;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return 0x04; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
@@ -20,7 +19,7 @@ namespace MineLib.Network.Packets.Client
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             stream.WriteDouble(X);
             stream.WriteDouble(FeetY);
             stream.WriteDouble(Z);

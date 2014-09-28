@@ -8,7 +8,7 @@ namespace MineLib.Network.Classic.Packets.Extension
         public byte SupportLevel;
 
         public const byte PacketID = 0x13;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return PacketID; } }
 
         public void ReadPacket(PacketByteReader stream)
         {
@@ -17,7 +17,7 @@ namespace MineLib.Network.Classic.Packets.Extension
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteByte(Id);
+            stream.WriteByte(ID);
             stream.WriteByte(SupportLevel);
             stream.Purge();
         }

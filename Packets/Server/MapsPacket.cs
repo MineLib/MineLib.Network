@@ -7,20 +7,19 @@ namespace MineLib.Network.Packets.Server
     {
         public int ItemDamage;
         public sbyte Scale;
-        public Icons Icons;
+        public IconList IconList;
         public sbyte Columns;
         public sbyte Rows;
         public sbyte X, Y;
         public byte[] Data; // TODO: Parse dat shiet
 
-        public const byte PacketID = 0x34;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return 0x34; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
             ItemDamage = reader.ReadVarInt();
             Scale = reader.ReadSByte();
-            Icons = Icons.FromReader(reader);
+            IconList = IconList.FromReader(reader);
             Columns = reader.ReadSByte();
 
             if (Columns > 0)
@@ -35,10 +34,10 @@ namespace MineLib.Network.Packets.Server
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             stream.WriteVarInt(ItemDamage);
             stream.WriteSByte(Scale);
-            Icons.ToStream(ref stream);
+            IconList.ToStream(ref stream);
             stream.WriteSByte(Columns);
             if (Columns > 0)
             {

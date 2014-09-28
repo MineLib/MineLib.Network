@@ -69,8 +69,7 @@ namespace MineLib.Network.Packets.Server
 
         public ICombatEvent CombatEvent;
 
-        public const byte PacketID = 0x42;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return 0x42; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
@@ -95,7 +94,7 @@ namespace MineLib.Network.Packets.Server
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             stream.WriteVarInt(Event);
             CombatEvent.ToStream(ref stream);
             stream.Purge();

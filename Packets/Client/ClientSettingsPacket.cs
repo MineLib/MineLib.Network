@@ -10,8 +10,7 @@ namespace MineLib.Network.Packets.Client
         public bool ChatColours;
         public byte DisplayedSkinParts;
 
-        public const byte PacketID = 0x15;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return 0x15; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
@@ -24,7 +23,7 @@ namespace MineLib.Network.Packets.Client
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             stream.WriteString(Locale);
             stream.WriteByte(ViewDistance);
             stream.WriteByte(ChatFlags);

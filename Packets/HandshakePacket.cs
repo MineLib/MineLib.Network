@@ -11,7 +11,7 @@ namespace MineLib.Network.Packets
         public NextState NextState;
 
         public const byte PacketID = 0x00;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return PacketID; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
@@ -23,7 +23,7 @@ namespace MineLib.Network.Packets
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             stream.WriteVarInt(ProtocolVersion);
             stream.WriteString(ServerAddress);
             stream.WriteShort(ServerPort);

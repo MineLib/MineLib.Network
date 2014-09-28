@@ -8,8 +8,7 @@ namespace MineLib.Network.Packets.Client
         public float Pitch;
         public bool OnGround;
 
-        public const byte PacketID = 0x05;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return 0x05; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
@@ -20,7 +19,7 @@ namespace MineLib.Network.Packets.Client
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             stream.WriteFloat(Yaw);
             stream.WriteFloat(Pitch);
             stream.WriteBoolean(OnGround);

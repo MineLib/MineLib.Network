@@ -107,9 +107,10 @@ namespace MineLib.Network.Data
             
             itemStack.NBTData = new NbtCompound();
             var buffer = reader.ReadByteArray(length);
-            var nbt = new NbtFile();
-            nbt.LoadFromBuffer(buffer, 0, length, NbtCompression.None, null);
-            itemStack.NBTData = nbt.RootTag;
+            // TODO: NBTTag reading
+            //var nbt = new NbtFile();
+            //nbt.LoadFromBuffer(buffer, 0, length, NbtCompression.None, null);
+            //itemStack.NBTData = nbt.RootTag;
 
             return itemStack;
         }
@@ -203,11 +204,11 @@ namespace MineLib.Network.Data
         }
     }
 
-    public class ItemStackArray : IEquatable<ItemStackArray>
+    public class ItemStackList : IEquatable<ItemStackList>
     {
         private readonly List<ItemStack> _entries;
 
-        public ItemStackArray()
+        public ItemStackList()
         {
             _entries = new List<ItemStack>();
         }
@@ -225,9 +226,9 @@ namespace MineLib.Network.Data
 
         #region Network
 
-        public static ItemStackArray FromReader(PacketByteReader reader)
+        public static ItemStackList FromReader(PacketByteReader reader)
         {
-            var value = new ItemStackArray();
+            var value = new ItemStackList();
 
             var count = reader.ReadShort();
             for (int i = 0; i < count; i++)
@@ -293,19 +294,19 @@ namespace MineLib.Network.Data
 
         #region Operators
 
-        public static bool operator ==(ItemStackArray left, ItemStackArray right)
+        public static bool operator ==(ItemStackList left, ItemStackList right)
         {
             return left.Equals(right);
         }
 
-        public static bool operator !=(ItemStackArray left, ItemStackArray right)
+        public static bool operator !=(ItemStackList left, ItemStackList right)
         {
             return !left.Equals(right);
         }
 
         #endregion
 
-        public bool Equals(ItemStackArray other)
+        public bool Equals(ItemStackList other)
         {
             if (other.Count != Count)
                 return false;
@@ -322,8 +323,8 @@ namespace MineLib.Network.Data
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
-            if (obj.GetType() != typeof(ItemStackArray)) return false;
-            return Equals((ItemStackArray)obj);
+            if (obj.GetType() != typeof(ItemStackList)) return false;
+            return Equals((ItemStackList)obj);
         }
 
         public override int GetHashCode()

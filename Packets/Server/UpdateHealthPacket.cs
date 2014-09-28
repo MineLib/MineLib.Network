@@ -8,8 +8,7 @@ namespace MineLib.Network.Packets.Server
         public int Food;
         public float FoodSaturation;
 
-        public const byte PacketID = 0x06;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return 0x06; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
@@ -20,7 +19,7 @@ namespace MineLib.Network.Packets.Server
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             stream.WriteFloat(Health);
             stream.WriteVarInt(Food);
             stream.WriteFloat(FoodSaturation);

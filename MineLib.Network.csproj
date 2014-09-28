@@ -21,6 +21,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <RootNamespace>MineLib.Network</RootNamespace>
@@ -83,6 +85,9 @@
     <Compile Include="Classic\Packets\Server\PositionAndOrientationUpdate.cs" />
     <Compile Include="Classic\Packets\Server\UpdateUserType.cs" />
     <Compile Include="Cryptography.cs" />
+    <Compile Include="Data\Anvil\Block.cs" />
+    <Compile Include="Data\Anvil\Chunk.cs" />
+    <Compile Include="Data\Anvil\Section.cs" />
     <Compile Include="Data\ChunkColumnMetadata.cs" />
     <Compile Include="Data\Coordinates2D.cs" />
     <Compile Include="Data\EntityMetadataEntries\MetadataRotation.cs" />
@@ -264,6 +269,7 @@
     <Compile Include="Packets\Server\PlayerListHeaderFooterPacket.cs" />
     <Compile Include="Packets\Server\ResourcePackSendPacket.cs" />
     <Compile Include="Packets\Server\UpdateEntityNBTPacket.cs" />
+    <Compile Include="Packets\ClientResponse.cs" />
     <Compile Include="Yggdrasil.cs" />
     <Compile Include="Yggdrasil.Json.cs" />
   </ItemGroup>

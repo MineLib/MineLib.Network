@@ -9,8 +9,7 @@ namespace MineLib.Network.Packets.Client
         public float Forward;
         public SteerVehicle Flags;
 
-        public const byte PacketID = 0x0C;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return 0x0C; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
@@ -21,7 +20,7 @@ namespace MineLib.Network.Packets.Client
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             stream.WriteFloat(Sideways);
             stream.WriteFloat(Forward);
             stream.WriteByte((byte) Flags);

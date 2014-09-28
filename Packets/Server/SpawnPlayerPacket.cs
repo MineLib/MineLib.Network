@@ -11,10 +11,9 @@ namespace MineLib.Network.Packets.Server
         public Vector3 Vector3;
         public sbyte Yaw, Pitch;
         public short CurrentItem;
-        public EntityMetadata Metadata;
+        public EntityMetadata EntityMetadata;
 
-        public const byte PacketID = 0x0C;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return 0x0C; } }
     
         public void ReadPacket(PacketByteReader reader)
         {
@@ -24,19 +23,19 @@ namespace MineLib.Network.Packets.Server
             Yaw = reader.ReadSByte();
             Pitch = reader.ReadSByte();
             CurrentItem = reader.ReadShort();
-            Metadata = EntityMetadata.FromReader(reader);
+            EntityMetadata = EntityMetadata.FromReader(reader);
         }
     
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             stream.WriteVarInt(EntityID);
             stream.WriteBigInteger(PlayerUUID);
             Vector3.ToStreamIntFixedPoint(ref stream);
             stream.WriteSByte(Yaw);
             stream.WriteSByte(Pitch);
             stream.WriteShort(CurrentItem);
-            Metadata.ToStream(ref stream);
+            EntityMetadata.ToStream(ref stream);
             stream.Purge();
         }
     }

@@ -7,8 +7,7 @@ namespace MineLib.Network.Packets.Server
         public string Channel;
         public byte[] Data;
 
-        public const byte PacketId = 0x3F;
-        public byte Id { get { return PacketId; } }
+        public byte ID { get { return 0x3F; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
@@ -19,7 +18,7 @@ namespace MineLib.Network.Packets.Server
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             stream.WriteString(Channel);
             stream.WriteVarInt(Data.Length);
             stream.WriteByteArray(Data);

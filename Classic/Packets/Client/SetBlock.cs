@@ -11,7 +11,7 @@ namespace MineLib.Network.Classic.Packets.Client
         public byte BlockType;
 
         public const byte PacketID = 0x05;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return PacketID; } }
 
         public void ReadPacket(PacketByteReader stream)
         {
@@ -24,7 +24,7 @@ namespace MineLib.Network.Classic.Packets.Client
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteByte(Id);
+            stream.WriteByte(ID);
             stream.WriteShort((short)Coordinates.X);
             stream.WriteShort((short)Coordinates.Y);
             stream.WriteShort((short)Coordinates.Z);

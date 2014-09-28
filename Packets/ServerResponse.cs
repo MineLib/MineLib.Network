@@ -9,25 +9,25 @@ namespace MineLib.Network.Packets
         public delegate IPacket CreatePacketInstance();
 
         #region Login Response
-        public static readonly CreatePacketInstance[] ServerLoginResponse =
+        public static readonly CreatePacketInstance[] Login =
         {
-            () => new LoginDisconnectPacket(),      // 0x00
-            () => new EncryptionRequestPacket(),    // 0x01
-            () => new LoginSuccessPacket(),         // 0x02
-            () => new Server.Login.SetCompressionPacket()        // 0x03
+            () => new LoginDisconnectPacket(),              // 0x00
+            () => new EncryptionRequestPacket(),            // 0x01
+            () => new LoginSuccessPacket(),                 // 0x02
+            () => new Server.Login.SetCompressionPacket()   // 0x03
         };
         #endregion
 
         #region Status Response
-        public static readonly CreatePacketInstance[] ServerStatusResponse =
+        public static readonly CreatePacketInstance[] Status =
         {
-            () => new ResponsePacket(), // 0x00
-            () => new PingPacket()      // 0x01
+            () => new ResponsePacket(),                     // 0x00
+            () => new PingPacket()                          // 0x01
         };
         #endregion
 
         #region Play Response
-        public static readonly CreatePacketInstance[] ServerPlayResponse =
+        public static readonly CreatePacketInstance[] Play =
         {
             () => new KeepAlivePacket(),                    // 0x00
             () => new JoinGamePacket(),                     // 0x01
@@ -284,9 +284,8 @@ namespace MineLib.Network.Packets
             null, // 0xFC
             null, // 0xFD
             null, // 0xFE
-            null // 0xFF
+            null  // 0xFF
         };
         #endregion
-
     }
 }

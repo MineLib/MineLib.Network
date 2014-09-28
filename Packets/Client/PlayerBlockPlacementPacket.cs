@@ -11,8 +11,7 @@ namespace MineLib.Network.Packets.Client
         public ItemStack Slot;
         public Vector3 CursorVector3;
 
-        public const byte PacketID = 0x08;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return 0x08; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
@@ -24,7 +23,7 @@ namespace MineLib.Network.Packets.Client
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             Location.ToStreamLong(ref stream);
             stream.WriteByte((byte) Direction);
             Slot.ToStream(ref stream);

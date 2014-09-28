@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 namespace MineLib.Network.IO
 {
@@ -15,12 +14,18 @@ namespace MineLib.Network.IO
 
         public override long Seek(long offset, SeekOrigin origin)
         {
-            throw new NotSupportedException();
+            if (EncryptionEnabled)
+                return _crypto.BaseStream.Seek(offset, origin);
+            else
+                return _stream.Seek(offset, origin);
         }
 
         public override void SetLength(long value)
         {
-            throw new NotSupportedException();
+            if (EncryptionEnabled)
+                _crypto.BaseStream.SetLength(value);
+            else
+                _stream.SetLength(value);
         }
 
         public override int Read(byte[] buffer, int offset, int count)
@@ -46,7 +51,7 @@ namespace MineLib.Network.IO
 
         public override bool CanSeek
         {
-            get { return false; }
+            get { return EncryptionEnabled ? _crypto.BaseStream.CanSeek : _stream.CanSeek; }
         }
 
         public override bool CanWrite
@@ -56,22 +61,24 @@ namespace MineLib.Network.IO
 
         public override long Length
         {
-            get { throw new NotSupportedException(); }
+            get { return EncryptionEnabled ? _crypto.BaseStream.Length : _stream.Length; }
         }
 
         public override long Position 
         {
             get
             {
-                if (EncryptionEnabled) 
-                    throw new NotSupportedException();
-                return _stream.Position;
+                if (EncryptionEnabled)
+                    return _crypto.BaseStream.Position;
+                else
+                    return _stream.Position;
             }
             set
             {
                 if (EncryptionEnabled)
-                    throw new NotSupportedException();
-                _stream.Position = value;
+                    _crypto.BaseStream.Position = value;
+                else
+                    _stream.Position = value;
             }
         }
     }

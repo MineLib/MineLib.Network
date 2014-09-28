@@ -2,12 +2,16 @@
 
 namespace MineLib.Network.Packets.Server.Login
 {
-    public struct SetCompressionPacket : IPacket
+    public interface ISetCompression : IPacket
     {
-        public int Threshold;
+        int Threshold { get; set; }
+    }
 
-        public const byte PacketID = 0x03;
-        public byte Id { get { return PacketID; } }
+    public struct SetCompressionPacket : ISetCompression
+    {
+        public int Threshold { get; set; }
+
+        public byte ID { get { return 0x03; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
@@ -16,7 +20,7 @@ namespace MineLib.Network.Packets.Server.Login
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             stream.WriteVarInt(Threshold);
             stream.Purge();
         }

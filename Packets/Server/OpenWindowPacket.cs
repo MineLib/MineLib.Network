@@ -10,8 +10,7 @@ namespace MineLib.Network.Packets.Server
         public byte NumberOfSlots;
         public int? EntityID;
 
-        public const byte PacketID = 0x2D;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return 0x2D; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
@@ -25,7 +24,7 @@ namespace MineLib.Network.Packets.Server
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             stream.WriteByte(WindowID);
             stream.WriteString(InventoryType);
             stream.WriteString(WindowTitle);

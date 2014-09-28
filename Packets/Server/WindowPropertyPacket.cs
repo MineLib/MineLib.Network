@@ -8,8 +8,7 @@ namespace MineLib.Network.Packets.Server
         public short PropertyId;
         public short Value;
 
-        public const byte PacketID = 0x31;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return 0x31; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
@@ -20,7 +19,7 @@ namespace MineLib.Network.Packets.Server
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             stream.WriteByte(WindowId);
             stream.WriteShort(PropertyId);
             stream.WriteShort(Value);

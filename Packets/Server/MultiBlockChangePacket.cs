@@ -6,29 +6,23 @@ namespace MineLib.Network.Packets.Server
     public struct MultiBlockChangePacket : IPacket
     {
         public Coordinates2D Coordinates; // TODO: Add FromReader() ?
-        public int RecordCount;
-        private byte[] data;
-        public RecordsArray RecordsArray;
+        public RecordList RecordList;
 
-        public const byte PacketID = 0x22;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return 0x22; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
             Coordinates.X = reader.ReadInt();
             Coordinates.Z = reader.ReadInt();
-            RecordsArray = RecordsArray.FromReader(reader);
+            RecordList = RecordList.FromReader(reader);
         }
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             stream.WriteInt(Coordinates.X);
             stream.WriteInt(Coordinates.Z);
-            RecordsArray.ToStream(ref stream);
-            stream.WriteVarInt(RecordCount);
-            stream.WriteInt(RecordCount * 4);
-            stream.WriteByteArray(data);
+            RecordList.ToStream(ref stream);
             stream.Purge();
         }
     }

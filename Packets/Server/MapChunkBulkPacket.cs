@@ -1,33 +1,23 @@
-using MineLib.Network.Data;
+using MineLib.Network.Data.Anvil;
 using MineLib.Network.IO;
 
 namespace MineLib.Network.Packets.Server
 {
     public struct MapChunkBulkPacket : IPacket
     {
-        public bool SkyLightSent;
-        public ChunkColumnMetadata MetaInformation;
-        public byte[] ChunkData;
+        public ChunkList ChunkList;
 
-        public const byte PacketID = 0x26;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return 0x26; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
-            SkyLightSent = reader.ReadBoolean();
-            MetaInformation = ChunkColumnMetadata.FromReader(reader);
-
-            var length = reader.ReadVarInt();
-            ChunkData = reader.ReadByteArray(length);
+            ChunkList = ChunkList.FromReader(reader);
         }
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
-            stream.WriteBoolean(SkyLightSent);
-            MetaInformation.ToStream(ref stream);
-            stream.WriteVarInt(ChunkData.Length);
-            stream.WriteByteArray(ChunkData);
+            stream.WriteVarInt(ID);
+            ChunkList.ToStream(ref stream);
             stream.Purge();
         }
     }

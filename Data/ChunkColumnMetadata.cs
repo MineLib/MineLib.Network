@@ -3,7 +3,7 @@ using MineLib.Network.IO;
 
 namespace MineLib.Network.Data
 {
-    public struct Metadata
+    public struct ChunkColumnMetadata
     {
         public Coordinates2D Coordinates;
         public ushort PrimaryBitMap;
@@ -13,13 +13,13 @@ namespace MineLib.Network.Data
         // -- Debugging
     }
 
-    public class ChunkColumnMetadata
+    public class ChunkColumnMetadataList
     {
-        private readonly List<Metadata> _entries;
+        private readonly List<ChunkColumnMetadata> _entries;
 
-        public ChunkColumnMetadata()
+        public ChunkColumnMetadataList()
         {
-            _entries = new List<Metadata>();
+            _entries = new List<ChunkColumnMetadata>();
         }
 
         public int Count
@@ -27,20 +27,25 @@ namespace MineLib.Network.Data
             get { return _entries.Count; }
         }
 
-        public Metadata this[int index]
+        public ChunkColumnMetadata this[int index]
         {
             get { return _entries[index]; }
             set { _entries.Insert(index, value); }
         }
 
-        public static ChunkColumnMetadata FromReader(PacketByteReader reader)
+        public IEnumerable<ChunkColumnMetadata> GetMetadata()
         {
-            var value = new ChunkColumnMetadata();
+            return _entries.ToArray();
+        }
+
+        public static ChunkColumnMetadataList FromReader(PacketByteReader reader)
+        {
+            var value = new ChunkColumnMetadataList();
 
             var count = reader.ReadVarInt();
             for (var i = 0; i < count; i++)
             {
-                var metadata = new Metadata();
+                var metadata = new ChunkColumnMetadata();
 
                 metadata.Coordinates.X = reader.ReadInt();
                 metadata.Coordinates.Z = reader.ReadInt();

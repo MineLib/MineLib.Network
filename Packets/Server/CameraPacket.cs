@@ -6,8 +6,7 @@ namespace MineLib.Network.Packets.Server
     {
         public int CameraID;
 
-        public const byte PacketID = 0x43;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return 0x43; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
@@ -16,7 +15,7 @@ namespace MineLib.Network.Packets.Server
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             stream.WriteVarInt(CameraID);
             stream.Purge();
         }

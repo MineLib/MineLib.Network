@@ -11,7 +11,7 @@ namespace MineLib.Network.Classic.Packets.Client
         public byte UnUsed;
 
         public const byte PacketID = 0x00;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return PacketID; } }
 
         public void ReadPacket(PacketByteReader stream)
         {
@@ -23,7 +23,7 @@ namespace MineLib.Network.Classic.Packets.Client
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteByte(Id);
+            stream.WriteByte(ID);
             stream.WriteByte(ProtocolVersion);
             stream.WriteString(Username);
             stream.WriteString(VerificationKey);

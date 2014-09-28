@@ -10,8 +10,7 @@ namespace MineLib.Network.Packets.Server
         public float Yaw, Pitch;
         public PlayerPositionAndLookFlags Flags;
 
-        public const byte PacketID = 0x08;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return 0x08; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
@@ -23,7 +22,7 @@ namespace MineLib.Network.Packets.Server
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             Vector3.ToStreamDouble(ref stream);
             stream.WriteFloat(Yaw);
             stream.WriteFloat(Pitch);

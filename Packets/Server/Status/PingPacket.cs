@@ -6,8 +6,7 @@ namespace MineLib.Network.Packets.Server.Status
     {
         public long Time;
 
-        public const byte PacketID = 0x01;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return 0x01; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
@@ -16,7 +15,7 @@ namespace MineLib.Network.Packets.Server.Status
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             stream.WriteLong(Time);
             stream.Purge();
         }

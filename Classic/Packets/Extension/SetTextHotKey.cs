@@ -11,7 +11,7 @@ namespace MineLib.Network.Classic.Packets.Extension
         public byte KeyMods;
 
         public const byte PacketID = 0x15;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return PacketID; } }
 
         public void ReadPacket(PacketByteReader stream)
         {
@@ -23,7 +23,7 @@ namespace MineLib.Network.Classic.Packets.Extension
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteByte(Id);
+            stream.WriteByte(ID);
             stream.WriteString(Label);
             stream.WriteString(Action);
             stream.WriteInt(KeyCode);

@@ -8,8 +8,7 @@ namespace MineLib.Network.Packets.Server
         public GameStateReason Reason;
         public float Value;
 
-        public const byte PacketID = 0x2B;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return 0x2B; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
@@ -19,7 +18,7 @@ namespace MineLib.Network.Packets.Server
     
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             stream.WriteByte((byte) Reason);
             stream.WriteFloat(Value);
             stream.Purge();

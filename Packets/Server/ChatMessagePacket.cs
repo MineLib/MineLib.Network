@@ -8,8 +8,7 @@ namespace MineLib.Network.Packets.Server
         public string Message;
         public ChatMessagePosition Position;
 
-        public const byte PacketID = 0x02;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return 0x02; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
@@ -19,7 +18,7 @@ namespace MineLib.Network.Packets.Server
 
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             stream.WriteString(Message);
             stream.WriteByte((byte) Position);
             stream.Purge();

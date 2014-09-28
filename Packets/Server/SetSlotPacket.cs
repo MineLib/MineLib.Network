@@ -9,8 +9,7 @@ namespace MineLib.Network.Packets.Server
         public short Slot;
         public ItemStack SlotData;
 
-        public const byte PacketID = 0x2F;
-        public byte Id { get { return PacketID; } }
+        public byte ID { get { return 0x2F; } }
 
         public void ReadPacket(PacketByteReader reader)
         {
@@ -21,7 +20,7 @@ namespace MineLib.Network.Packets.Server
     
         public void WritePacket(ref PacketStream stream)
         {
-            stream.WriteVarInt(Id);
+            stream.WriteVarInt(ID);
             stream.WriteSByte(WindowId);
             stream.WriteShort(Slot);
             SlotData.ToStream(ref stream);
