@@ -8,7 +8,7 @@ namespace MineLib.Network.IO
     // Read only decrypted data
     public class PacketByteReader
     {
-        private MemoryStream _stream;
+        private readonly MemoryStream _stream;
 
         public PacketByteReader(MemoryStream stream)
         {
@@ -18,11 +18,6 @@ namespace MineLib.Network.IO
         public PacketByteReader(byte[] data)
         {
             _stream = new MemoryStream(data);
-        }
-
-        public void SetNewMemoryStream(MemoryStream stream)
-        {
-            _stream = stream;
         }
 
         // -- Strings
@@ -52,7 +47,7 @@ namespace MineLib.Network.IO
             return (ushort)((ReadByte() << 8) | ReadByte());
         }
 
-        // -- Integer
+        // -- Int
 
         public int ReadInt()
         {
@@ -94,7 +89,7 @@ namespace MineLib.Network.IO
             return BitConverter.ToInt64(bytes, 0);
         }
 
-        // -- BigInteger
+        // -- BigInt
 
         public BigInteger ReadBigInteger()
         {
@@ -139,7 +134,7 @@ namespace MineLib.Network.IO
 
         }
 
-        // -- Bool
+        // -- Boolean
 
         public bool ReadBoolean()
         {
@@ -147,7 +142,7 @@ namespace MineLib.Network.IO
 
         }
 
-        // -- IntegerArray
+        // -- IntArray
 
         public int[] ReadIntArray(int value)
         {

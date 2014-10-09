@@ -13,11 +13,6 @@ namespace MineLib.Network
         {
             if (OnPacketHandled != null)
                 OnPacketHandled(packet, id, state);
-
-#if DEBUG
-            if(packet == null)
-                throw new Exception("Null packet");
-#endif
         }
     }
 }

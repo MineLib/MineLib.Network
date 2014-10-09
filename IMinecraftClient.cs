@@ -11,5 +11,7 @@ namespace MineLib.Network
 
         string AccessToken { get; set; }
         string SelectedProfile { get; set; }
+
+        void Dispose();
     }
 }

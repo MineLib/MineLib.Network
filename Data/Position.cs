@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using MineLib.Network.IO;
 
 namespace MineLib.Network.Data
@@ -7,7 +6,6 @@ namespace MineLib.Network.Data
     /// <summary>
     /// Represents the location of an object in 3D space (int).
     /// </summary>
-    [StructLayout(LayoutKind.Auto)]
     public struct Position : IEquatable<Position>
     {
         public int X;

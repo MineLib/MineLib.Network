@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace MineLib.Network
 {
-    public partial class Yggdrasil
+    public static partial class Yggdrasil
     {
         public enum ErrorType
         {

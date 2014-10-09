@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using MineLib.Network.IO;
 
 namespace MineLib.Network.Data
@@ -64,7 +63,7 @@ namespace MineLib.Network.Data
             }
         }
 
-        public Record[] GetRecords()
+        public IEnumerable<Record> GetRecords()
         {
             return _entries.ToArray();
         }

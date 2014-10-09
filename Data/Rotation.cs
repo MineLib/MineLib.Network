@@ -5,7 +5,7 @@ namespace MineLib.Network.Data
     /// <summary>
     /// Represents mostly head location of an entity
     /// </summary>
-    public class Rotation : IEquatable<Rotation>
+    public struct Rotation : IEquatable<Rotation>
     {
         public float Pitch;
         public float Yaw;

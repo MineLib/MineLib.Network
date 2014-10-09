@@ -6,21 +6,21 @@ namespace MineLib.Network.Data.Anvil
 {
     public class Chunk : IEquatable<Chunk>
     {
-        public const int Width = 16;
-        public const int Height = 256;
-        public const int Depth = 16;
+        public const short Width = 16;
+        public const short Height = 256;
+        public const short Depth = 16;
 
         public const int OneByteData = Section.Width * Section.Depth * Section.Height;
         public const int HalfByteData = OneByteData / 2;
         public const int TwoByteData = OneByteData * 2;
         public const int BiomesLength = Width * Depth;
 
-        public readonly Coordinates2D Coordinates;
+        public Coordinates2D Coordinates;
         public ushort PrimaryBitMap;
         public bool OverWorld;
         public bool GroundUp;
 
-        public readonly byte[] Biomes;
+        public byte[] Biomes;
 
         public Section[] Sections;
 
@@ -34,8 +34,11 @@ namespace MineLib.Network.Data.Anvil
             Biomes = new byte[BiomesLength];
 
             Sections = new Section[16];
-            for (short i = 0; i < Sections.Length; i++)
-                Sections[i] = new Section(i);       
+            for (var i = 0; i < Sections.Length; i++)
+            {
+                var pos = new Position(Coordinates.X, i, Coordinates.Z);
+                Sections[i] = new Section(pos);
+            }
         }
 
         public override string ToString()
@@ -48,7 +51,7 @@ namespace MineLib.Network.Data.Anvil
             // Get the total sections included in the bitMap
             var sectionCount = 0;
 
-            for (int y = 0; y < 16; y++)
+            for (var y = 0; y < 16; y++)
             {
                 if ((bitMap & (1 << y)) > 0)
                     sectionCount++;
@@ -162,12 +165,12 @@ namespace MineLib.Network.Data.Anvil
 
         public Position GetBlockPosition(Section section, int index)
         {
-            var sectionPosition = Section.GetSectionPositionInArray(index);
+            var sectionPosition = Section.GetSectionPositionByIndex(index);
 
             return new Position
             {
                 X = 16 * Coordinates.X + sectionPosition.X,
-                Y = 16 * section.Y + sectionPosition.Y,
+                Y = 16 * section.Position.Y + sectionPosition.Y,
                 Z = 16 * Coordinates.Z + sectionPosition.Z
             };
         }

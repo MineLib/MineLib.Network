@@ -3,21 +3,24 @@ using System.Collections.Generic;
 
 namespace MineLib.Network.Data.Anvil
 {
-    public class Section : IEquatable<Section>
+    public struct Section : IEquatable<Section>
     {
         public const int Width = 16;
         public const int Height = 16;
         public const int Depth = 16;
 
-        public Block[] Blocks;
-
-        public readonly short Y;
+        public Block[,,] Blocks;
 
         public bool IsFilled;
 
-        public Section(short y)
+        public Position Position;
+
+        public Section(Position position)
         {
-            Y = y;
+            Position = position;
+
+            Blocks = new Block[0, 0, 0];
+            IsFilled = false;
         }
 
         public override string ToString()
@@ -30,7 +33,7 @@ namespace MineLib.Network.Data.Anvil
             if(IsFilled)
                 return;
 
-            Blocks = new Block[Width * Height * Depth];
+            Blocks = new Block[Width, Height, Depth];
 
             IsFilled = true;
         }
@@ -40,101 +43,113 @@ namespace MineLib.Network.Data.Anvil
             if(IsFilled) 
                 return;
 
-            Blocks = new Block[Width * Height * Depth];
-
-            // TODO: Less messy
-            var idMetadata = new short[4096];
-
-            for (int i = 0, j = 0; i < idMetadata.Length; i++)
-            {
-                idMetadata[i] = (short)(rawBlocks[j] + rawBlocks[j + 1]);
-                j++;
-                j++;
-            }
+            Blocks = new Block[Width, Height, Depth];
 
             var blockLight = ToBytePerBlock(rawBlockLight);
             var skyLight = ToBytePerBlock(rawSkyLight);
 
-            // TODO: Add auto Coordinate calculator
-            for (var i = 0; i < Blocks.Length; i++)
+            for (int i = 0, j = 0; i < Width * Height * Depth; i++)
             {
-                var id = (short) (idMetadata[i] >> 4);
-                var meta = (byte)(idMetadata[i] & 15);
+                var idMetadata = (short)(rawBlocks[j] + rawBlocks[j + 1]);
+                j++;
+                j++;
 
-                Blocks[i] = new Block(id, meta, blockLight[i], skyLight[i]);
+                // TODO: Add auto Coordinate calculator
+                var id = (short)(idMetadata >> 4);
+                var meta = (byte)(idMetadata & 15);
+
+                var sectionPos = GetSectionPositionByIndex(i);
+                Blocks[sectionPos.X, sectionPos.Y, sectionPos.Z] = new Block(id, meta, blockLight[i], skyLight[i]);
             }
 
             IsFilled = true;
         }
 
-        public Block GetBlock(Position sectionCoordinates)
+        public Block GetBlock(Position sectionPos)
         {
             if (!IsFilled)
                 throw new AccessViolationException("Section is empty");
 
-            return Blocks[GetIndexInArray(sectionCoordinates)];
+            return Blocks[sectionPos.X, sectionPos.Y, sectionPos.Z];
         }
 
-        public void SetBlock(Position sectionCoordinates, Block block)
+        public void SetBlock(Position sectionPos, Block block)
         {
             if (!IsFilled)
                 BuildEmpty();
 
-            var index = GetIndexInArray(sectionCoordinates);
+            var oldBlock = Blocks[sectionPos.X, sectionPos.Y, sectionPos.Z];
 
             // I don't think that these values will change
-            block.Light = Blocks[index].Light;
-            block.SkyLight = Blocks[index].SkyLight;
+            block.Light = oldBlock.Light;
+            block.SkyLight = oldBlock.SkyLight;
 
-            Blocks[index] = block;
+            Blocks[sectionPos.X, sectionPos.Y, sectionPos.Z] = block;
         }
 
-        public byte GetBlockLighting(Position sectionCoordinates)
+        public byte GetBlockLighting(Position sectionPos)
         {
             if (!IsFilled)
                 throw new AccessViolationException("Section is empty");
 
-            return Blocks[GetIndexInArray(sectionCoordinates)].Light;
+            return Blocks[sectionPos.X, sectionPos.Y, sectionPos.Z].Light;
         }
 
-        public void SetBlockLighting(Position sectionCoordinates, byte data)
+        public void SetBlockLighting(Position sectionPos, byte data)
         {
             if (!IsFilled)
                 BuildEmpty();
 
-            Blocks[GetIndexInArray(sectionCoordinates)].Light = data;
+            Blocks[sectionPos.X, sectionPos.Y, sectionPos.Z].Light = data;
         }
 
-        public byte GetBlockSkylight(Position sectionCoordinates)
+        public byte GetBlockSkylight(Position sectionPos)
         {
             if (!IsFilled)
                 throw new AccessViolationException("Section is empty");
 
-            return Blocks[GetIndexInArray(sectionCoordinates)].SkyLight;
+            return Blocks[sectionPos.X, sectionPos.Y, sectionPos.Z].SkyLight;
         }
 
-        public void SetBlockSkylight(Position sectionCoordinates, byte data)
+        public void SetBlockSkylight(Position sectionPos, byte data)
         {
             if (!IsFilled)
                 BuildEmpty();
 
-            Blocks[GetIndexInArray(sectionCoordinates)].SkyLight = data;
+            Blocks[sectionPos.X, sectionPos.Y, sectionPos.Z].SkyLight = data;
         }
 
         #region Helping Methods
 
-        private static int GetIndexInArray(Position sectionCoordinates)
-        {
-            return (sectionCoordinates.X + (sectionCoordinates.Z * 16) + (sectionCoordinates.Y * 16 * 16));
-        }
-
-        public static Position GetSectionPositionInArray(int index)
+        public static Position GetSectionPositionByIndex(int index)
         {
             return new Position
             {
                 X = index % 16,
                 Y = index / (16 * 16),
                 Z = (index / 16) % 16
+            };
+        }
+
+        public Position GetGlobalPositionByArrayIndex(Position pos)
+        {
+            return GetGlobalPositionByArrayIndex(pos.X, pos.Y, pos.Z);
+        }
+
+        public Position GetGlobalPositionByArrayIndex(int index1, int index2, int index3)
+        {
+            return GetGlobalPositionByIndex(16 * index1 + 16 * index2 + 16 * index3);
+        }
+
+        public Position GetGlobalPositionByIndex(int index)
+        {
+            var sectionPos = GetSectionPositionByIndex(index);
+
+            return new Position
+            {
+                X = Width * Position.X + sectionPos.Y,
+                Y = Height * Position.Y + sectionPos.Y,
+                Z = Depth * Position.Z + sectionPos.Z
             };
         }
 
@@ -177,7 +192,7 @@ namespace MineLib.Network.Data.Anvil
         // You need to be a really freak to use it
         public bool Equals(Section section)
         {
-            return Blocks.Equals(section.Blocks) && Y.Equals(section.Y);
+            return Blocks.Equals(section.Blocks) && Position.Equals(section.Position);
         }
 
         public override bool Equals(object obj)
@@ -192,7 +207,7 @@ namespace MineLib.Network.Data.Anvil
             unchecked
             {
                 var result = Blocks.GetHashCode();
-                result = (result * 397) ^ Y.GetHashCode();
+                result = (result * 397) ^ Position.GetHashCode();
                 return result;
             }
         }

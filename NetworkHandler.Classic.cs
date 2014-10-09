@@ -1,5 +1,4 @@
-﻿using System.IO;
-using MineLib.Network.Classic.Packets;
+﻿using MineLib.Network.Classic.Packets;
 using MineLib.Network.IO;
 
 namespace MineLib.Network
@@ -31,34 +30,6 @@ namespace MineLib.Network
             return true;
         }
 
-        private void StartSendingClassic()
-        {
-            do
-            {
-            } while (PacketSenderClassic());
-        }
-
-        private bool PacketSenderClassic()
-        {
-            if (_baseSock.Client == null || !Connected)
-                return false;
-
-            if (_packetsToSend.Count == 0)
-                return true;
-
-            while (_packetsToSend.Count > 0)
-            {
-                var packet = _packetsToSend.Take();
-
-#if DEBUG
-                _packetsSended.Add(packet);
-#endif
-
-                packet.WritePacket(ref _stream);
-            }
-            return true;
-        }
-
         #endregion Sending and Receiving.
 
         private void HandlePacketClassic(int id, byte[] data)
@@ -72,7 +43,7 @@ namespace MineLib.Network
             packet.ReadPacket(_reader);
 
 #if DEBUG
-            _packetsReceived.Add(packet);
+            PacketsReceived.Add(packet);
 #endif
 
             RaisePacketHandledClassic(packet, id);

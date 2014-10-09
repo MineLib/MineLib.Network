@@ -5,14 +5,14 @@ using Org.BouncyCastle.Math;
 
 namespace MineLib.Network.Data
 {
-    public class Modifiers
+    public struct Modifiers
     {
         public BigInteger UUID;
         public double Amount;
         public sbyte Operation;
     }
 
-    public class EntityProperty
+    public struct EntityProperty
     {
         public string Key;
         public double Value;

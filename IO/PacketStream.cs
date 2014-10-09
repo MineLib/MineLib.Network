@@ -13,10 +13,10 @@ namespace MineLib.Network.IO
         // -- Credits to SirCmpwn for encryption support, as taken from SMProxy.
         private readonly Stream _stream;
         private IAesStream _crypto;
+        private byte[] _buffer;
         public bool EncryptionEnabled;
         public bool CompressionEnabled;
         public int CompressionThreshold;
-        private byte[] _buffer;
 
         public PacketStream(Stream stream)
         {
@@ -77,7 +77,7 @@ namespace MineLib.Network.IO
             }, 0, 2);
         }
 
-        // -- Integer
+        // -- Int
 
         public void WriteInt(int value)
         {
@@ -147,7 +147,7 @@ namespace MineLib.Network.IO
             WriteByteArray(bytes);
         }
 
-        // -- BigInteger
+        // -- BigInt
 
         public void WriteBigInteger(BigInteger value)
         {
@@ -206,7 +206,7 @@ namespace MineLib.Network.IO
 
         }
 
-        // -- IntegerArray
+        // -- IntArray
 
         public void WriteIntArray(int[] value)
         {

@@ -4,7 +4,7 @@ using MineLib.Network.Packets.Client.Status;
 
 namespace MineLib.Network.Packets
 {
-    public static class ClientResponse
+    public struct ClientResponse
     {
         public delegate IPacket CreatePacketInstance();
 
