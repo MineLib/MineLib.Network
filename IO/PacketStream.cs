@@ -21,14 +21,14 @@ namespace MineLib.Network.IO
         private byte[] _buffer;
         private readonly Encoding _encoding;
 
-        public PacketStream(Stream stream, NetworkMode mode = NetworkMode.Main)
+        public PacketStream(Stream stream, NetworkMode mode)
         {
             _stream = stream;
             Mode = mode;
 
             switch (Mode)
             {
-                case NetworkMode.Main:
+                case NetworkMode.Modern:
                     _encoding = Encoding.UTF8;
                     break;
 
@@ -64,8 +64,8 @@ namespace MineLib.Network.IO
         {
             switch (Mode)
             {
-                case NetworkMode.Main:
-                    WriteStringMain(value);
+                case NetworkMode.Modern:
+                    WriteStringModern(value);
                     break;
 
                 case NetworkMode.Classic:
@@ -78,7 +78,7 @@ namespace MineLib.Network.IO
             }
         }
 
-        private void WriteStringMain(string value)
+        private void WriteStringModern(string value)
         {
             var length = GetVarIntBytes(value.Length);
             var final = new byte[value.Length + length.Length];
@@ -378,11 +378,11 @@ namespace MineLib.Network.IO
         {
             switch (Mode)
             {
-                case NetworkMode.Main:
+                case NetworkMode.Modern:
                     if (CompressionEnabled)
-                        PurgeMainWithCompression();
+                        PurgeModernWithCompression();
                     else
-                        PurgeMainWithoutCompression();
+                        PurgeModernWithoutCompression();
                     break;
 
                 case NetworkMode.Classic:
@@ -398,7 +398,7 @@ namespace MineLib.Network.IO
             _buffer = null;
         }
 
-        private void PurgeMainWithoutCompression()
+        private void PurgeModernWithoutCompression()
         {
             var lenBytes = GetVarIntBytes(_buffer.Length);
 
@@ -415,7 +415,7 @@ namespace MineLib.Network.IO
             _buffer = null;
         }
 
-        private void PurgeMainWithCompression()
+        private void PurgeModernWithCompression()
         {
             int packetLength = 0; // data.Length + GetVarIntBytes(data.Length).Length
             int dataLength = 0; // UncompressedData.Length

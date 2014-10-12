@@ -2,9 +2,9 @@
 {
     public enum ServerState
     {
-        MainLogin,
-        MainPlay,
-        MainStatus,
+        ModernLogin,
+        ModernPlay,
+        ModernStatus,
 
         ClassicLogin,
         ClassicPlay,

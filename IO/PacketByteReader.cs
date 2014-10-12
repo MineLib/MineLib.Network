@@ -12,14 +12,14 @@ namespace MineLib.Network.IO
 
         private readonly Stream _stream;
 
-        public PacketByteReader(Stream stream, NetworkMode mode = NetworkMode.Main)
+        public PacketByteReader(Stream stream, NetworkMode mode)
         {
             _stream = stream;
 
             Mode = mode;
         }
 
-        public PacketByteReader(byte[] data, NetworkMode mode = NetworkMode.Main)
+        public PacketByteReader(byte[] data, NetworkMode mode)
         {
             _stream = new MemoryStream(data);
 
@@ -32,8 +32,8 @@ namespace MineLib.Network.IO
         {
             switch (Mode)
             {
-                case NetworkMode.Main: 
-                    return ReadStringMain();
+                case NetworkMode.Modern: 
+                    return ReadStringModern();
 
                 case NetworkMode.Classic: 
                     return ReadStringClassic();
@@ -45,7 +45,7 @@ namespace MineLib.Network.IO
             return null;
         }
 
-        private string ReadStringMain()
+        private string ReadStringModern()
         {
             var length = ReadVarInt();
             var stringBytes = ReadByteArray(length);

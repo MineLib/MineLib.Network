@@ -2,7 +2,7 @@
 {
     public enum NetworkMode
     {
-        Main,
+        Modern,
         Classic,
         PocketEdition
     }

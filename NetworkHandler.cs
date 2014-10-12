@@ -30,7 +30,7 @@ namespace MineLib.Network
 
         public bool Crashed { get; private set; }
 
-        public NetworkHandler(IMinecraftClient client, NetworkMode mode = NetworkMode.Main)
+        public NetworkHandler(IMinecraftClient client, NetworkMode mode)
         {
             _minecraft = client;
             Mode = mode;
@@ -49,7 +49,7 @@ namespace MineLib.Network
             {
                 switch (Mode)
                 {
-                    case NetworkMode.Main:
+                    case NetworkMode.Modern:
                     case NetworkMode.Classic:
                         _baseSock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                         break;
@@ -70,14 +70,14 @@ namespace MineLib.Network
             // -- Create our Wrapped socket.
             var nStream = new NetworkStream(_baseSock);
             var bStream = new BufferedStream(nStream);
-            _stream = new PacketStream(bStream);
+            _stream = new PacketStream(bStream, Mode);
 
             // -- Subscribe to DataReceived event.
             switch (Mode)
             {
                 // -- We can choose if we want to handle any packet
-                case NetworkMode.Main:
-                    OnDataReceived += HandlePacketMain;
+                case NetworkMode.Modern:
+                    OnDataReceived += HandlePacketModern;
                     break;
 
                 // -- In Classic and PocketEdition we need to handle every packet
@@ -95,8 +95,8 @@ namespace MineLib.Network
             {
                 switch (Mode)
                 {
-                    case NetworkMode.Main:
-                        _listener = new Thread(StartReceivingMainSync) {Name = "PacketListener"};
+                    case NetworkMode.Modern:
+                        _listener = new Thread(StartReceivingModernSync) {Name = "PacketListener"};
                         break;
 
                     case NetworkMode.Classic:
@@ -113,8 +113,8 @@ namespace MineLib.Network
             {
                 switch (Mode)
                 {
-                    case NetworkMode.Main:
-                        _baseSock.BeginReceive(new byte[0], 0, 0, SocketFlags.None, PacketReceiverMainAsync, _baseSock);
+                    case NetworkMode.Modern:
+                        _baseSock.BeginReceive(new byte[0], 0, 0, SocketFlags.None, PacketReceiverModernAsync, _baseSock);
                         break;
 
                     case NetworkMode.Classic:
