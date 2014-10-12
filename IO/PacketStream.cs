@@ -11,16 +11,31 @@ namespace MineLib.Network.IO
     public partial class PacketStream : IDisposable
     {
         // -- Credits to SirCmpwn for encryption support, as taken from SMProxy.
-        private readonly Stream _stream;
-        private IAesStream _crypto;
-        private byte[] _buffer;
+        public readonly NetworkMode Mode;
         public bool EncryptionEnabled;
         public bool CompressionEnabled;
         public int CompressionThreshold;
 
-        public PacketStream(Stream stream)
+        private readonly Stream _stream;
+        private IAesStream _crypto;
+        private byte[] _buffer;
+        private readonly Encoding _encoding;
+
+        public PacketStream(Stream stream, NetworkMode mode = NetworkMode.Main)
         {
             _stream = stream;
+            Mode = mode;
+
+            switch (Mode)
+            {
+                case NetworkMode.Main:
+                    _encoding = Encoding.UTF8;
+                    break;
+
+                case NetworkMode.Classic:
+                    _encoding = Encoding.ASCII;
+                    break;
+            }
         }
 
         public void InitializeEncryption(byte[] key)
@@ -47,11 +62,55 @@ namespace MineLib.Network.IO
 
         public void WriteString(string value)
         {
+            switch (Mode)
+            {
+                case NetworkMode.Main:
+                    WriteStringMain(value);
+                    break;
+
+                case NetworkMode.Classic:
+                    WriteStringClassic(value);
+                    break;
+
+                case NetworkMode.PocketEdition:
+                    WriteStringPocketEdition(value);
+                    break;
+            }
+        }
+
+        private void WriteStringMain(string value)
+        {
             var length = GetVarIntBytes(value.Length);
             var final = new byte[value.Length + length.Length];
 
             Buffer.BlockCopy(length, 0, final, 0, length.Length);
-            Buffer.BlockCopy(Encoding.UTF8.GetBytes(value), 0, final, length.Length, value.Length);
+            Buffer.BlockCopy(_encoding.GetBytes(value), 0, final, length.Length, value.Length);
+
+            WriteByteArray(final);
+        }
+
+        private void WriteStringClassic(string value)
+        {
+            var final = new byte[64];
+            for (var i = 0; i < final.Length; i++)
+            {
+                final[i] = 0x20;
+            }
+
+            Buffer.BlockCopy(_encoding.GetBytes(value), 0, final, 0, value.Length);
+
+            WriteByteArray(final);
+        }
+
+        private void WriteStringPocketEdition(string value)
+        {
+            var final = new byte[8];
+            for (var i = 0; i < final.Length; i++)
+            {
+                final[i] = 0x20;
+            }
+
+            Buffer.BlockCopy(_encoding.GetBytes(value), 0, final, 0, value.Length);
 
             WriteByteArray(final);
         }
@@ -317,13 +376,29 @@ namespace MineLib.Network.IO
 
         public void Purge()
         {
-            if (CompressionEnabled)
-                PurgeWithCompression();
-            else
-                PurgeWithoutCompression();
+            switch (Mode)
+            {
+                case NetworkMode.Main:
+                    if (CompressionEnabled)
+                        PurgeMainWithCompression();
+                    else
+                        PurgeMainWithoutCompression();
+                    break;
+
+                case NetworkMode.Classic:
+                    PurgeClassic();
+                    break;
+            }
         }
 
-        private void PurgeWithoutCompression()
+        private void PurgeClassic()
+        {
+            _stream.Write(_buffer, 0, _buffer.Length);
+
+            _buffer = null;
+        }
+
+        private void PurgeMainWithoutCompression()
         {
             var lenBytes = GetVarIntBytes(_buffer.Length);
 
@@ -340,7 +415,7 @@ namespace MineLib.Network.IO
             _buffer = null;
         }
 
-        private void PurgeWithCompression()
+        private void PurgeMainWithCompression()
         {
             int packetLength = 0; // data.Length + GetVarIntBytes(data.Length).Length
             int dataLength = 0; // UncompressedData.Length

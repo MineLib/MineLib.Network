@@ -1,24 +1,24 @@
-﻿using MineLib.Network.Data;
+﻿using MineLib.Network.Classic.Enums;
 using MineLib.Network.IO;
-using MineLib.Network.Packets;
+using MineLib.Network.Main.Data;
 
 namespace MineLib.Network.Classic.Packets.Client
 {
-    public struct SetBlockPacket : IPacket
+    public struct SetBlockPacket : IPacketWithSize
     {
         public Position Coordinates;
-        public byte Mode;
+        public SetBlockMode Mode;
         public byte BlockType;
 
-        public const byte PacketID = 0x05;
-        public byte ID { get { return PacketID; } }
+        public byte ID { get { return 0x05; } }
+        public short Size { get { return 9; } }
 
         public void ReadPacket(PacketByteReader stream)
         {
             Coordinates.X = stream.ReadShort();
             Coordinates.Y = stream.ReadShort();
             Coordinates.Z = stream.ReadShort();
-            Mode = stream.ReadByte();
+            Mode = (SetBlockMode) stream.ReadByte();
             BlockType = stream.ReadByte();
         }
 
@@ -28,7 +28,7 @@ namespace MineLib.Network.Classic.Packets.Client
             stream.WriteShort((short)Coordinates.X);
             stream.WriteShort((short)Coordinates.Y);
             stream.WriteShort((short)Coordinates.Z);
-            stream.WriteByte(Mode);
+            stream.WriteByte((byte) Mode);
             stream.WriteByte(BlockType);
             stream.Purge();
         }

@@ -1,10 +1,9 @@
-﻿using MineLib.Network.Data;
-using MineLib.Network.IO;
-using MineLib.Network.Packets;
+﻿using MineLib.Network.IO;
+using MineLib.Network.Main.Data;
 
 namespace MineLib.Network.Classic.Packets.Server
 {
-    public struct SpawnPlayerPacket : IPacket
+    public struct SpawnPlayerPacket : IPacketWithSize
     {
         public sbyte PlayerID;
         public string PlayerName;
@@ -12,8 +11,8 @@ namespace MineLib.Network.Classic.Packets.Server
         public byte Yaw;
         public byte Pitch;
 
-        public const byte PacketID = 0x07;
-        public byte ID { get { return PacketID; } }
+        public byte ID { get { return 0x07; } }
+        public short Size { get { return 74; } }
 
         public void ReadPacket(PacketByteReader stream)
         {

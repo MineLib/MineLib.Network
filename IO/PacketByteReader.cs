@@ -8,26 +8,65 @@ namespace MineLib.Network.IO
     // Read only decrypted data
     public class PacketByteReader
     {
-        private readonly MemoryStream _stream;
+        public readonly NetworkMode Mode;
 
-        public PacketByteReader(MemoryStream stream)
+        private readonly Stream _stream;
+
+        public PacketByteReader(Stream stream, NetworkMode mode = NetworkMode.Main)
         {
             _stream = stream;
+
+            Mode = mode;
         }
 
-        public PacketByteReader(byte[] data)
+        public PacketByteReader(byte[] data, NetworkMode mode = NetworkMode.Main)
         {
             _stream = new MemoryStream(data);
+
+            Mode = mode;
         }
 
         // -- Strings
 
         public string ReadString()
         {
+            switch (Mode)
+            {
+                case NetworkMode.Main: 
+                    return ReadStringMain();
+
+                case NetworkMode.Classic: 
+                    return ReadStringClassic();
+
+                case NetworkMode.PocketEdition:
+                    return ReadStringPocketEdition();
+            }
+
+            return null;
+        }
+
+        private string ReadStringMain()
+        {
             var length = ReadVarInt();
             var stringBytes = ReadByteArray(length);
 
             return Encoding.UTF8.GetString(stringBytes);
+        }
+
+        private string ReadStringClassic()
+        {
+            const int length = 64;
+            var stringBytes = ReadByteArray(length);
+
+            return Encoding.ASCII.GetString(stringBytes);
+        }
+
+        private string ReadStringPocketEdition()
+        {
+            const int length = 8;
+            var stringBytes = ReadByteArray(length);
+
+            return Encoding.ASCII.GetString(stringBytes);
         }
 
         // -- Shorts
@@ -210,7 +249,6 @@ namespace MineLib.Network.IO
             }
 
             return myBytes;
-
         }
 
         private byte ReadSingleByte()

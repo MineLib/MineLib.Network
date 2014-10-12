@@ -1,14 +1,13 @@
 ﻿using MineLib.Network.IO;
-using MineLib.Network.Packets;
 
 namespace MineLib.Network.Classic.Packets.Server
 {
-    public struct DespawnPlayerPacket : IPacket
+    public struct DespawnPlayerPacket : IPacketWithSize
     {
         public sbyte PlayerID;
 
-        public const byte PacketID = 0x0C;
-        public byte ID { get { return PacketID; } }
+        public byte ID { get { return 0x0C; } }
+        public short Size { get { return 2; } }
 
         public void ReadPacket(PacketByteReader stream)
         {

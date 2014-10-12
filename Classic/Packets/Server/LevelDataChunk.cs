@@ -1,21 +1,20 @@
 ﻿using MineLib.Network.IO;
-using MineLib.Network.Packets;
 
 namespace MineLib.Network.Classic.Packets.Server
 {
-    public struct LevelDataChunkPacket : IPacket
+    public struct LevelDataChunkPacket : IPacketWithSize
     {
         public short ChunkLength;
         public byte[] ChunkData;
         public byte PercentComplete;
 
-        public const byte PacketID = 0x03;
-        public byte ID { get { return PacketID; } }
+        public byte ID { get { return 0x03; } }
+        public short Size { get { return 1028; } }
 
         public void ReadPacket(PacketByteReader stream)
         {
             ChunkLength = stream.ReadShort();
-            ChunkData = stream.ReadByteArray(ChunkLength);
+            ChunkData = stream.ReadByteArray(1024);
             PercentComplete = stream.ReadByte();
         }
 

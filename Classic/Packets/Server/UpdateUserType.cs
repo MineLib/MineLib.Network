@@ -1,24 +1,24 @@
-﻿using MineLib.Network.IO;
-using MineLib.Network.Packets;
+﻿using MineLib.Network.Classic.Enums;
+using MineLib.Network.IO;
 
 namespace MineLib.Network.Classic.Packets.Server
 {
-    public struct UpdateUserTypePacket : IPacket
+    public struct UpdateUserTypePacket : IPacketWithSize
     {
-        public byte UserType;
+        public UserType UserType;
 
-        public const byte PacketID = 0x0F;
-        public byte ID { get { return PacketID; } }
+        public byte ID { get { return 0x0F; } }
+        public short Size { get { return 2; } }
 
         public void ReadPacket(PacketByteReader stream)
         {
-            UserType = stream.ReadByte();
+            UserType = (UserType) stream.ReadByte();
         }
 
         public void WritePacket(ref PacketStream stream)
         {
             stream.WriteByte(ID);
-            stream.WriteByte(UserType);
+            stream.WriteByte((byte) UserType);
             stream.Purge();
         }
     }

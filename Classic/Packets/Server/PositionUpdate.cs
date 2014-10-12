@@ -1,17 +1,16 @@
 ﻿using MineLib.Network.IO;
-using MineLib.Network.Packets;
 
 namespace MineLib.Network.Classic.Packets.Server
 {
-    public struct PositionUpdatePacket : IPacket
+    public struct PositionUpdatePacket : IPacketWithSize
     {
         public sbyte PlayerID;
         public sbyte ChangeX;
         public sbyte ChangeY;
         public sbyte ChangeZ;
 
-        public const byte PacketID = 0x0A;
-        public byte ID { get { return PacketID; } }
+        public byte ID { get { return 0x0A; } }
+        public short Size { get { return 5; } }
 
         public void ReadPacket(PacketByteReader stream)
         {

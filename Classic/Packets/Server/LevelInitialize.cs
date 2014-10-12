@@ -1,12 +1,11 @@
 ﻿using MineLib.Network.IO;
-using MineLib.Network.Packets;
 
 namespace MineLib.Network.Classic.Packets.Server
 {
-    public struct LevelInitializePacket : IPacket
+    public struct LevelInitializePacket : IPacketWithSize
     {
-        public const byte PacketID = 0x02;
-        public byte ID { get { return PacketID; } }
+        public byte ID { get { return 0x02; } }
+        public short Size { get { return 1; } }
 
         public void ReadPacket(PacketByteReader stream)
         {

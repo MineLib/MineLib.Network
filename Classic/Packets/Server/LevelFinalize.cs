@@ -1,15 +1,14 @@
-﻿using MineLib.Network.Data;
-using MineLib.Network.IO;
-using MineLib.Network.Packets;
+﻿using MineLib.Network.IO;
+using MineLib.Network.Main.Data;
 
 namespace MineLib.Network.Classic.Packets.Server
 {
-    public struct LevelFinalizePacket : IPacket
+    public struct LevelFinalizePacket : IPacketWithSize
     {
         public Position Coordinates;
 
-        public const byte PacketID = 0x04;
-        public byte ID { get { return PacketID; } }
+        public byte ID { get { return 0x04; } }
+        public short Size { get { return 7; } }
 
         public void ReadPacket(PacketByteReader stream)
         {

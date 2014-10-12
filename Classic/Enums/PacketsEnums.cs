@@ -24,7 +24,24 @@
         DespawnPlayer                   = 0x0C,
         Message                         = 0x0D,
         DisconnectPlayer                = 0x0E,
-        UpdateUserType                  = 0x0F
+        UpdateUserType                  = 0x0F,
+        ExtInfo                         = 0x10,
+        ExtEntry                        = 0x11,
+        SetClickDistance                = 0x12,
+        CustomBlockSupportLevel         = 0x13,
+        HoldThis                        = 0x14,
+        SetTextHotKey                   = 0x15,
+        ExtAddPlayerName                = 0x16,
+        ExtRemovePlayerName             = 0x18,
+        EnvSetColor                     = 0x19,
+        MakeSelection                   = 0x1A,
+        RemoveSelection                 = 0x1B,
+        SetBlockPermission              = 0x1C,
+        ChangeModel                     = 0x1D,
+        EnvSetMapAppearance             = 0x1E,
+        EnvSetWeatherType               = 0x1F,
+        HackControl                     = 0x20,
+        ExtAddEntity2                   = 0x21,
     }
 
 }

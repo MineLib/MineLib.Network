@@ -427,11 +427,11 @@ namespace MineLib.Network.Cryptography
         /// <seealso cref="CreateBitString(byte[], uint)"/>
         /// <seealso cref="CreateBitString(AsnType)"/>
         /// <seealso cref="CreateBitString(AsnType[])"/>
-        /// <seealso cref="CreateBitString(String)"/>
+        /// <seealso cref="CreateBitString(string)"/>
         /// <seealso cref="CreateOctetString(byte[])"/>
         /// <seealso cref="CreateOctetString(AsnType)"/>
         /// <seealso cref="CreateOctetString(AsnType[])"/>
-        /// <seealso cref="CreateOctetString(String)"/>
+        /// <seealso cref="CreateOctetString(string)"/>
         public static AsnType CreateBitString(byte[] octets)
         {
             // BitString: Tag 0x03 (3, Universal, Primitive)
@@ -456,11 +456,11 @@ namespace MineLib.Network.Cryptography
         /// <seealso cref="CreateBitString(byte[])"/>
         /// <seealso cref="CreateBitString(AsnType)"/>
         /// <seealso cref="CreateBitString(AsnType[])"/>
-        /// <seealso cref="CreateBitString(String)"/>
+        /// <seealso cref="CreateBitString(string)"/>
         /// <seealso cref="CreateOctetString(byte[])"/>
         /// <seealso cref="CreateOctetString(AsnType)"/>
         /// <seealso cref="CreateOctetString(AsnType[])"/>
-        /// <seealso cref="CreateOctetString(String)"/>
+        /// <seealso cref="CreateOctetString(string)"/>
         public static AsnType CreateBitString(byte[] octets, uint unusedBits)
         {
             if (IsEmpty(octets))
@@ -491,11 +491,11 @@ namespace MineLib.Network.Cryptography
         /// <seealso cref="CreateBitString(byte[])"/>
         /// <seealso cref="CreateBitString(byte[], uint)"/>
         /// <seealso cref="CreateBitString(AsnType[])"/>
-        /// <seealso cref="CreateBitString(String)"/>
+        /// <seealso cref="CreateBitString(string)"/>
         /// <seealso cref="CreateOctetString(byte[])"/>
         /// <seealso cref="CreateOctetString(AsnType)"/>
         /// <seealso cref="CreateOctetString(AsnType[])"/>
-        /// <seealso cref="CreateOctetString(String)"/>
+        /// <seealso cref="CreateOctetString(string)"/>
         public static AsnType CreateBitString(AsnType value)
         {
             if (IsEmpty(value))
@@ -519,11 +519,11 @@ namespace MineLib.Network.Cryptography
         /// <seealso cref="CreateBitString(byte[])"/>
         /// <seealso cref="CreateBitString(byte[], uint)"/>
         /// <seealso cref="CreateBitString(AsnType)"/>
-        /// <seealso cref="CreateBitString(String)"/>
+        /// <seealso cref="CreateBitString(string)"/>
         /// <seealso cref="CreateOctetString(byte[])"/>
         /// <seealso cref="CreateOctetString(AsnType)"/>
         /// <seealso cref="CreateOctetString(AsnType[])"/>
-        /// <seealso cref="CreateOctetString(String)"/>
+        /// <seealso cref="CreateOctetString(string)"/>
         public static AsnType CreateBitString(AsnType[] values)
         {
             if (IsEmpty(values))

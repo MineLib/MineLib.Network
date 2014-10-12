@@ -2,16 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading;
-using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
-using MineLib.Network.Cryptography;
+using MineLib.Network.Events;
 using MineLib.Network.IO;
-using MineLib.Network.Enums;
-using MineLib.Network.Packets;
-using MineLib.Network.Packets.Client.Login;
-using MineLib.Network.Packets.Server.Login;
 
 namespace MineLib.Network
 {
@@ -24,9 +17,10 @@ namespace MineLib.Network
 
         private delegate void DataReceived(int id, byte[] data);
         private event DataReceived OnDataReceived;
-        private event DataReceived OnDataReceivedClassic;
+        
+        public event PacketsHandler OnPacketHandled;
 
-        private TcpClient _baseSock;
+        private Socket _baseSock;
         private PacketStream _stream;
         private PacketByteReader _reader;
 
@@ -34,39 +28,44 @@ namespace MineLib.Network
 
         private readonly IMinecraftClient _minecraft;
 
-        public bool Connected { get { return _baseSock.Connected; }}
+        public NetworkMode Mode { get; private set; }
 
         public bool DebugPackets { get; set; }
 
-        public bool CompressionEnabled { get { return _stream.CompressionEnabled; }}
-        public int CompressionThreshold { get { return _stream.CompressionThreshold; } }
+        public bool Connected { get { return _baseSock.Connected; }}
 
-        public bool Crashed;
+        public bool Crashed { get; private set; }
 
-        public bool Classic { get; set; }
-
-        public NetworkHandler(IMinecraftClient client)
+        public NetworkHandler(IMinecraftClient client, NetworkMode mode = NetworkMode.Main)
         {
             _minecraft = client;
+            Mode = mode;
             Crashed = false;
         }
 
         /// <summary>
         ///     Starts the network handler.
         /// </summary>
-        public void Start(bool sync = true, bool debugPackets = false)
+        public void Start(bool sync = false, bool debugPackets = true)
         {
             DebugPackets = debugPackets;
 
             // -- Connect to server.
             try
             {
-                _baseSock = new TcpClient();
+                switch (Mode)
+                {
+                    case NetworkMode.Main:
+                    case NetworkMode.Classic:
+                        _baseSock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                        break;
+
+                    case NetworkMode.PocketEdition:
+                        _baseSock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Udp);
+                        break;
+                }
+
                 _baseSock.Connect(_minecraft.ServerHost, _minecraft.ServerPort);
-
-                if(!sync)
-                    _baseSock.Client.BeginReceive(new byte[0], 0, 0, SocketFlags.None, PacketReceiverAsync, _baseSock.Client);
-
             }
             catch (SocketException)
             {
@@ -75,300 +74,77 @@ namespace MineLib.Network
             }
 
             // -- Create our Wrapped socket.
-            _stream = new PacketStream(_baseSock.GetStream());
+            var nStream = new NetworkStream(_baseSock);
+            var bStream = new BufferedStream(nStream);
+            _stream = new PacketStream(bStream);
 
             // -- Subscribe to DataReceived event.
-            OnDataReceived += HandlePacket;
-            OnDataReceivedClassic += HandlePacketClassic;
-
-            if (!sync) 
-                return;
-
-            _listener = Classic
-                ? new Thread(StartReceivingClassic) {Name = "PacketListenerClassic"}
-                : new Thread(StartReceivingSync) {Name = "PacketListener"};
-            _listener.Start();
-        }
-
-        #region Sending and Receiving.
-
-        public void Send(IPacket packet)
-        {
-            if(DebugPackets)
-                PacketsSended.Add(packet);
-
-            var ms = new MemoryStream();
-            var stream = new PacketStream(ms);
-            packet.WritePacket(ref stream);
-            var data = ms.ToArray();
-
-            _baseSock.Client.BeginSend(ms.ToArray(), 0, data.Length, SocketFlags.None, null, null);
-        }
-
-
-        private void StartReceivingSync()
-        {
-            try
+            switch (Mode)
             {
-                do
-                {
-                    Thread.Sleep(50);
-                } while (PacketReceiverSync());
+                // -- We can choose if we want to handle any packet
+                case NetworkMode.Main:
+                    OnDataReceived += HandlePacketMain;
+                    break;
+
+                // -- In Classic and PocketEdition we need to handle every packet
+                case NetworkMode.Classic:
+                    OnDataReceived += HandlePacketClassic;
+                    //OnPacketHandledClassic += RaisePacketHandledClassic;
+                    break;
+
+                case NetworkMode.PocketEdition:
+                    OnDataReceived += HandlePacketPocketEdition;
+                    break;
             }
-            catch (SocketException)
-            {
-                Crashed = true;
-            }
-        }
 
-        private bool PacketReceiverSync()
-        {
-            if (_baseSock.Client == null || !Connected)
-                return false;
-
-            while (_baseSock.Client.Available > 0)
+            if (sync)
             {
-                if (!CompressionEnabled)
+                switch (Mode)
                 {
-                    var length = _stream.ReadVarInt();
-                    var id = _stream.ReadVarInt();
+                    case NetworkMode.Main:
+                        _listener = new Thread(StartReceivingMainSync) {Name = "PacketListener"};
+                        break;
 
-                    OnDataReceived(id, _stream.ReadByteArray(length - 1));
+                    case NetworkMode.Classic:
+                        _listener = new Thread(StartReceivingClassicSync) {Name = "PacketListenerClassic"};
+                        break;
+
+                    case NetworkMode.PocketEdition:
+                        _listener = new Thread(StartReceivingPocketEditionSync) { Name = "PacketListenerPocketEdition" };
+                        break;
                 }
-                else
-                {
-                    var packetLength = _stream.ReadVarInt();
-                    var dataLength = _stream.ReadVarInt();
-                    int id = 0;
-
-                    if (dataLength == 0)
-                    {
-                        if (packetLength >= CompressionThreshold)
-                            throw new Exception("Received uncompressed message of size " + packetLength + " greater than threshold " + CompressionThreshold);
-
-                        id = _stream.ReadVarInt();
-
-                        var packetLengthBytes = PacketStream.GetVarIntBytes(packetLength).Length;
-                        var dataLengthBytes = PacketStream.GetVarIntBytes(dataLength).Length;
-                        var t = packetLengthBytes + dataLengthBytes;
-                        OnDataReceived(id, _stream.ReadByteArray(packetLength - 2)); // TODO: What is 2 here? (packetLength - packetLengthBytes - dataLengthBytes)?
-                    }
-                    else // (dataLength > 0)
-                    {
-                        var dataLengthBytes = PacketStream.GetVarIntBytes(dataLength).Length;
-
-                        var tempBuff = _stream.ReadByteArray(packetLength - dataLengthBytes);
-
-                        using (var outputStream = new MemoryStream())
-                        using (var inputStream = new InflaterInputStream(new MemoryStream(tempBuff)))
-                        {
-                            inputStream.CopyTo(outputStream);
-                            tempBuff = outputStream.ToArray();
-                        }
-
-                        id = tempBuff[0]; // TODO: Will be broken when ID will be more than 256.
-
-                        var data = new byte[tempBuff.Length - 1];
-                        Buffer.BlockCopy(tempBuff, 1, data, 0, data.Length);
-
-                        OnDataReceived(id, data);
-                    }
-                }
-            }
-
-            return true;
-        }
-
-
-        private void PacketReceiverAsync(IAsyncResult ar)
-        {
-            if (_baseSock.Client == null || !Connected)
-                return;
-
-            int packetId;
-            byte[] data;
-
-            if (!CompressionEnabled)
-            {
-                var packetLength = _stream.ReadVarInt();
-                packetId = _stream.ReadVarInt();
-                data = _stream.ReadByteArray(packetLength - 1);
+                _listener.Start();
             }
             else
             {
-                var packetLength = _stream.ReadVarInt();
-                var dataLength = _stream.ReadVarInt();
-                if (dataLength == 0)
+                switch (Mode)
                 {
-                    if (packetLength >= CompressionThreshold)
-                        throw new Exception("Received uncompressed message of size " + packetLength +
-                                            " greater than threshold " + CompressionThreshold);
+                    case NetworkMode.Main:
+                        _baseSock.BeginReceive(new byte[0], 0, 0, SocketFlags.None, PacketReceiverMainAsync, _baseSock);
+                        break;
 
-                    packetId = _stream.ReadVarInt();
+                    case NetworkMode.Classic:
+                        _baseSock.BeginReceive(new byte[0], 0, 0, SocketFlags.None, PacketReceiverClassicAsync, _baseSock);
+                        break;
 
-                    var packetLengthBytes = PacketStream.GetVarIntBytes(packetLength).Length;
-                    var dataLengthBytes = PacketStream.GetVarIntBytes(dataLength).Length;
-                    var t = packetLengthBytes + dataLengthBytes;
-                    data = _stream.ReadByteArray(packetLength - 2);
-                }
-                else // (dataLength > 0)
-                {
-                    var dataLengthBytes = PacketStream.GetVarIntBytes(dataLength).Length;
-
-                    var tempBuff = _stream.ReadByteArray(packetLength - dataLengthBytes);
-
-                    using (var outputStream = new MemoryStream())
-                    using (var inputStream = new InflaterInputStream(new MemoryStream(tempBuff)))
-                    {
-                        inputStream.CopyTo(outputStream);
-                        tempBuff = outputStream.ToArray();
-                    }
-
-                    packetId = tempBuff[0]; // TODO: Will be broken when ID will be more than 256.
-
-                    data = new byte[tempBuff.Length - 1];
-                    Buffer.BlockCopy(tempBuff, 1, data, 0, data.Length);
+                    case NetworkMode.PocketEdition:
+                        _baseSock.BeginReceive(new byte[0], 0, 0, SocketFlags.None, PacketReceiverPocketEditionAsync, _baseSock);
+                        break;
                 }
             }
-
-            OnDataReceived(packetId, data);
-
-            _baseSock.Client.EndReceive(ar);
-            _baseSock.Client.BeginReceive(new byte[0], 0, 0, SocketFlags.None, PacketReceiverAsync, _baseSock.Client);
         }
 
-        #endregion Sending and Receiving.
-
-        /// <summary>
-        /// Packets are handled here. Compression and encryption are handled here too
-        /// </summary>
-        /// <param name="id">Packet ID</param>
-        /// <param name="data">Packet byte[] data</param>
-        private void HandlePacket(int id, byte[] data)
+        public void Send(IPacket packet)
         {
-            _reader = new PacketByteReader(data);
-            IPacket packet;
+            if (DebugPackets)
+                PacketsSended.Add(packet);
 
-            switch (_minecraft.State)
-            {
-                    #region Status
+            var ms = new MemoryStream();
+            var stream = new PacketStream(ms, Mode);
+            packet.WritePacket(ref stream);
+            var data = ms.ToArray();
 
-                case ServerState.Status:
-                    if (ServerResponse.Status[id] == null)
-                        break;
-
-                    packet = ServerResponse.Status[id]();
-                    packet.ReadPacket(_reader);
-
-                    if (DebugPackets)
-                        PacketsReceived.Add(packet);
-
-                    RaisePacketHandled(packet, id, ServerState.Status);
-
-                    break;
-
-                    #endregion Status
-
-                    #region Login
-
-                case ServerState.Login:
-                    if (ServerResponse.Login[id] == null)
-                        break;
-
-                    packet = ServerResponse.Login[id]();
-                    packet.ReadPacket(_reader);
-
-                    if (DebugPackets)
-                        PacketsReceived.Add(packet);
-
-                    RaisePacketHandled(packet, id, ServerState.Login);
-
-                    if (id == 0x01)
-                        EnableEncryption(packet);  // -- Low-level encryption handle
-
-                    if (id == 0x03)
-                        SetCompression(packet); // -- Low-level compression handle
-
-                    break;
-
-                    #endregion Login
-
-                    #region Play
-
-                case ServerState.Play:
-                    if (ServerResponse.Play[id] == null)
-                        break;
-
-                    packet = ServerResponse.Play[id]();
-                    packet.ReadPacket(_reader);
-
-                    if (DebugPackets)
-                        PacketsReceived.Add(packet);
-
-                    RaisePacketHandled(packet, id, ServerState.Play);
-
-                    if (id == 0x46)
-                        SetCompression(packet); // -- Low-level compression handle
-
-                    break;
-
-                    #endregion Play
-            }
-        }
-
-        private void EnableEncryption(IPacket packet)
-        {
-            // From libMC.NET
-            var request = (EncryptionRequestPacket) packet;
-
-            var hashlist = new List<byte>();
-            hashlist.AddRange(Encoding.ASCII.GetBytes(request.ServerId));
-            hashlist.AddRange(request.SharedKey);
-            hashlist.AddRange(request.PublicKey);
-
-            var hashData = hashlist.ToArray();
-
-            var hash = JavaHelper.JavaHexDigest(hashData);
-
-            if (!Yggdrasil.ClientAuth(_minecraft.AccessToken, _minecraft.SelectedProfile, hash))
-            {
-                throw new Exception("Auth failure");
-                return;
-            }
-
-            // -- You pass it the key data and ask it to parse, and it will 
-            // -- Extract the server's public key, then parse that into RSA for us.
-            var keyParser = new AsnKeyParser(request.PublicKey);
-            var deKey = keyParser.ParseRSAPublicKey();
-
-            // -- Now we create an encrypter, and encrypt the token sent to us by the server
-            // -- as well as our newly made shared key (Which can then only be decrypted with the server's private key)
-            // -- and we send it to the server.
-            var cryptoService = new RSACryptoServiceProvider();
-            cryptoService.ImportParameters(deKey);
-
-            var encryptedSecret = cryptoService.Encrypt(request.SharedKey, false);
-            var encryptedVerify = cryptoService.Encrypt(request.VerificationToken, false);
-
-            _stream.InitializeEncryption(request.SharedKey);
-
-            // Directly send packet because i have troubles with synchronizing "make EncEnabled after sending this packet".
-            var packetToSend = new EncryptionResponsePacket
-            {
-                SharedSecret = encryptedSecret,
-                VerificationToken = encryptedVerify
-            };
-
-            packetToSend.WritePacket(ref _stream);
-
-            _stream.EncryptionEnabled = true;
-        }
-
-        private void SetCompression(IPacket packet)
-        {
-            var request = (ISetCompression) packet;
-
-            _stream.SetCompression(request.Threshold);
+            _baseSock.BeginSend(ms.ToArray(), 0, data.Length, SocketFlags.None, null, null);
         }
 
         /// <summary>
@@ -387,9 +163,6 @@ namespace MineLib.Network
 
             if (_reader != null)
                 _reader.Dispose();
-
-            if (_minecraft != null)
-                _minecraft.Dispose();
         }
     }
 }

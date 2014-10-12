@@ -1,16 +1,15 @@
 ﻿using MineLib.Network.IO;
-using MineLib.Network.Packets;
 
 namespace MineLib.Network.Classic.Packets.Server
 {
-    public struct OrientationUpdatePacket : IPacket
+    public struct OrientationUpdatePacket : IPacketWithSize
     {
         public sbyte PlayerID;
         public byte Yaw;
         public byte Pitch;
 
-        public const byte PacketID = 0x0B;
-        public byte ID { get { return PacketID; } }
+        public byte ID { get { return 0x0B; } }
+        public short Size { get { return 4; } }
 
         public void ReadPacket(PacketByteReader stream)
         {

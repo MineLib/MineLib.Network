@@ -1,11 +1,12 @@
-﻿using MineLib.Network.Packets;
+﻿using MineLib.Network.Classic.Packets.Extension.Client;
+using MineLib.Network.Classic.Packets.Extension.Server;
 using MineLib.Network.Classic.Packets.Server;
 
 namespace MineLib.Network.Classic.Packets
 {
     public static class ServerResponseClassic
     {
-        public delegate IPacket CreatePacketInstance();
+        public delegate IPacketWithSize CreatePacketInstance();
 
         #region Response
         public static readonly CreatePacketInstance[] ServerResponse =
@@ -26,24 +27,24 @@ namespace MineLib.Network.Classic.Packets
             () => new MessagePacket(),                          // 0x0D
             () => new DisconnectPlayerPacket(),                 // 0x0E
             () => new UpdateUserTypePacket(),                   // 0x0F
-            null, // 0x10
-            null, // 0x11
-            null, // 0x12
-            null, // 0x13
-            null, // 0x14
-            null, // 0x15
-            null, // 0x16
-            null, // 0x17
-            null, // 0x18
-            null, // 0x19
-            null, // 0x1A
-            null, // 0x1B
-            null, // 0x1C
-            null, // 0x1D
-            null, // 0x1E
-            null, // 0x1F
-            null, // 0x20
-            null, // 0x21
+            () => new ExtInfoPacket(),                          // 0x10
+            () => new ExtEntryPacket(),                         // 0x11
+            () => new SetClickDistancePacket(),                 // 0x12
+            () => new CustomBlockSupportLevelPacket(),          // 0x13
+            () => new HoldThisPacket(),                         // 0x14
+            () => new SetTextHotKeyPacket(),                    // 0x15
+            () => new ExtAddPlayerNamePacket(),                 // 0x16
+            null,                                               // 0x17
+            () => new ExtRemovePlayerNamePacket(),              // 0x18
+            () => new EnvSetColorPacket(),                      // 0x19
+            () => new MakeSelectionPacket(),                    // 0x1A
+            () => new RemoveSelectionPacket(),                  // 0x1B
+            () => new SetBlockPermissionPacket(),               // 0x1C
+            () => new ChangeModelPacket(),                      // 0x1D
+            () => new EnvSetMapAppearancePacket(),              // 0x1E
+            () => new EnvSetWeatherTypePacket(),                // 0x1F
+            () => new HackControlPacket(),                      // 0x20
+            () => new ExtAddEntity2Packet(),                    // 0x21
             null, // 0x22
             null, // 0x23
             null, // 0x24
@@ -269,6 +270,5 @@ namespace MineLib.Network.Classic.Packets
         };
 
         #endregion
-
     }
 }

@@ -1,16 +1,14 @@
-﻿using MineLib.Network.Events;
-using MineLib.Network.Packets;
-
-namespace MineLib.Network
+﻿namespace MineLib.Network
 {
     public partial class NetworkHandler
     {
-        public event PacketsHandler OnPacketHandledClassic;
-
-        private void RaisePacketHandledClassic(IPacket packet, int id)
+        private void RaisePacketHandledClassic(int id, IPacket packet, ServerState? state)
         {
-            if (OnPacketHandledClassic != null)
-                OnPacketHandledClassic(packet, id, null);
+            if (DebugPackets)
+                PacketsReceived.Add(packet);
+
+            if (OnPacketHandled != null)
+                OnPacketHandled(id, packet, null);
         }
     }
 }

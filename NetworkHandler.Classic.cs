@@ -1,40 +1,78 @@
-﻿using MineLib.Network.Classic.Packets;
+﻿using System;
+using System.Net.Sockets;
+using System.Threading;
+using MineLib.Network.Classic.Packets;
 using MineLib.Network.IO;
 
 namespace MineLib.Network
 {
     public partial class NetworkHandler
     {
-        #region Sending and Receiving.
-
-        private void StartReceivingClassic()
+        private void StartReceivingClassicSync()
         {
             do
             {
-            } while (PacketReceiverClassic());
+                Thread.Sleep(50);
+            } while (PacketReceiverClassicSync());
         }
 
-        private bool PacketReceiverClassic()
+        private bool PacketReceiverClassicSync()
         {
-            if (_baseSock.Client == null || !Connected)
+            if (_baseSock == null || !Connected)
                 return false;
 
-            while (_baseSock.Client.Available > 0)
+            while (_baseSock.Available > 0)
             {
-                var length = _stream.ReadVarInt();
-                var id = _stream.ReadByte();
+                var packetId = _stream.ReadByte();
 
-                OnDataReceivedClassic(id, _stream.ReadByteArray(length - 1));
+                // Connection lost
+                if (packetId == 255)
+                {
+                    Crashed = true;
+                    break;
+                }
+
+                var length = ServerResponseClassic.ServerResponse[packetId]().Size;
+                var data = _stream.ReadByteArray(length - 1);
+
+                OnDataReceived(packetId, data);
             }
 
             return true;
         }
+        
+        private void PacketReceiverClassicAsync(IAsyncResult ar)
+        {
+            if (_baseSock == null || !Connected)
+                return;
 
-        #endregion Sending and Receiving.
+            var packetId = _stream.ReadByte();
 
+            // Connection lost
+            if (packetId == 255)
+            {
+                Crashed = true;
+                return;
+            }
+
+            var length = ServerResponseClassic.ServerResponse[packetId]().Size;
+            var data = _stream.ReadByteArray(length - 1);
+
+            OnDataReceived(packetId, data);
+
+            _baseSock.EndReceive(ar);
+            _baseSock.BeginReceive(new byte[0], 0, 0, SocketFlags.None, PacketReceiverClassicAsync, _baseSock);
+        }
+
+
+        /// <summary>
+        /// Packets are handled here.
+        /// </summary>
+        /// <param name="id">Packet ID</param>
+        /// <param name="data">Packet byte[] data</param>
         private void HandlePacketClassic(int id, byte[] data)
         {
-            _reader = new PacketByteReader(data);
+            _reader = new PacketByteReader(data, Mode);
 
             if (ServerResponseClassic.ServerResponse[id] == null)
                 return;
@@ -42,11 +80,7 @@ namespace MineLib.Network
             var packet = ServerResponseClassic.ServerResponse[id]();
             packet.ReadPacket(_reader);
 
-#if DEBUG
-            PacketsReceived.Add(packet);
-#endif
-
-            RaisePacketHandledClassic(packet, id);
+            RaisePacketHandledClassic(id, packet, null);
         }
     }
 }

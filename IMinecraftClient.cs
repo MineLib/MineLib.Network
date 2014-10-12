@@ -1,6 +1,4 @@
-﻿using MineLib.Network.Enums;
-
-namespace MineLib.Network
+﻿namespace MineLib.Network
 {
     public interface IMinecraftClient
     {
@@ -11,6 +9,8 @@ namespace MineLib.Network
 
         string AccessToken { get; set; }
         string SelectedProfile { get; set; }
+
+        NetworkMode Mode { get; set; }
 
         void Dispose();
     }

@@ -1,18 +1,17 @@
-﻿using MineLib.Network.Data;
-using MineLib.Network.IO;
-using MineLib.Network.Packets;
+﻿using MineLib.Network.IO;
+using MineLib.Network.Main.Data;
 
 namespace MineLib.Network.Classic.Packets.Client
 {
-    public struct PositionAndOrientationPacket : IPacket
+    public struct PositionAndOrientationPacket : IPacketWithSize
     {
         public byte PlayerID;
         public Position Coordinates;
         public byte Yaw;
         public byte Pitch;
 
-        public const byte PacketID = 0x08;
-        public byte ID { get { return PacketID; } }
+        public byte ID { get { return 0x08; } }
+        public short Size { get { return 10; } }
 
         public void ReadPacket(PacketByteReader stream)
         {
