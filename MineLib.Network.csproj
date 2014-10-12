@@ -164,6 +164,7 @@
     <Compile Include="Main\Enums\PlayerPositionAndLookFlags.cs" />
     <Compile Include="Main\Enums\ResourcePackStatus.cs" />
     <Compile Include="Main\Enums\ScoreboardPosition.cs" />
+    <Compile Include="NetworkHandler.Events.cs" />
     <Compile Include="NetworkMode.cs" />
     <Compile Include="PocketEdition\Packets\Client\LoginPacket.cs" />
     <Compile Include="PocketEdition\Packets\Server\LoginStatusPacket.cs" />
@@ -294,12 +295,9 @@
     <Compile Include="Main\Packets\Server\WindowPropertyPacket.cs" />
     <Compile Include="Main\Packets\Server\WorldBorderPacket.cs" />
     <Compile Include="NetworkHandler.Classic.cs" />
-    <Compile Include="NetworkHandler.Classic.Packets.cs" />
     <Compile Include="NetworkHandler.cs" />
     <Compile Include="NetworkHandler.Main.cs" />
-    <Compile Include="NetworkHandler.Main.Packets.cs" />
     <Compile Include="NetworkHandler.PocketEdition.cs" />
-    <Compile Include="NetworkHandler.PocketEdition.Packets.cs" />
     <Compile Include="IO\AesStream.cs" />
     <Compile Include="IO\PacketStream.cs" />
     <Compile Include="Yggdrasil.cs" />

@@ -66,7 +66,7 @@ namespace MineLib.Network
             var packet = ServerResponsePocketEdition.ServerResponse[id]();
             packet.ReadPacket(_reader);
 
-            RaisePacketHandledPocketEdition(id, packet, null);
+            RaisePacketHandled(id, packet, null);
         }
     }
 }

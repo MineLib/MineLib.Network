@@ -80,7 +80,7 @@ namespace MineLib.Network
             var packet = ServerResponseClassic.ServerResponse[id]();
             packet.ReadPacket(_reader);
 
-            RaisePacketHandledClassic(id, packet, null);
+            RaisePacketHandled(id, packet, null);
         }
     }
 }

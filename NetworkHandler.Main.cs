@@ -172,7 +172,7 @@ namespace MineLib.Network
                     packet = ServerResponse.Status[id]();
                     packet.ReadPacket(_reader);
 
-                    RaisePacketHandledMain(id, packet, ServerState.MainStatus);
+                    RaisePacketHandled(id, packet, ServerState.MainStatus);
 
                     break;
 
@@ -187,7 +187,7 @@ namespace MineLib.Network
                     packet = ServerResponse.Login[id]();
                     packet.ReadPacket(_reader);
 
-                    RaisePacketHandledMain(id, packet, ServerState.MainLogin);
+                    RaisePacketHandled(id, packet, ServerState.MainLogin);
 
                     if (id == 0x01)
                         EnableEncryption(packet);  // -- Low-level encryption handle
@@ -208,7 +208,7 @@ namespace MineLib.Network
                     packet = ServerResponse.Play[id]();
                     packet.ReadPacket(_reader);
 
-                    RaisePacketHandledMain(id, packet, ServerState.MainPlay);
+                    RaisePacketHandled(id, packet, ServerState.MainPlay);
 
                     if (id == 0x46)
                         SetCompression(packet); // -- Low-level compression handle

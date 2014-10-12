@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using System.Threading;
-using MineLib.Network.Events;
 using MineLib.Network.IO;
 
 namespace MineLib.Network
@@ -14,11 +13,6 @@ namespace MineLib.Network
         public readonly List<IPacket> PacketsReceived = new List<IPacket>();
         public readonly List<IPacket> PacketsSended = new List<IPacket>();
         // -- Debugging.
-
-        private delegate void DataReceived(int id, byte[] data);
-        private event DataReceived OnDataReceived;
-        
-        public event PacketsHandler OnPacketHandled;
 
         private Socket _baseSock;
         private PacketStream _stream;
