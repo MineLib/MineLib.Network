@@ -8,4 +8,5 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq mono-devel mono-utils gtk-sharp2
 
-xbuild MineLib.Network.sln
+install:
+  -xbuild MineLib.Network.sln
