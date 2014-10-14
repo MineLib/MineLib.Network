@@ -59,7 +59,10 @@ namespace MineLib.Network.Modern.Data.Anvil
                 var meta = (byte)(idMetadata & 15);
 
                 var sectionPos = GetSectionPositionByIndex(i);
-                Blocks[sectionPos.X, sectionPos.Y, sectionPos.Z] = new Block(id, meta, blockLight[i], skyLight[i]);
+                if(id != 0 && meta != 0)
+                    Blocks[sectionPos.X, sectionPos.Y, sectionPos.Z] = new Block(id, meta, blockLight[i], skyLight[i]);
+                else
+                    Blocks[sectionPos.X, sectionPos.Y, sectionPos.Z] = null;
             }
 
             IsFilled = true;
