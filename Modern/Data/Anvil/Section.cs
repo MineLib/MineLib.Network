@@ -81,8 +81,8 @@ namespace MineLib.Network.Modern.Data.Anvil
             var oldBlock = Blocks[sectionPos.X, sectionPos.Y, sectionPos.Z];
 
             // I don't think that these values will change
-            block.Light = oldBlock.Light;
-            block.SkyLight = oldBlock.SkyLight;
+            block.SetLight(oldBlock.GetLight());
+            block.SetSkyLight(oldBlock.GetSkyLight());
 
             Blocks[sectionPos.X, sectionPos.Y, sectionPos.Z] = block;
         }
@@ -92,7 +92,7 @@ namespace MineLib.Network.Modern.Data.Anvil
             if (!IsFilled)
                 throw new AccessViolationException("Section is empty");
 
-            return Blocks[sectionPos.X, sectionPos.Y, sectionPos.Z].Light;
+            return Blocks[sectionPos.X, sectionPos.Y, sectionPos.Z].GetLight();
         }
 
         public void SetBlockLighting(Position sectionPos, byte data)
@@ -100,7 +100,7 @@ namespace MineLib.Network.Modern.Data.Anvil
             if (!IsFilled)
                 BuildEmpty();
 
-            Blocks[sectionPos.X, sectionPos.Y, sectionPos.Z].Light = data;
+            Blocks[sectionPos.X, sectionPos.Y, sectionPos.Z].SetLight(data);
         }
 
         public byte GetBlockSkylight(Position sectionPos)
@@ -108,7 +108,7 @@ namespace MineLib.Network.Modern.Data.Anvil
             if (!IsFilled)
                 throw new AccessViolationException("Section is empty");
 
-            return Blocks[sectionPos.X, sectionPos.Y, sectionPos.Z].SkyLight;
+            return Blocks[sectionPos.X, sectionPos.Y, sectionPos.Z].GetSkyLight();
         }
 
         public void SetBlockSkylight(Position sectionPos, byte data)
@@ -116,7 +116,7 @@ namespace MineLib.Network.Modern.Data.Anvil
             if (!IsFilled)
                 BuildEmpty();
 
-            Blocks[sectionPos.X, sectionPos.Y, sectionPos.Z].SkyLight = data;
+            Blocks[sectionPos.X, sectionPos.Y, sectionPos.Z].SetSkyLight(data);
         }
 
         #region Helping Methods

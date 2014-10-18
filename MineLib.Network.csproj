@@ -308,7 +308,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Libraries\BouncyCastle.Crypto.dll" />
-    <Content Include="Libraries\fNbt.dll" />
     <Content Include="Libraries\ICSharpCode.SharpZipLib.dll" />
     <Content Include="Libraries\Newtonsoft.Json.dll" />
   </ItemGroup>
