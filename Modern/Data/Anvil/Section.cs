@@ -62,7 +62,7 @@ namespace MineLib.Network.Modern.Data.Anvil
                 if(id != 0 && meta != 0)
                     Blocks[sectionPos.X, sectionPos.Y, sectionPos.Z] = new Block(id, meta, blockLight[i], skyLight[i]);
                 else
-                    Blocks[sectionPos.X, sectionPos.Y, sectionPos.Z] = null;
+                    Blocks[sectionPos.X, sectionPos.Y, sectionPos.Z] = new Block(0);
             }
 
             IsFilled = true;
