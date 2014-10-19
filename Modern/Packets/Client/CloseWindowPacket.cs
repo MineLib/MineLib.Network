@@ -8,16 +8,20 @@ namespace MineLib.Network.Modern.Packets.Client
 
         public byte ID { get { return 0x0D; } }
 
-        public void ReadPacket(PacketByteReader reader)
+        public IPacket ReadPacket(MinecraftDataReader reader)
         {
             WindowID = reader.ReadByte();
+
+            return this;
         }
 
-        public void WritePacket(ref PacketStream stream)
+        public IPacket WritePacket(MinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteByte(WindowID);
             stream.Purge();
+
+            return this;
         }
     }
 }

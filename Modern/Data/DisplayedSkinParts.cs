@@ -14,23 +14,7 @@ namespace MineLib.Network.Modern.Data
         public bool HatEnabled;
         public bool Unused;
 
-        public void ToStream(ref PacketStream stream)
-        {
-            var value = ToByte();
-
-            stream.WriteByte(value);
-        }
-
-        public byte ToByte()
-        {
-            var bitArray = new BitArray(new bool[] { CapeEnabled, JackedEnabled, LeftSleeveEnabled, RightSleeveEnabled, LeftPantsEnabled, RightPantsEnabled, HatEnabled, Unused });
-            var byteArray = new byte[1];
-            bitArray.CopyTo(byteArray, 0);
-
-            return byteArray[0];
-        }
-
-        public static DisplayedSkinParts FromReader(PacketByteReader reader)
+        public static DisplayedSkinParts FromReader(MinecraftDataReader reader)
         {
             var value = reader.ReadByte();
 
@@ -54,6 +38,22 @@ namespace MineLib.Network.Modern.Data
                 HatEnabled = boolArray[6],
                 Unused = boolArray[7]
             };
+        }
+
+        public void ToStream(MinecraftStream stream)
+        {
+            var value = ToByte();
+
+            stream.WriteByte(value);
+        }
+
+        public byte ToByte()
+        {
+            var bitArray = new BitArray(new bool[] { CapeEnabled, JackedEnabled, LeftSleeveEnabled, RightSleeveEnabled, LeftPantsEnabled, RightPantsEnabled, HatEnabled, Unused });
+            var byteArray = new byte[1];
+            bitArray.CopyTo(byteArray, 0);
+
+            return byteArray[0];
         }
     }
 }

@@ -5,8 +5,8 @@ namespace MineLib.Network.Modern.Packets.Server
 {
     public interface ITeam
     {
-        ITeam FromReader(PacketByteReader reader);
-        void ToStream(ref PacketStream stream);
+        ITeam FromReader(MinecraftDataReader reader);
+        void ToStream(ref MinecraftStream stream);
     }
 
     public struct TeamsCreateTeam : ITeam
@@ -19,7 +19,7 @@ namespace MineLib.Network.Modern.Packets.Server
         public byte Color;
         public string[] Players;
 
-        public ITeam FromReader(PacketByteReader reader)
+        public ITeam FromReader(MinecraftDataReader reader)
         {
             TeamDisplayName = reader.ReadString();
             TeamPrefix = reader.ReadString();
@@ -38,7 +38,7 @@ namespace MineLib.Network.Modern.Packets.Server
             return this;
         }
 
-        public void ToStream(ref PacketStream stream)
+        public void ToStream(ref MinecraftStream stream)
         {
             stream.WriteString(TeamDisplayName);
             stream.WriteString(TeamPrefix);
@@ -53,12 +53,12 @@ namespace MineLib.Network.Modern.Packets.Server
 
     public struct TeamsRemoveTeam : ITeam
     {
-        public ITeam FromReader(PacketByteReader reader)
+        public ITeam FromReader(MinecraftDataReader reader)
         {
             return this;
         }
 
-        public void ToStream(ref PacketStream stream)
+        public void ToStream(ref MinecraftStream stream)
         {
         }
     }
@@ -72,7 +72,7 @@ namespace MineLib.Network.Modern.Packets.Server
         public string NameTagVisibility;
         public byte Color;
 
-        public ITeam FromReader(PacketByteReader reader)
+        public ITeam FromReader(MinecraftDataReader reader)
         {
             TeamDisplayName = reader.ReadString();
             TeamPrefix = reader.ReadString();
@@ -84,7 +84,7 @@ namespace MineLib.Network.Modern.Packets.Server
             return this;
         }
 
-        public void ToStream(ref PacketStream stream)
+        public void ToStream(ref MinecraftStream stream)
         {
             stream.WriteString(TeamDisplayName);
             stream.WriteString(TeamPrefix);
@@ -99,7 +99,7 @@ namespace MineLib.Network.Modern.Packets.Server
     {
         public string[] Players;
 
-        public ITeam FromReader(PacketByteReader reader)
+        public ITeam FromReader(MinecraftDataReader reader)
         {
             var count = reader.ReadVarInt();
             Players = new string[count];
@@ -111,7 +111,7 @@ namespace MineLib.Network.Modern.Packets.Server
             return this;
         }
 
-        public void ToStream(ref PacketStream stream)
+        public void ToStream(ref MinecraftStream stream)
         {
             stream.WriteVarInt(Players.Length);
             stream.WriteStringArray(Players);
@@ -122,7 +122,7 @@ namespace MineLib.Network.Modern.Packets.Server
     {
         public string[] Players;
 
-        public ITeam FromReader(PacketByteReader reader)
+        public ITeam FromReader(MinecraftDataReader reader)
         {
             var count = reader.ReadVarInt();
             Players = new string[count];
@@ -134,7 +134,7 @@ namespace MineLib.Network.Modern.Packets.Server
             return this;
         }
 
-        public void ToStream(ref PacketStream stream)
+        public void ToStream(ref MinecraftStream stream)
         {
             stream.WriteVarInt(Players.Length);
             stream.WriteStringArray(Players);
@@ -149,7 +149,7 @@ namespace MineLib.Network.Modern.Packets.Server
 
         public byte ID { get { return 0x3E; } }
 
-        public void ReadPacket(PacketByteReader reader)
+        public IPacket ReadPacket(MinecraftDataReader reader)
         {
             TeamName = reader.ReadString();
             Action = (TeamAction) reader.ReadByte();
@@ -172,15 +172,19 @@ namespace MineLib.Network.Modern.Packets.Server
                     Team = new TeamsRemovePlayers().FromReader(reader);
                     break;
             }
+
+            return this;
         }
 
-        public void WritePacket(ref PacketStream stream)
+        public IPacket WritePacket(MinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteString(TeamName);
             stream.WriteByte((byte) Action);
             Team.ToStream(ref stream);
             stream.Purge();
+
+            return this;
         }
     }
 }

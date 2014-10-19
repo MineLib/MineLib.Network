@@ -5,22 +5,22 @@ namespace MineLib.Network.Modern.Packets.Server
 {
     public interface IWorldBorder
     {
-        IWorldBorder FromReader(PacketByteReader reader);
-        void ToStream(ref PacketStream stream);
+        IWorldBorder FromReader(MinecraftDataReader reader);
+        void ToStream(ref MinecraftStream stream);
     }
 
     public struct WorldBorderSetSize : IWorldBorder
     {
         public double Radius;
         
-        public IWorldBorder FromReader(PacketByteReader reader)
+        public IWorldBorder FromReader(MinecraftDataReader reader)
         {
             Radius = reader.ReadDouble();
 
             return this;
         }
 
-        public void ToStream(ref PacketStream stream)
+        public void ToStream(ref MinecraftStream stream)
         {
             stream.WriteDouble(Radius);
         }
@@ -32,7 +32,7 @@ namespace MineLib.Network.Modern.Packets.Server
         public double NewRadius;
         public long Speed;
 
-        public IWorldBorder FromReader(PacketByteReader reader)
+        public IWorldBorder FromReader(MinecraftDataReader reader)
         {
             OldRadius = reader.ReadDouble();
             NewRadius = reader.ReadDouble();
@@ -41,7 +41,7 @@ namespace MineLib.Network.Modern.Packets.Server
             return this;
         }
 
-        public void ToStream(ref PacketStream stream)
+        public void ToStream(ref MinecraftStream stream)
         {
             stream.WriteDouble(OldRadius);
             stream.WriteDouble(NewRadius);
@@ -53,7 +53,7 @@ namespace MineLib.Network.Modern.Packets.Server
     {
         public double X, Z;
 
-        public IWorldBorder FromReader(PacketByteReader reader)
+        public IWorldBorder FromReader(MinecraftDataReader reader)
         {
             X = reader.ReadDouble();
             Z = reader.ReadDouble();
@@ -61,7 +61,7 @@ namespace MineLib.Network.Modern.Packets.Server
             return this;
         }
 
-        public void ToStream(ref PacketStream stream)
+        public void ToStream(ref MinecraftStream stream)
         {
             stream.WriteDouble(X);
             stream.WriteDouble(Z);
@@ -78,7 +78,7 @@ namespace MineLib.Network.Modern.Packets.Server
         public int WarningTime;
         public int WarningBlocks;
 
-        public IWorldBorder FromReader(PacketByteReader reader)
+        public IWorldBorder FromReader(MinecraftDataReader reader)
         {
             X = reader.ReadDouble();
             Z = reader.ReadDouble();
@@ -93,7 +93,7 @@ namespace MineLib.Network.Modern.Packets.Server
             return this;
         }
 
-        public void ToStream(ref PacketStream stream)
+        public void ToStream(ref MinecraftStream stream)
         {
             stream.WriteDouble(X);
             stream.WriteDouble(Z);
@@ -111,14 +111,14 @@ namespace MineLib.Network.Modern.Packets.Server
     {
         public int WarningTime;
 
-        public IWorldBorder FromReader(PacketByteReader reader)
+        public IWorldBorder FromReader(MinecraftDataReader reader)
         {
             WarningTime = reader.ReadVarInt();
 
             return this;
         }
 
-        public void ToStream(ref PacketStream stream)
+        public void ToStream(ref MinecraftStream stream)
         {
             stream.WriteVarInt(WarningTime);
         }
@@ -128,14 +128,14 @@ namespace MineLib.Network.Modern.Packets.Server
     {
         public int WarningBlocks;
 
-        public IWorldBorder FromReader(PacketByteReader reader)
+        public IWorldBorder FromReader(MinecraftDataReader reader)
         {
             WarningBlocks = reader.ReadVarInt();
 
             return this;
         }
 
-        public void ToStream(ref PacketStream stream)
+        public void ToStream(ref MinecraftStream stream)
         {
             stream.WriteVarInt(WarningBlocks);
         }
@@ -149,7 +149,7 @@ namespace MineLib.Network.Modern.Packets.Server
 
         public byte ID { get { return 0x44; } }
 
-        public void ReadPacket(PacketByteReader reader)
+        public IPacket ReadPacket(MinecraftDataReader reader)
         {
             Action = (WorldBorderAction) reader.ReadVarInt();
 
@@ -174,14 +174,18 @@ namespace MineLib.Network.Modern.Packets.Server
                     WorldBorder = new WorldBorderSetWarningBlocks().FromReader(reader);
                     break;
             }
+
+            return this;
         }
 
-        public void WritePacket(ref PacketStream stream)
+        public IPacket WritePacket(MinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteVarInt((byte) Action);
             WorldBorder.ToStream(ref stream);
             stream.Purge();
+
+            return this;
         }
     }
 }

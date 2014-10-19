@@ -10,20 +10,24 @@ namespace MineLib.Network.Modern.Packets.Client
 
         public byte ID { get { return 0x13; } }
 
-        public void ReadPacket(PacketByteReader reader)
+        public IPacket ReadPacket(MinecraftDataReader reader)
         {
             Flags = reader.ReadByte();
             FlyingSpeed = reader.ReadFloat();
             WalkingSpeed = reader.ReadFloat();
+
+            return this;
         }
 
-        public void WritePacket(ref PacketStream stream)
+        public IPacket WritePacket(MinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteByte(Flags);
             stream.WriteFloat(FlyingSpeed);
             stream.WriteFloat(WalkingSpeed);
             stream.Purge();
+
+            return this;
         }
     }
 }

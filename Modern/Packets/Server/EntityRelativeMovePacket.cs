@@ -11,20 +11,24 @@ namespace MineLib.Network.Modern.Packets.Server
 
         public byte ID { get { return 0x15; } }
 
-        public void ReadPacket(PacketByteReader reader)
+        public IPacket ReadPacket(MinecraftDataReader reader)
         {
             EntityID = reader.ReadVarInt();
             DeltaVector3 = Vector3.FromReaderSByteFixedPoint(reader);
             OnGround = reader.ReadBoolean();
+
+            return this;
         }
 
-        public void WritePacket(ref PacketStream stream)
+        public IPacket WritePacket(MinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteVarInt(EntityID);
-            DeltaVector3.ToStreamSByteFixedPoint(ref stream);
+            DeltaVector3.ToStreamSByteFixedPoint(stream);
             stream.WriteBoolean(OnGround);
             stream.Purge();
+
+            return this;
         }
     }
 }

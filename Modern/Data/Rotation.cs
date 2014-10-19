@@ -34,6 +34,16 @@ namespace MineLib.Network.Modern.Data
             return string.Format("Pitch: {0}, Yaw: {1}, Roll: {2}", Pitch, Yaw, Roll);
         }
 
+        public static bool operator ==(Rotation a, Rotation b)
+        {
+            return a.Pitch == b.Pitch && a.Yaw == b.Yaw && a.Roll == b.Roll;
+        }
+
+        public static bool operator !=(Rotation a, Rotation b)
+        {
+            return a.Pitch != b.Pitch && a.Yaw != b.Yaw && a.Roll != b.Roll;
+        }
+
         public bool Equals(Rotation other)
         {
             return other.Pitch.Equals(Pitch) && other.Yaw.Equals(Yaw) && other.Roll.Equals(Roll);
@@ -41,8 +51,9 @@ namespace MineLib.Network.Modern.Data
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (obj.GetType() != typeof(Rotation)) return false;
+            if (obj.GetType() != typeof(Rotation))
+                return false;
+
             return Equals((Rotation)obj);
         }
 

@@ -31,12 +31,12 @@ namespace MineLib.Network.Modern.Data.EntityMetadataEntries
             Value = value;
         }
 
-        public override void FromReader(PacketByteReader reader)
+        public override void FromReader(MinecraftDataReader reader)
         {
             Value = reader.ReadString();
         }
 
-        public override void ToStream(ref PacketStream stream, byte index)
+        public override void ToStream(MinecraftStream stream, byte index)
         {
             stream.WriteByte(GetKey(index));
             stream.WriteString(Value);

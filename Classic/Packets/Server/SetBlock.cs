@@ -11,15 +11,22 @@ namespace MineLib.Network.Classic.Packets.Server
         public byte ID { get { return 0x06; } }
         public short Size { get { return 8; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public IPacketWithSize ReadPacket(MinecraftDataReader stream)
         {
             Coordinates.X = stream.ReadShort();
             Coordinates.Y = stream.ReadShort();
             Coordinates.Z = stream.ReadShort();
             BlockType = stream.ReadByte();
+
+            return this;
         }
 
-        public void WritePacket(ref PacketStream stream)
+        IPacket IPacket.ReadPacket(MinecraftDataReader stream)
+        {
+            return ReadPacket(stream);
+        }
+
+        public IPacket WritePacket(MinecraftStream stream)
         {
             stream.WriteByte(ID);
             stream.WriteShort((short)Coordinates.X);
@@ -27,6 +34,8 @@ namespace MineLib.Network.Classic.Packets.Server
             stream.WriteShort((short)Coordinates.Z);
             stream.WriteByte(BlockType);
             stream.Purge();
+
+            return this;
         }
     }
 }

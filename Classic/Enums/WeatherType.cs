@@ -2,7 +2,7 @@
 {
     public enum WeatherType
     {
-        Sunny = 0,
+        Sunny   = 0,
         Raining = 1,
         Snowing = 2
     }

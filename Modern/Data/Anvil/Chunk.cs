@@ -62,7 +62,7 @@ namespace MineLib.Network.Modern.Data.Anvil
 
         #region Network
 
-        public static Chunk FromReader(PacketByteReader reader)
+        public static Chunk FromReader(MinecraftDataReader reader)
         {
             var overWorld = true;// TODO: From World class
             var coordinates = new Coordinates2D(reader.ReadInt(), reader.ReadInt());
@@ -115,7 +115,7 @@ namespace MineLib.Network.Modern.Data.Anvil
         }
 
         // TODO: Convert to RawData
-        public void ToStream(ref PacketStream stream)
+        public void ToStream(MinecraftStream stream)
         {
             var OverWorld = true; // TODO: From World class
 
@@ -378,7 +378,7 @@ namespace MineLib.Network.Modern.Data.Anvil
             return _entries.ToArray();
         }
 
-        public static ChunkList FromReader(PacketByteReader reader)
+        public static ChunkList FromReader(MinecraftDataReader reader)
         {
             var value = new ChunkList();
 
@@ -446,10 +446,10 @@ namespace MineLib.Network.Modern.Data.Anvil
         }
 
         // TODO: Convert to RawData
-        public void ToStream(ref PacketStream stream)
+        public void ToStream(MinecraftStream stream)
         {
             stream.WriteBoolean(GroundUp);
-            Metadata.ToStream(ref stream);
+            Metadata.ToStream(stream);
 
             int totalSections = 0;
             foreach (var metadata in Metadata.GetMetadata())

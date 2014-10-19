@@ -10,18 +10,22 @@ namespace MineLib.Network.Modern.Packets.Client
 
         public byte ID { get { return 0x10; } }
 
-        public void ReadPacket(PacketByteReader reader)
+        public IPacket ReadPacket(MinecraftDataReader reader)
         {
             Slot = reader.ReadShort();
             ClickedItem = ItemStack.FromReader(reader);
+
+            return this;
         }
 
-        public void WritePacket(ref PacketStream stream)
+        public IPacket WritePacket(MinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteShort(Slot);
-            ClickedItem.ToStream(ref stream);
+            ClickedItem.ToStream(stream);
             stream.Purge();
+
+            return this;
         }
     }
 }

@@ -14,7 +14,7 @@ using MineLib.Network.Modern.Packets.Server.Login;
 
 namespace MineLib.Network
 {
-    public partial class NetworkHandler
+    public sealed partial class NetworkHandler
     {
         public bool CompressionEnabled { get { return _stream.CompressionEnabled; } }
         public int CompressionThreshold { get { return _stream.CompressionThreshold; } }
@@ -64,14 +64,14 @@ namespace MineLib.Network
 
                         packetId = _stream.ReadVarInt();
 
-                        var packetLengthBytes = PacketStream.GetVarIntBytes(packetLength).Length;
-                        var dataLengthBytes = PacketStream.GetVarIntBytes(dataLength).Length;
+                        var packetLengthBytes = MinecraftStream.GetVarIntBytes(packetLength).Length;
+                        var dataLengthBytes = MinecraftStream.GetVarIntBytes(dataLength).Length;
                         var t = packetLengthBytes + dataLengthBytes;
                         OnDataReceived(packetId, _stream.ReadByteArray(packetLength - 2)); // TODO: What is 2 here? (packetLength - packetLengthBytes - dataLengthBytes)?
                     }
                     else // (dataLength > 0)
                     {
-                        var dataLengthBytes = PacketStream.GetVarIntBytes(dataLength).Length;
+                        var dataLengthBytes = MinecraftStream.GetVarIntBytes(dataLength).Length;
 
                         var tempBuff = _stream.ReadByteArray(packetLength - dataLengthBytes);
 
@@ -85,7 +85,7 @@ namespace MineLib.Network
                         packetId = tempBuff[0]; // TODO: Will be broken when ID will be more than 256.
 
                         var data = new byte[tempBuff.Length - 1];
-                        Buffer.BlockCopy(tempBuff, 1, data, 0, data.Length);
+                        Array.Copy(tempBuff, 1, data, 0, data.Length);
 
                         OnDataReceived(packetId, data);
                     }
@@ -123,14 +123,14 @@ namespace MineLib.Network
 
                     packetId = _stream.ReadVarInt();
 
-                    var packetLengthBytes = PacketStream.GetVarIntBytes(packetLength).Length;
-                    var dataLengthBytes = PacketStream.GetVarIntBytes(dataLength).Length;
+                    var packetLengthBytes = MinecraftStream.GetVarIntBytes(packetLength).Length;
+                    var dataLengthBytes = MinecraftStream.GetVarIntBytes(dataLength).Length;
                     var t = packetLengthBytes + dataLengthBytes;
                     data = _stream.ReadByteArray(packetLength - 2);
                 }
                 else // (dataLength > 0)
                 {
-                    var dataLengthBytes = PacketStream.GetVarIntBytes(dataLength).Length;
+                    var dataLengthBytes = MinecraftStream.GetVarIntBytes(dataLength).Length;
 
                     var tempBuff = _stream.ReadByteArray(packetLength - dataLengthBytes);
 
@@ -141,10 +141,10 @@ namespace MineLib.Network
                         tempBuff = outputStream.ToArray();
                     }
 
-                    packetId = tempBuff[0]; // TODO: Will be broken when ID will be more than 256.
+                    packetId = tempBuff[0]; // TODO: Will be broken when ID will be more than 256. Use ReadVarInt
 
                     data = new byte[tempBuff.Length - 1];
-                    Buffer.BlockCopy(tempBuff, 1, data, 0, data.Length);
+                    Array.Copy(tempBuff, 1, data, 0, data.Length);
                 }
             }
 
@@ -162,7 +162,7 @@ namespace MineLib.Network
         /// <param name="data">Packet byte[] data</param>
         private void HandlePacketModern(int id, byte[] data)
         {
-            _reader = new PacketByteReader(data, Mode);
+            var reader = new MinecraftDataReader(data, NetworkMode);
             IPacket packet;
 
             switch (_minecraft.State)
@@ -173,8 +173,7 @@ namespace MineLib.Network
                     if (ServerResponse.Status[id] == null)
                         break;
 
-                    packet = ServerResponse.Status[id]();
-                    packet.ReadPacket(_reader);
+                    packet = ServerResponse.Status[id]().ReadPacket(reader);
 
                     RaisePacketHandled(id, packet, ServerState.ModernStatus);
 
@@ -188,16 +187,15 @@ namespace MineLib.Network
                     if (ServerResponse.Login[id] == null)
                         break;
 
-                    packet = ServerResponse.Login[id]();
-                    packet.ReadPacket(_reader);
+                    packet = ServerResponse.Login[id]().ReadPacket(reader);
 
                     RaisePacketHandled(id, packet, ServerState.ModernLogin);
 
                     if (id == 0x01)
-                        EnableEncryption(packet);  // -- Low-level encryption handle
+                        ModernEnableEncryption(packet);  // -- Low-level encryption handle
 
                     if (id == 0x03)
-                        SetCompression(packet); // -- Low-level compression handle
+                        ModernSetCompression(packet); // -- Low-level compression handle
 
                     break;
 
@@ -209,13 +207,12 @@ namespace MineLib.Network
                     if (ServerResponse.Play[id] == null)
                         break;
 
-                    packet = ServerResponse.Play[id]();
-                    packet.ReadPacket(_reader);
+                    packet = ServerResponse.Play[id]().ReadPacket(reader);
 
                     RaisePacketHandled(id, packet, ServerState.ModernPlay);
 
                     if (id == 0x46)
-                        SetCompression(packet); // -- Low-level compression handle
+                        ModernSetCompression(packet); // -- Low-level compression handle
 
                     // Connection lost
                     if (id == 0x40)
@@ -230,10 +227,14 @@ namespace MineLib.Network
             }
         }
 
-        private void EnableEncryption(IPacket packet)
+        /// <summary>
+        /// Enabling encryption
+        /// </summary>
+        /// <param name="packet">EncryptionRequestPacket</param>
+        private void ModernEnableEncryption(IPacket packet)
         {
             // From libMC.NET
-            var request = (EncryptionRequestPacket)packet;
+            var request = (EncryptionRequestPacket) packet;
 
             var hashlist = new List<byte>();
             hashlist.AddRange(Encoding.ASCII.GetBytes(request.ServerId));
@@ -274,9 +275,13 @@ namespace MineLib.Network
             _stream.EncryptionEnabled = true;
         }
 
-        private void SetCompression(IPacket packet)
+        /// <summary>
+        /// Setting compression
+        /// </summary>
+        /// <param name="packet">EncryptionRequestPacket</param>
+        private void ModernSetCompression(IPacket packet)
         {
-            var request = (ISetCompression)packet;
+            var request = (ISetCompression) packet;
 
             _stream.SetCompression(request.Threshold);
         }

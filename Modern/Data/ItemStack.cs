@@ -88,7 +88,7 @@ namespace MineLib.Network.Modern.Data
 
         #region Network
 
-        public static ItemStack FromReader(PacketByteReader reader)
+        public static ItemStack FromReader(MinecraftDataReader reader)
         {
             var itemStack = new ItemStack();
 
@@ -111,7 +111,7 @@ namespace MineLib.Network.Modern.Data
             return itemStack;
         }
 
-        public void ToStream(ref PacketStream stream)
+        public void ToStream(MinecraftStream stream)
         {
             stream.WriteShort(ID);
             stream.WriteShort(Damage);
@@ -217,7 +217,7 @@ namespace MineLib.Network.Modern.Data
 
         #region Network
 
-        public static ItemStackList FromReader(PacketByteReader reader)
+        public static ItemStackList FromReader(MinecraftDataReader reader)
         {
             var value = new ItemStackList();
 
@@ -250,7 +250,7 @@ namespace MineLib.Network.Modern.Data
             return value;
         }
 
-        public void ToStream(ref PacketStream stream)
+        public void ToStream(ref MinecraftStream stream)
         {
             foreach (var itemStack in _entries)
             {

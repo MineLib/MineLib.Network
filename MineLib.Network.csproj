@@ -104,8 +104,8 @@
     <Compile Include="Modern\DebugHelpers.cs" />
     <Compile Include="IMinecraftClient.cs" />
     <Compile Include="Events\Events.cs" />
-    <Compile Include="IO\PacketByteReader.cs" />
-    <Compile Include="IO\PacketStream.Stream.cs" />
+    <Compile Include="IO\MinecraftDataReader.cs" />
+    <Compile Include="IO\MinecraftStream.Stream.cs" />
     <Compile Include="Modern\BaseClients\ServerInfoParser.cs" />
     <Compile Include="Modern\BaseClients\ServerInfoParser.Events.cs" />
     <Compile Include="Modern\BaseClients\ServerInfoParser.Json.cs" />
@@ -290,6 +290,7 @@
     <Compile Include="PocketEdition\Packets\Client\SetTimePacket.cs" />
     <Compile Include="PocketEdition\Packets\Client\StartGamePacket.cs" />
     <Compile Include="PocketEdition\Packets\ServerResponse.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServerState.cs" />
     <Compile Include="IPacket.cs" />
     <Compile Include="NetworkHandler.Classic.cs" />
@@ -297,19 +298,17 @@
     <Compile Include="NetworkHandler.Modern.cs" />
     <Compile Include="NetworkHandler.PocketEdition.cs" />
     <Compile Include="IO\AesStream.cs" />
-    <Compile Include="IO\PacketStream.cs" />
+    <Compile Include="IO\MinecraftStream.cs" />
     <Compile Include="Yggdrasil.cs" />
     <Compile Include="Yggdrasil.Json.cs" />
-    <Compile Include="IPacketClassic.cs" />
+    <Compile Include="IPacketWithSize.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Libraries\BouncyCastle.Crypto.dll" />
     <Content Include="Libraries\ICSharpCode.SharpZipLib.dll" />
     <Content Include="Libraries\Newtonsoft.Json.dll" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSHARP.Targets" />
   <ProjectExtensions>
     <VisualStudio AllowExistingFolder="true" />

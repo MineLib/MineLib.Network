@@ -15,7 +15,7 @@ namespace MineLib.Network.Modern.Packets.Server
 
         public byte ID { get { return 0x2A; } }
 
-        public void ReadPacket(PacketByteReader reader)
+        public IPacket ReadPacket(MinecraftDataReader reader)
         {
             ParticleID = (Particle) reader.ReadInt();
             LongDistance = reader.ReadBoolean();
@@ -40,9 +40,11 @@ namespace MineLib.Network.Modern.Packets.Server
                     Data = reader.ReadVarIntArray(0);
                     break;
             }
+
+            return this;
         }
 
-        public void WritePacket(ref PacketStream stream)
+        public IPacket WritePacket(MinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteInt((int) ParticleID);
@@ -56,6 +58,8 @@ namespace MineLib.Network.Modern.Packets.Server
             stream.WriteFloat(ParticleData);
             stream.WriteInt(NumberOfParticles);
             stream.WriteVarIntArray(Data);
+
+            return this;
         }
     }
 }

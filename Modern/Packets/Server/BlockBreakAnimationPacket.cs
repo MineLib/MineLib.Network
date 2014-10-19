@@ -11,20 +11,24 @@ namespace MineLib.Network.Modern.Packets.Server
 
         public byte ID { get { return 0x25; } }
 
-        public void ReadPacket(PacketByteReader reader)
+        public IPacket ReadPacket(MinecraftDataReader reader)
         {
             EntityID = reader.ReadVarInt();
             Location = Position.FromReaderLong(reader);
             DestroyStage = reader.ReadSByte();
+
+            return this;
         }
 
-        public void WritePacket(ref PacketStream stream)
+        public IPacket WritePacket(MinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteVarInt(EntityID);
-            Location.ToStreamLong(ref stream);
+            Location.ToStreamLong(stream);
             stream.WriteSByte(DestroyStage);
             stream.Purge();
+
+            return this;
         }
     }
 }

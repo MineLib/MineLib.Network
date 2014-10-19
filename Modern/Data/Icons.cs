@@ -11,6 +11,17 @@ namespace MineLib.Network.Modern.Data
         public int X;
         public int Y;
 
+
+        public static bool operator ==(Icon a, Icon b)
+        {
+            return a.Direction == b.Direction && a.Type == b.Type && a.X == b.X && a.Y == b.Y;
+        }
+
+        public static bool operator !=(Icon a, Icon b)
+        {
+            return a.Direction != b.Direction && a.Type != b.Type && a.X != b.X && a.Y != b.Y;
+        }
+
         public bool Equals(Icon other)
         {
             return other.Direction.Equals(Direction) && other.Type.Equals(Type) && other.X.Equals(X) && other.Y.Equals(Y);
@@ -18,8 +29,9 @@ namespace MineLib.Network.Modern.Data
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (obj.GetType() != typeof(Icon)) return false;
+            if (obj.GetType() != typeof(Icon))
+                return false;
+
             return Equals((Icon)obj);
         }
 
@@ -56,7 +68,7 @@ namespace MineLib.Network.Modern.Data
             set { _entries.Insert(index, value); }
         }
 
-        public static IconList FromReader(PacketByteReader reader)
+        public static IconList FromReader(MinecraftDataReader reader)
         {
             var value = new IconList();
 
@@ -78,7 +90,7 @@ namespace MineLib.Network.Modern.Data
             return value;
         }
 
-        public void ToStream(ref PacketStream stream)
+        public void ToStream(MinecraftStream stream)
         {
             stream.WriteVarInt(Count);
 

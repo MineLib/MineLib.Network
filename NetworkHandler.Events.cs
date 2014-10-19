@@ -2,7 +2,7 @@
 
 namespace MineLib.Network
 {
-    public partial class NetworkHandler
+    public sealed partial class NetworkHandler
     {
         public event PacketHandler OnPacketHandled;
         private event DataReceived OnDataReceived;

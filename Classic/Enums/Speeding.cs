@@ -3,6 +3,6 @@
     public enum Speeding
     {
         OnlyAllowNormalWalkingSpeed = 0,
-        AllowMovingAtAnySpeeds = 1
+        AllowMovingAtAnySpeeds      = 1
     }
 }

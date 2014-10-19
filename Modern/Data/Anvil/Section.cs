@@ -192,6 +192,16 @@ namespace MineLib.Network.Modern.Data.Anvil
 
         #endregion
 
+        public static bool operator ==(Section a, Section b)
+        {
+            return a.Blocks == b.Blocks && a.IsFilled == b.IsFilled && a.Position == b.Position;
+        }
+
+        public static bool operator !=(Section a, Section b)
+        {
+            return a.Blocks != b.Blocks && a.IsFilled != b.IsFilled && a.Position != b.Position;
+        }
+
         // You need to be a really freak to use it
         public bool Equals(Section section)
         {
@@ -200,8 +210,9 @@ namespace MineLib.Network.Modern.Data.Anvil
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (obj.GetType() != typeof(Section)) return false;
+            if (obj.GetType() != typeof(Section))
+                return false;
+
             return Equals((Section)obj);
         }
 

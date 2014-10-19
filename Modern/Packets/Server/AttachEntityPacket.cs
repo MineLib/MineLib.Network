@@ -10,20 +10,24 @@ namespace MineLib.Network.Modern.Packets.Server
 
         public byte ID { get { return 0x1B; } }
 
-        public void ReadPacket(PacketByteReader reader)
+        public IPacket ReadPacket(MinecraftDataReader reader)
         {
             EntityID = reader.ReadInt();
             VehicleID = reader.ReadInt();
             Leash = reader.ReadBoolean();
+
+            return this;
         }
 
-        public void WritePacket(ref PacketStream stream)
+        public IPacket WritePacket(MinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteInt(EntityID);
             stream.WriteInt(VehicleID);
             stream.WriteBoolean(Leash);
             stream.Purge();
+
+            return this;
         }
     }
 }

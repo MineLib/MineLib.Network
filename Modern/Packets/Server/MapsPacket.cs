@@ -15,7 +15,7 @@ namespace MineLib.Network.Modern.Packets.Server
 
         public byte ID { get { return 0x34; } }
 
-        public void ReadPacket(PacketByteReader reader)
+        public IPacket ReadPacket(MinecraftDataReader reader)
         {
             ItemDamage = reader.ReadVarInt();
             Scale = reader.ReadSByte();
@@ -30,14 +30,16 @@ namespace MineLib.Network.Modern.Packets.Server
                 var dataLength = reader.ReadShort();
                 Data = reader.ReadByteArray(dataLength);
             }
+
+            return this;
         }
 
-        public void WritePacket(ref PacketStream stream)
+        public IPacket WritePacket(MinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteVarInt(ItemDamage);
             stream.WriteSByte(Scale);
-            IconList.ToStream(ref stream);
+            IconList.ToStream(stream);
             stream.WriteSByte(Columns);
             if (Columns > 0)
             {
@@ -48,6 +50,8 @@ namespace MineLib.Network.Modern.Packets.Server
                 stream.WriteByteArray(Data);
             }
             stream.Purge();
+
+            return this;
         }
     }
 }

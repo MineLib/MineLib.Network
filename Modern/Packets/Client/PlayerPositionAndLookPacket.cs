@@ -11,7 +11,7 @@ namespace MineLib.Network.Modern.Packets.Client
 
         public byte ID { get { return 0x06; } }
 
-        public void ReadPacket(PacketByteReader reader)
+        public IPacket ReadPacket(MinecraftDataReader reader)
         {
             X = reader.ReadDouble();
             FeetY = reader.ReadDouble();
@@ -19,9 +19,11 @@ namespace MineLib.Network.Modern.Packets.Client
             Yaw = reader.ReadFloat();
             Pitch = reader.ReadFloat();
             OnGround = reader.ReadBoolean();
+
+            return this;
         }
 
-        public void WritePacket(ref PacketStream stream)
+        public IPacket WritePacket(MinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteDouble(X);
@@ -31,6 +33,8 @@ namespace MineLib.Network.Modern.Packets.Client
             stream.WriteFloat(Pitch);
             stream.WriteBoolean(OnGround);
             stream.Purge();
+
+            return this;
         }
     }
 }

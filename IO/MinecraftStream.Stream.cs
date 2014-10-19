@@ -2,7 +2,7 @@
 
 namespace MineLib.Network.IO
 {
-    public partial class PacketStream : Stream
+    public sealed partial class MinecraftStream : Stream
     {
         public override void Flush()
         {

@@ -12,7 +12,7 @@ namespace MineLib.Network.Modern.Packets.Server
 
         public byte ID { get { return 0x27; } }
 
-        public void ReadPacket(PacketByteReader reader)
+        public IPacket ReadPacket(MinecraftDataReader reader)
         {
             X = reader.ReadFloat();
             Y = reader.ReadFloat();
@@ -23,9 +23,11 @@ namespace MineLib.Network.Modern.Packets.Server
             PlayerMotionX = reader.ReadFloat();
             PlayerMotionY = reader.ReadFloat();
             PlayerMotionZ = reader.ReadFloat();
+
+            return this;
         }
 
-        public void WritePacket(ref PacketStream stream)
+        public IPacket WritePacket(MinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteFloat(X);
@@ -38,6 +40,8 @@ namespace MineLib.Network.Modern.Packets.Server
             stream.WriteFloat(PlayerMotionY);
             stream.WriteFloat(PlayerMotionZ);
             stream.Purge();
+
+            return this;
         }
     }
 }

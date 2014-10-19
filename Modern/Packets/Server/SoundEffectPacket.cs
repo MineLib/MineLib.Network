@@ -12,22 +12,26 @@ namespace MineLib.Network.Modern.Packets.Server
 
         public byte ID { get { return 0x29; } }
 
-        public void ReadPacket(PacketByteReader reader)
+        public IPacket ReadPacket(MinecraftDataReader reader)
         {
             SoundName = reader.ReadString();
             Coordinates = Position.FromReaderInt(reader);
             Volume = reader.ReadFloat();
             Pitch = reader.ReadByte();
+
+            return this;
         }
 
-        public void WritePacket(ref PacketStream stream)
+        public IPacket WritePacket(MinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteString(SoundName);
-            Coordinates.ToStreamInt(ref stream);
+            Coordinates.ToStreamInt(stream);
             stream.WriteFloat(Volume);
             stream.WriteByte(Pitch);
             stream.Purge();
+
+            return this;
         }
     }
 }

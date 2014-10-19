@@ -7,8 +7,8 @@ namespace MineLib.Network.Modern.Packets.Server
 {
     public interface IPlayerList
     {
-        IPlayerList FromReader(PacketByteReader reader);
-        void ToStream(ref PacketStream stream);
+        IPlayerList FromReader(MinecraftDataReader reader);
+        void ToStream(ref MinecraftStream stream);
     }
 
     public struct Properties
@@ -39,7 +39,7 @@ namespace MineLib.Network.Modern.Packets.Server
             set { _entries.Insert(index, value); }
         }
 
-        public static PlayerListActionProperties FromReader(PacketByteReader reader)
+        public static PlayerListActionProperties FromReader(MinecraftDataReader reader)
         {
             var count = reader.ReadVarInt();
 
@@ -61,7 +61,7 @@ namespace MineLib.Network.Modern.Packets.Server
             return value;
         }
 
-        public void ToStream(ref PacketStream stream)
+        public void ToStream(ref MinecraftStream stream)
         {
             stream.WriteVarInt(Count);
 
@@ -85,7 +85,7 @@ namespace MineLib.Network.Modern.Packets.Server
         public bool HasDisplayName;
         public string DisplayName;
 
-        public IPlayerList FromReader(PacketByteReader reader)
+        public IPlayerList FromReader(MinecraftDataReader reader)
         {
             Name = reader.ReadString();
             Properties = PlayerListActionProperties.FromReader(reader);
@@ -99,7 +99,7 @@ namespace MineLib.Network.Modern.Packets.Server
             return this;
         }
 
-        public void ToStream(ref PacketStream stream)
+        public void ToStream(ref MinecraftStream stream)
         {
             stream.WriteString(Name);
             Properties.ToStream(ref stream);
@@ -116,14 +116,14 @@ namespace MineLib.Network.Modern.Packets.Server
     {
         public int Gamemode;
 
-        public IPlayerList FromReader(PacketByteReader reader)
+        public IPlayerList FromReader(MinecraftDataReader reader)
         {
             Gamemode = reader.ReadVarInt();
             
             return this;
         }
 
-        public void ToStream(ref PacketStream stream)
+        public void ToStream(ref MinecraftStream stream)
         {
             stream.WriteVarInt(Gamemode);
         }
@@ -133,14 +133,14 @@ namespace MineLib.Network.Modern.Packets.Server
     {
         public int Ping;
 
-        public IPlayerList FromReader(PacketByteReader reader)
+        public IPlayerList FromReader(MinecraftDataReader reader)
         {
             Ping = reader.ReadVarInt();
 
             return this;
         }
 
-        public void ToStream(ref PacketStream stream)
+        public void ToStream(ref MinecraftStream stream)
         {
             stream.WriteVarInt(Ping);
         }
@@ -151,7 +151,7 @@ namespace MineLib.Network.Modern.Packets.Server
         public bool HasDisplayName;
         public string DisplayName;
 
-        public IPlayerList FromReader(PacketByteReader reader)
+        public IPlayerList FromReader(MinecraftDataReader reader)
         {
             HasDisplayName = reader.ReadBoolean();
             DisplayName = reader.ReadString();
@@ -159,7 +159,7 @@ namespace MineLib.Network.Modern.Packets.Server
             return this;
         }
 
-        public void ToStream(ref PacketStream stream)
+        public void ToStream(ref MinecraftStream stream)
         {
             stream.WriteBoolean(HasDisplayName);
             stream.WriteString(DisplayName);
@@ -168,12 +168,12 @@ namespace MineLib.Network.Modern.Packets.Server
 
     public struct PlayerListActionRemovePlayer : IPlayerList
     {
-        public IPlayerList FromReader(PacketByteReader reader)
+        public IPlayerList FromReader(MinecraftDataReader reader)
         {
             return this;
         }
 
-        public void ToStream(ref PacketStream stream)
+        public void ToStream(ref MinecraftStream stream)
         {
         }
     }
@@ -187,7 +187,7 @@ namespace MineLib.Network.Modern.Packets.Server
 
         public byte ID { get { return 0x38; } }
 
-        public void ReadPacket(PacketByteReader reader)
+        public IPacket ReadPacket(MinecraftDataReader reader)
         {
             Action = (PlayerListAction) reader.ReadVarInt();
             Length = reader.ReadVarInt();
@@ -211,9 +211,11 @@ namespace MineLib.Network.Modern.Packets.Server
                     PlayerList = new PlayerListActionRemovePlayer().FromReader(reader);
                     break;
             }
+
+            return this;
         }
 
-        public void WritePacket(ref PacketStream stream)
+        public IPacket WritePacket(MinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteVarInt((byte) Action);
@@ -221,6 +223,8 @@ namespace MineLib.Network.Modern.Packets.Server
             stream.WriteBigInteger(UUID);
             PlayerList.ToStream(ref stream);
             stream.Purge();
+
+            return this;
         }
     }
 }

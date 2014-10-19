@@ -12,15 +12,17 @@ namespace MineLib.Network.Modern.Packets.Server
     
         public byte ID { get { return 0x07; } }
 
-        public void ReadPacket(PacketByteReader reader)
+        public IPacket ReadPacket(MinecraftDataReader reader)
         {
             Dimension = (Dimension) reader.ReadInt();
             Difficulty = (Difficulty) reader.ReadByte();
             GameMode = (GameMode) reader.ReadByte();
             LevelType = reader.ReadString();
+
+            return this;
         }
     
-        public void WritePacket(ref PacketStream stream)
+        public IPacket WritePacket(MinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteInt((int) Dimension);
@@ -28,6 +30,8 @@ namespace MineLib.Network.Modern.Packets.Server
             stream.WriteByte((byte) GameMode);
             stream.WriteString(LevelType);
             stream.Purge();
+
+            return this;
         }
     }
 }

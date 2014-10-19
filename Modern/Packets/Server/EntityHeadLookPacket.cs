@@ -9,18 +9,22 @@ namespace MineLib.Network.Modern.Packets.Server
 
         public byte ID { get { return 0x19; } }
 
-        public void ReadPacket(PacketByteReader reader)
+        public IPacket ReadPacket(MinecraftDataReader reader)
         {
             EntityID = reader.ReadVarInt();
             HeadYaw = reader.ReadSByte();
+
+            return this;
         }
 
-        public void WritePacket(ref PacketStream stream)
+        public IPacket WritePacket(MinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteVarInt(EntityID);
             stream.WriteSByte(HeadYaw);
             stream.Purge();
+
+            return this;
         }
     }
 }

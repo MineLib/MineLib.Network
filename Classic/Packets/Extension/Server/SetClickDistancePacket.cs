@@ -9,16 +9,25 @@ namespace MineLib.Network.Classic.Packets.Extension.Server
         public byte ID { get { return 0x12; } }
         public short Size { get { return 3; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public IPacketWithSize ReadPacket(MinecraftDataReader stream)
         {
             Distance = stream.ReadShort();
+
+            return this;
         }
 
-        public void WritePacket(ref PacketStream stream)
+        IPacket IPacket.ReadPacket(MinecraftDataReader stream)
+        {
+            return ReadPacket(stream);
+        }
+
+        public IPacket WritePacket(MinecraftStream stream)
         {
             stream.WriteByte(ID);
             stream.WriteShort(Distance);
             stream.Purge();
+
+            return this;
         }
     }
 }

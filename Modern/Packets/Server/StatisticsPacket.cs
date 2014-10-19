@@ -9,16 +9,20 @@ namespace MineLib.Network.Modern.Packets.Server
 
         public byte ID { get { return 0x37; } }
 
-        public void ReadPacket(PacketByteReader reader)
+        public IPacket ReadPacket(MinecraftDataReader reader)
         {
             StatisticsEntryList = StatisticsEntryList.FromReader(reader);
+
+            return this;
         }
 
-        public void WritePacket(ref PacketStream stream)
+        public IPacket WritePacket(MinecraftStream stream)
         {
             stream.WriteVarInt(ID);
-            StatisticsEntryList.ToStream(ref stream);
+            StatisticsEntryList.ToStream(stream);
             stream.Purge();
+
+            return this;
         }
     }
 }

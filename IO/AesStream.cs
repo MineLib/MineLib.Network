@@ -8,25 +8,26 @@ using Org.BouncyCastle.Crypto.Parameters;
 
 namespace MineLib.Network.IO
 {
-    public interface IAesStream
+    public interface IAesStream : IDisposable
     {
-        Stream BaseStream { get; set; }
+        Stream BaseStream { get; }
 
         int ReadByte();
         int Read(byte[] buffer, int offset, int count);
 
         void Write(byte[] buffer, int offset, int count);
 
-        void Dispose();
     }
 
     // -- Credits to umby24 for encryption support, as taken from CWrapped.
-    public class NativeAesStream : IAesStream
+    public sealed class NativeAesStream : IAesStream
     {
-        public Stream BaseStream { get; set; }
+        public Stream BaseStream { get; private set; }
 
         private readonly CryptoStream _decryptStream;
         private readonly CryptoStream _encryptStream;
+
+        private bool _disposed;
 
         public NativeAesStream(Stream stream, byte[] key)
         {
@@ -72,23 +73,44 @@ namespace MineLib.Network.IO
 
         public void Dispose()
         {
-            //if (_decryptStream != null)
-            //    _decryptStream.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
-            //if (_encryptStream != null)
-            //    _encryptStream.Dispose();
+        private void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
 
-            if (BaseStream != null)
-                BaseStream.Dispose();
+            if (disposing)
+            {
+                if (_decryptStream != null)
+                    _decryptStream.Dispose();
+
+                if (_encryptStream != null)
+                    _encryptStream.Dispose();
+
+                if (BaseStream != null)
+                    BaseStream.Dispose();
+            }
+
+            _disposed = true;
+        }
+
+        ~NativeAesStream()
+        {
+            Dispose(false);
         }
     }
 
-    public class BouncyAesStream : IAesStream
+    public sealed class BouncyAesStream : IAesStream
     {
-        public Stream BaseStream { get; set; }
+        public Stream BaseStream { get; private set; }
 
         private readonly BufferedBlockCipher _decryptCipher;
         private readonly BufferedBlockCipher _encryptCipher;
+
+        private bool _disposed;
 
         public BouncyAesStream(Stream stream, byte[] key)
         {
@@ -104,7 +126,7 @@ namespace MineLib.Network.IO
         public int ReadByte()
         {
             var value = BaseStream.ReadByte();
-            return value == -1 ? value : _decryptCipher.ProcessByte((byte)value)[0];
+            return value == -1 ? value : _decryptCipher.ProcessByte((byte) value)[0];
         }
 
         public int Read(byte[] buffer, int offset, int count)
@@ -123,14 +145,33 @@ namespace MineLib.Network.IO
 
         public void Dispose()
         {
-            if (_decryptCipher != null)
-                _decryptCipher.Reset();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
-            if (_encryptCipher != null)
-                _encryptCipher.Reset();
+        private void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
 
-            if (BaseStream != null)
-                BaseStream.Dispose();
+            if (disposing)
+            {
+                if (_decryptCipher != null)
+                    _decryptCipher.Reset();
+
+                if (_encryptCipher != null)
+                    _encryptCipher.Reset();
+
+                if (BaseStream != null)
+                    BaseStream.Dispose();
+            }
+
+            _disposed = true;
+        }
+
+        ~BouncyAesStream()
+        {
+            Dispose(false);
         }
     }
 }

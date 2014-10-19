@@ -6,14 +6,21 @@ using MineLib.Network.IO;
 
 namespace MineLib.Network
 {
-    public partial class NetworkHandler
+    public sealed partial class NetworkHandler
     {
         private void StartReceivingClassicSync()
         {
-            do
+            try
             {
-                Thread.Sleep(50);
-            } while (PacketReceiverClassicSync());
+                do
+                {
+                    Thread.Sleep(50);
+                } while (PacketReceiverClassicSync());
+            }
+            catch (SocketException)
+            {
+                Crashed = true;
+            }
         }
 
         private bool PacketReceiverClassicSync()
@@ -72,13 +79,12 @@ namespace MineLib.Network
         /// <param name="data">Packet byte[] data</param>
         private void HandlePacketClassic(int id, byte[] data)
         {
-            _reader = new PacketByteReader(data, Mode);
+            var reader = new MinecraftDataReader(data, NetworkMode);
 
             if (ServerResponseClassic.ServerResponse[id] == null)
                 return;
 
-            var packet = ServerResponseClassic.ServerResponse[id]();
-            packet.ReadPacket(_reader);
+            var packet = ServerResponseClassic.ServerResponse[id]().ReadPacket(reader);
 
             RaisePacketHandled(id, packet, null);
         }

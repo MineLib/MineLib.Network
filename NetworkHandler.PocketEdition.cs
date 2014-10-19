@@ -6,14 +6,21 @@ using MineLib.Network.PocketEdition.Packets;
 
 namespace MineLib.Network
 {
-    public partial class NetworkHandler
+    public sealed partial class NetworkHandler
     {
         private void StartReceivingPocketEditionSync()
         {
-            do
+            try
             {
-                Thread.Sleep(50);
-            } while (PacketReceiverPocketEditionSync());
+                do
+                {
+                    Thread.Sleep(50);
+                } while (PacketReceiverPocketEditionSync());
+            }
+            catch (SocketException)
+            {
+                Crashed = true;
+            }
         }
 
         private bool PacketReceiverPocketEditionSync()
@@ -58,13 +65,12 @@ namespace MineLib.Network
         /// <param name="data">Packet byte[] data</param>
         private void HandlePacketPocketEdition(int id, byte[] data)
         {
-            _reader = new PacketByteReader(data, Mode);
+            var reader = new MinecraftDataReader(data, NetworkMode);
 
             if (ServerResponsePocketEdition.ServerResponse[id] == null)
                 return;
 
-            var packet = ServerResponsePocketEdition.ServerResponse[id]();
-            packet.ReadPacket(_reader);
+            var packet = ServerResponsePocketEdition.ServerResponse[id]().ReadPacket(reader);
 
             RaisePacketHandled(id, packet, null);
         }

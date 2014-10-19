@@ -2,7 +2,7 @@
 
 namespace MineLib.Network.Modern.BaseClients
 {
-    public partial class ServerInfoParser
+    public sealed partial class ServerInfoParser
     {
         private void RaisePacketHandled(int id, IPacket packet, ServerState? state)
         {

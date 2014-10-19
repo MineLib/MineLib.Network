@@ -4,18 +4,18 @@ namespace MineLib.Network.Modern.Packets.Server
 {
     public interface ICombatEvent
     {
-        ICombatEvent FromReader(PacketByteReader reader);
-        void ToStream(ref PacketStream stream);
+        ICombatEvent FromReader(MinecraftDataReader reader);
+        void ToStream(ref MinecraftStream stream);
     }
 
     public struct CombatEventEnterCombat : ICombatEvent
     {
-        public ICombatEvent FromReader(PacketByteReader reader)
+        public ICombatEvent FromReader(MinecraftDataReader reader)
         {
             return this; // Hope works TODO: Check this
         }
 
-        public void ToStream(ref PacketStream stream)
+        public void ToStream(ref MinecraftStream stream)
         {
         }
     }
@@ -25,7 +25,7 @@ namespace MineLib.Network.Modern.Packets.Server
         public int Duration;
         public int EntityID;
 
-        public ICombatEvent FromReader(PacketByteReader reader)
+        public ICombatEvent FromReader(MinecraftDataReader reader)
         {
             Duration = reader.ReadVarInt();
             EntityID = reader.ReadInt();
@@ -33,7 +33,7 @@ namespace MineLib.Network.Modern.Packets.Server
             return this; // Hope works
         }
 
-        public void ToStream(ref PacketStream stream)
+        public void ToStream(ref MinecraftStream stream)
         {
             stream.WriteVarInt(Duration);
             stream.WriteInt(EntityID);
@@ -46,7 +46,7 @@ namespace MineLib.Network.Modern.Packets.Server
         public int EntityID;
         public string Message;
 
-        public ICombatEvent FromReader(PacketByteReader reader)
+        public ICombatEvent FromReader(MinecraftDataReader reader)
         {
             PlayerID = reader.ReadVarInt();
             EntityID = reader.ReadInt();
@@ -55,7 +55,7 @@ namespace MineLib.Network.Modern.Packets.Server
             return this; // Hope works
         }
 
-        public void ToStream(ref PacketStream stream)
+        public void ToStream(ref MinecraftStream stream)
         {
             stream.WriteVarInt(PlayerID);
             stream.WriteInt(EntityID);
@@ -71,7 +71,7 @@ namespace MineLib.Network.Modern.Packets.Server
 
         public byte ID { get { return 0x42; } }
 
-        public void ReadPacket(PacketByteReader reader)
+        public IPacket ReadPacket(MinecraftDataReader reader)
         {
             Event = reader.ReadVarInt();
 
@@ -90,14 +90,18 @@ namespace MineLib.Network.Modern.Packets.Server
                     break;
             }
 
+
+            return this;
         }
 
-        public void WritePacket(ref PacketStream stream)
+        public IPacket WritePacket(MinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteVarInt(Event);
             CombatEvent.ToStream(ref stream);
             stream.Purge();
+
+            return this;
         }
     }
 }

@@ -11,20 +11,29 @@ namespace MineLib.Network.Classic.Packets.Server
         public byte ID { get { return 0x03; } }
         public short Size { get { return 1028; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public IPacketWithSize ReadPacket(MinecraftDataReader stream)
         {
             ChunkLength = stream.ReadShort();
             ChunkData = stream.ReadByteArray(1024);
             PercentComplete = stream.ReadByte();
+
+            return this;
         }
 
-        public void WritePacket(ref PacketStream stream)
+        IPacket IPacket.ReadPacket(MinecraftDataReader stream)
+        {
+            return ReadPacket(stream);
+        }
+
+        public IPacket WritePacket(MinecraftStream stream)
         {
             stream.WriteByte(ID);
             stream.WriteShort(ChunkLength);
             stream.WriteByteArray(ChunkData);
             stream.WriteByte(PercentComplete);
             stream.Purge();
+
+            return this;
         }
     }
 }

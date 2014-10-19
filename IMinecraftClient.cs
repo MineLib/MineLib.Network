@@ -1,6 +1,8 @@
-﻿namespace MineLib.Network
+﻿using System;
+
+namespace MineLib.Network
 {
-    public interface IMinecraftClient
+    public interface IMinecraftClient : IDisposable
     {
         string ServerHost { get; set; }
         short ServerPort { get; set; }
@@ -11,7 +13,5 @@
         string SelectedProfile { get; set; }
 
         NetworkMode Mode { get; set; }
-
-        void Dispose();
     }
 }

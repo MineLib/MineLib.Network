@@ -13,16 +13,23 @@ namespace MineLib.Network.PocketEdition.Packets.Client
         public byte ID { get { return 0x82; } }
         public short Size { get { return 0; } }
 
-        public void ReadPacket(PacketByteReader reader)
+        public IPacketWithSize ReadPacket(MinecraftDataReader reader)
         {
             Username = reader.ReadString();
             Protocol1 = reader.ReadInt();
             Protocol2 = reader.ReadInt();
             ClientID = reader.ReadInt();
             RealmsData = reader.ReadString();
+
+            return this;
         }
 
-        public void WritePacket(ref PacketStream stream)
+        IPacket IPacket.ReadPacket(MinecraftDataReader stream)
+        {
+            return ReadPacket(stream);
+        }
+
+        public IPacket WritePacket(MinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteString(Username);
@@ -31,6 +38,8 @@ namespace MineLib.Network.PocketEdition.Packets.Client
             stream.WriteInt(ClientID);
             stream.WriteString(RealmsData);
             stream.Purge();
+
+            return this;
         }
     }
 }

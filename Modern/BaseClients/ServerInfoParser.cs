@@ -18,7 +18,7 @@ namespace MineLib.Network.Modern.BaseClients
     }
 
     // TODO: Handle this mess
-    public partial class ServerInfoParser : IMinecraftClient, IDisposable
+    public sealed partial class ServerInfoParser : IMinecraftClient, IDisposable
     {
         #region Variables
 
@@ -45,8 +45,13 @@ namespace MineLib.Network.Modern.BaseClients
         #endregion Variables
 
         private NetworkHandler _handler;
-        private bool ConnectionClosed { get { return !_handler.Connected; }}
 
+        private bool ConnectionClosed
+        {
+            get { return !_handler.Connected; }
+        }
+
+        private bool _disposed;
 
         public ServerInfoParser()
         {
@@ -71,7 +76,7 @@ namespace MineLib.Network.Modern.BaseClients
             if (ConnectionClosed)
             {
                 Dispose();
-                return new ResponseData { Info = new ServerInfo(), Ping = int.MaxValue };
+                return new ResponseData {Info = new ServerInfo(), Ping = int.MaxValue};
             }
 
             #endregion
@@ -81,7 +86,7 @@ namespace MineLib.Network.Modern.BaseClients
             FireResponsePacket += packet =>
             {
                 // Send Ping Packet after receiving Response Packet
-                SendPacket(new PingPacket { Time = DateTime.UtcNow.Millisecond });
+                SendPacket(new PingPacket {Time = DateTime.UtcNow.Millisecond});
 
                 info = ParseResponse(packet);
             };
@@ -104,14 +109,18 @@ namespace MineLib.Network.Modern.BaseClients
                 {
                     watch.Stop();
                     Dispose();
-                    return new ResponseData { Info = new ServerInfo(), Ping = int.MaxValue };
+                    return new ResponseData {Info = new ServerInfo(), Ping = int.MaxValue};
                 }
 
                 if (watch.ElapsedMilliseconds > 2000)
                 {
                     watch.Stop();
                     Dispose();
-                    return new ResponseData { Info = new ServerInfo { Version = new Version { Name = "Unsupported", Protocol = 0} }, Ping = (int)PingServer(host, port) };
+                    return new ResponseData
+                    {
+                        Info = new ServerInfo {Version = new Version {Name = "Unsupported", Protocol = 0}},
+                        Ping = (int) PingServer(host, port)
+                    };
                 }
 
                 Thread.Sleep(50);
@@ -125,7 +134,7 @@ namespace MineLib.Network.Modern.BaseClients
             var ping = (int) PingServer(host, port);
 
             Dispose();
-            return new ResponseData { Info = info, Ping = ping };
+            return new ResponseData {Info = info, Ping = ping};
         }
 
         public ServerInfo GetServerInfo(string host, short port, int protocolVersion)
@@ -149,7 +158,7 @@ namespace MineLib.Network.Modern.BaseClients
             }
 
             #endregion
-            
+
             #region Packet handlers
 
             FireResponsePacket += delegate(IPacket packet)
@@ -177,7 +186,7 @@ namespace MineLib.Network.Modern.BaseClients
                 {
                     watch.Stop();
                     Dispose();
-                    return new ServerInfo { Version = new Version { Name = "Unsupported", Protocol = 0 } };
+                    return new ServerInfo {Version = new Version {Name = "Unsupported", Protocol = 0}};
                 }
 
                 Thread.Sleep(50);
@@ -263,7 +272,7 @@ namespace MineLib.Network.Modern.BaseClients
 
         private static ServerInfo ParseResponse(IPacket packet)
         {
-            var response = (ResponsePacket)packet;
+            var response = (ResponsePacket) packet;
 
             return JsonConvert.DeserializeObject<ServerInfo>(response.Response, new Base64Converter());
         }
@@ -285,11 +294,29 @@ namespace MineLib.Network.Modern.BaseClients
             return watch.ElapsedMilliseconds;
         }
 
-
         public void Dispose()
         {
-            if(_handler != null)
-                _handler.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                if (_handler != null)
+                    _handler.Dispose();
+            }
+
+            _disposed = true;
+        }
+
+        ~ServerInfoParser()
+        {
+            Dispose(false);
         }
     }
 }

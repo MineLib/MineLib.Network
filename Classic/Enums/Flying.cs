@@ -3,6 +3,6 @@
     public enum Flying
     {
         PreventPlayerFromFlying = 0,
-        AllowFlying = 1
+        AllowFlying             = 1
     }
 }

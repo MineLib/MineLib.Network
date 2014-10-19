@@ -14,7 +14,7 @@ namespace MineLib.Network.Classic.Packets.Server
         public byte ID { get { return 0x07; } }
         public short Size { get { return 74; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public IPacketWithSize ReadPacket(MinecraftDataReader stream)
         {
             PlayerID = stream.ReadSByte();
             PlayerName = stream.ReadString();
@@ -23,9 +23,16 @@ namespace MineLib.Network.Classic.Packets.Server
             Coordinates.Z = stream.ReadShort();
             Yaw = stream.ReadByte();
             Pitch = stream.ReadByte();
+
+            return this;
         }
 
-        public void WritePacket(ref PacketStream stream)
+        IPacket IPacket.ReadPacket(MinecraftDataReader stream)
+        {
+            return ReadPacket(stream);
+        }
+
+        public IPacket WritePacket(MinecraftStream stream)
         {
             stream.WriteByte(ID);
             stream.WriteSByte(PlayerID);
@@ -36,6 +43,8 @@ namespace MineLib.Network.Classic.Packets.Server
             stream.WriteByte(Yaw);
             stream.WriteByte(Pitch);
             stream.Purge();
+
+            return this;
         }
     }
 }

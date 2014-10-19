@@ -15,7 +15,7 @@ namespace MineLib.Network.Modern.Packets.Server
 
         public byte ID { get { return 0x01; } }
 
-        public void ReadPacket(PacketByteReader reader)
+        public IPacket ReadPacket(MinecraftDataReader reader)
         {
             EntityID = reader.ReadInt();
             GameMode = (GameMode) reader.ReadByte();
@@ -24,9 +24,11 @@ namespace MineLib.Network.Modern.Packets.Server
             MaxPlayers = reader.ReadByte();
             LevelType = reader.ReadString();
             ReducedDebugInfo = reader.ReadBoolean();
+
+            return this;
         }
     
-        public void WritePacket(ref PacketStream stream)
+        public IPacket WritePacket(MinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteInt(EntityID);
@@ -37,6 +39,8 @@ namespace MineLib.Network.Modern.Packets.Server
             stream.WriteString(LevelType);
             stream.WriteBoolean(ReducedDebugInfo);
             stream.Purge();
+
+            return this;
         }
     }
 }

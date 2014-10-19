@@ -3,6 +3,6 @@
     public enum NoClip
     {
         PreventPlayerFromNoClipping = 0,
-        AllownNoClipping = 1
+        AllownNoClipping            = 1
     }
 }

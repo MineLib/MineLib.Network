@@ -13,16 +13,18 @@ namespace MineLib.Network.Modern.Packets.Server
 
         public byte ID { get { return 0x1D; } }
 
-        public void ReadPacket(PacketByteReader reader)
+        public IPacket ReadPacket(MinecraftDataReader reader)
         {
             EntityID = reader.ReadVarInt();
             EffectID = (EffectID) reader.ReadSByte();
             Amplifier = reader.ReadSByte();
             Duration = reader.ReadVarInt();
             HideParticles = reader.ReadBoolean();
+
+            return this;
         }
 
-        public void WritePacket(ref PacketStream stream)
+        public IPacket WritePacket(MinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteVarInt(EntityID);
@@ -31,6 +33,8 @@ namespace MineLib.Network.Modern.Packets.Server
             stream.WriteVarInt(Duration);
             stream.WriteBoolean(HideParticles);
             stream.Purge();
+
+            return this;
         }
     }
 }

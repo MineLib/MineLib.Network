@@ -30,7 +30,7 @@ namespace MineLib.Network.Modern.Data
             set { _entries.Insert(index, value); }
         }
 
-        public static RecordList FromReader(PacketByteReader reader)
+        public static RecordList FromReader(MinecraftDataReader reader)
         {
             var value = new RecordList();
 
@@ -54,7 +54,7 @@ namespace MineLib.Network.Modern.Data
             return value;
         }
 
-        public void ToStream(ref PacketStream stream)
+        public void ToStream(MinecraftStream stream)
         {
             stream.WriteVarInt(Count);
 

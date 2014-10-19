@@ -70,6 +70,16 @@ namespace MineLib.Network.Modern.Data.Anvil
         }
 
 
+        public static bool operator ==(Block a, Block b)
+        {
+            return a.IDMeta == b.IDMeta && a.SkyAndBlockLight == b.SkyAndBlockLight;
+        }
+
+        public static bool operator !=(Block a, Block b)
+        {
+            return a.IDMeta != b.IDMeta && a.SkyAndBlockLight != b.SkyAndBlockLight;
+        }
+
         public bool Equals(Block other)
         {
             return other.IDMeta.Equals(IDMeta);
@@ -77,9 +87,10 @@ namespace MineLib.Network.Modern.Data.Anvil
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (obj.GetType() != typeof (Block)) return false;
-            return Equals((Block) obj);
+            if (obj.GetType() != typeof(Block))
+                return false;
+
+            return Equals((Block)obj);
         }
 
         public override int GetHashCode()

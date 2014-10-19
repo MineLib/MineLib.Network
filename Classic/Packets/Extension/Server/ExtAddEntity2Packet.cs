@@ -16,7 +16,7 @@ namespace MineLib.Network.Classic.Packets.Extension.Server
         public byte ID { get { return 0x21; } }
         public short Size { get { return 138; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public IPacketWithSize ReadPacket(MinecraftDataReader stream)
         {
             EntityID = stream.ReadByte();
             InGameName = stream.ReadString();
@@ -26,9 +26,16 @@ namespace MineLib.Network.Classic.Packets.Extension.Server
             SpawnZ = stream.ReadShort();
             SpawnYaw = stream.ReadByte();
             SpawnPitch = stream.ReadByte();
+
+            return this;
         }
 
-        public void WritePacket(ref PacketStream stream)
+        IPacket IPacket.ReadPacket(MinecraftDataReader stream)
+        {
+            return ReadPacket(stream);
+        }
+
+        public IPacket WritePacket(MinecraftStream stream)
         {
             stream.WriteByte(ID);
             stream.WriteByte(EntityID);
@@ -40,6 +47,8 @@ namespace MineLib.Network.Classic.Packets.Extension.Server
             stream.WriteByte(SpawnYaw);
             stream.WriteByte(SpawnPitch);
             stream.Purge();
+
+            return this;
         }
     }
 }

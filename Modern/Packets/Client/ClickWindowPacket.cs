@@ -14,7 +14,7 @@ namespace MineLib.Network.Modern.Packets.Client
 
         public byte ID { get { return 0x0E; } }
 
-        public void ReadPacket(PacketByteReader reader)
+        public IPacket ReadPacket(MinecraftDataReader reader)
         {
             WindowID = reader.ReadByte();
             Slot = reader.ReadShort();
@@ -22,9 +22,11 @@ namespace MineLib.Network.Modern.Packets.Client
             ActionNumber = reader.ReadShort();
             Mode = reader.ReadByte();
             ClickedItem = ItemStack.FromReader(reader);
+
+            return this;
         }
 
-        public void WritePacket(ref PacketStream stream)
+        public IPacket WritePacket(MinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteByte(WindowID);
@@ -32,8 +34,10 @@ namespace MineLib.Network.Modern.Packets.Client
             stream.WriteByte(Button);
             stream.WriteShort(ActionNumber);
             stream.WriteByte(Mode);
-            ClickedItem.ToStream(ref stream);
+            ClickedItem.ToStream(stream);
             stream.Purge();
+
+            return this;
         }
     }
 }

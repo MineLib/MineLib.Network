@@ -13,22 +13,26 @@ namespace MineLib.Network.Modern.Packets.Server
 
         public byte ID { get { return 0x28; } }
 
-        public void ReadPacket(PacketByteReader reader)
+        public IPacket ReadPacket(MinecraftDataReader reader)
         {
             EffectID = (EffectID) reader.ReadInt();
             Location = Position.FromReaderLong(reader);
             Data = reader.ReadInt();
             DisableRelativeVolume = reader.ReadBoolean();
+
+            return this;
         }
 
-        public void WritePacket(ref PacketStream stream)
+        public IPacket WritePacket(MinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteInt((int) EffectID);
-            Location.ToStreamLong(ref stream);
+            Location.ToStreamLong(stream);
             stream.WriteInt(Data);
             stream.WriteBoolean(DisableRelativeVolume);
             stream.Purge();
+
+            return this;
         }
     }
 }

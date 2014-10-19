@@ -38,6 +38,16 @@
             return new Size(a.Width/b, a.Height/b, a.Depth/b);
         }
 
+        public static bool operator ==(Size a, double b)
+        {
+            return a.Width == b && a.Height == b && a.Depth == b;
+        }
+
+        public static bool operator !=(Size a, double b)
+        {
+            return a.Width!= b && a.Height != b && a.Depth != b;
+        }
+
         public bool Equals(Size other)
         {
             return other.Width.Equals(Width) && other.Height.Equals(Height) && other.Depth.Equals(Depth);
@@ -45,8 +55,9 @@
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (obj.GetType() != typeof(Size)) return false;
+            if (obj.GetType() != typeof(Size))
+                return false;
+
             return Equals((Size)obj);
         }
 

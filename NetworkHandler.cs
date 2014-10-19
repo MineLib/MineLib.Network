@@ -7,47 +7,55 @@ using MineLib.Network.IO;
 
 namespace MineLib.Network
 {
-    public partial class NetworkHandler : IDisposable
+    public sealed partial class NetworkHandler : IDisposable
     {
         // -- Debugging
         public readonly List<IPacket> PacketsReceived = new List<IPacket>();
         public readonly List<IPacket> PacketsSended = new List<IPacket>();
         // -- Debugging.
 
-        private Socket _baseSock;
-        private PacketStream _stream;
-        private PacketByteReader _reader;
-
-        private Thread _listener;
-
         private readonly IMinecraftClient _minecraft;
 
-        public NetworkMode Mode { get; private set; }
+        private Socket _baseSock;
+        private MinecraftStream _stream;
+
+        private Thread _readerThread;
+
+        private bool _disposed;
+
+        #region Properties
+
+        public NetworkMode NetworkMode { get; private set; }
 
         public bool DebugPackets { get; set; }
 
-        public bool Connected { get { return _baseSock.Connected; }}
+        public bool Connected
+        {
+            get { return _baseSock.Connected; }
+        }
 
         public bool Crashed { get; private set; }
+
+        #endregion
 
         public NetworkHandler(IMinecraftClient client, NetworkMode mode)
         {
             _minecraft = client;
-            Mode = mode;
+            NetworkMode = mode;
             Crashed = false;
         }
 
         /// <summary>
-        ///     Starts the network handler.
+        /// Starts the network handler.
         /// </summary>
-        public void Start(bool sync = false, bool debugPackets = true)
+        public void Start(bool sync = true, bool debugPackets = true)
         {
             DebugPackets = debugPackets;
 
             // -- Connect to server.
             try
             {
-                switch (Mode)
+                switch (NetworkMode)
                 {
                     case NetworkMode.Modern:
                     case NetworkMode.Classic:
@@ -70,20 +78,19 @@ namespace MineLib.Network
             // -- Create our Wrapped socket.
             var nStream = new NetworkStream(_baseSock);
             var bStream = new BufferedStream(nStream);
-            _stream = new PacketStream(bStream, Mode);
+            _stream = new MinecraftStream(bStream, NetworkMode);
 
             // -- Subscribe to DataReceived event.
-            switch (Mode)
+            switch (NetworkMode)
             {
-                // -- We can choose if we want to handle any packet
+                    // -- We can choose if we want to handle any packet
                 case NetworkMode.Modern:
                     OnDataReceived += HandlePacketModern;
                     break;
 
-                // -- In Classic and PocketEdition we need to handle every packet
+                    // -- In Classic and PocketEdition we need to handle every packet
                 case NetworkMode.Classic:
                     OnDataReceived += HandlePacketClassic;
-                    //OnPacketHandledClassic += RaisePacketHandledClassic;
                     break;
 
                 case NetworkMode.PocketEdition:
@@ -93,36 +100,41 @@ namespace MineLib.Network
 
             if (sync)
             {
-                switch (Mode)
+                switch (NetworkMode)
                 {
                     case NetworkMode.Modern:
-                        _listener = new Thread(StartReceivingModernSync) {Name = "PacketListener"};
+                        _readerThread = new Thread(StartReceivingModernSync) {Name = "PacketListener"};
                         break;
 
                     case NetworkMode.Classic:
-                        _listener = new Thread(StartReceivingClassicSync) {Name = "PacketListenerClassic"};
+                        _readerThread = new Thread(StartReceivingClassicSync) {Name = "PacketListenerClassic"};
                         break;
 
                     case NetworkMode.PocketEdition:
-                        _listener = new Thread(StartReceivingPocketEditionSync) { Name = "PacketListenerPocketEdition" };
+                        _readerThread = new Thread(StartReceivingPocketEditionSync)
+                        {
+                            Name = "PacketListenerPocketEdition"
+                        };
                         break;
                 }
-                _listener.Start();
+                _readerThread.Start();
             }
-            else
+            else // -- Async
             {
-                switch (Mode)
+                switch (NetworkMode)
                 {
                     case NetworkMode.Modern:
                         _baseSock.BeginReceive(new byte[0], 0, 0, SocketFlags.None, PacketReceiverModernAsync, _baseSock);
                         break;
 
                     case NetworkMode.Classic:
-                        _baseSock.BeginReceive(new byte[0], 0, 0, SocketFlags.None, PacketReceiverClassicAsync, _baseSock);
+                        _baseSock.BeginReceive(new byte[0], 0, 0, SocketFlags.None, PacketReceiverClassicAsync,
+                            _baseSock);
                         break;
 
                     case NetworkMode.PocketEdition:
-                        _baseSock.BeginReceive(new byte[0], 0, 0, SocketFlags.None, PacketReceiverPocketEditionAsync, _baseSock);
+                        _baseSock.BeginReceive(new byte[0], 0, 0, SocketFlags.None, PacketReceiverPocketEditionAsync,
+                            _baseSock);
                         break;
                 }
             }
@@ -133,30 +145,47 @@ namespace MineLib.Network
             if (DebugPackets)
                 PacketsSended.Add(packet);
 
-            var ms = new MemoryStream();
-            var stream = new PacketStream(ms, Mode);
-            packet.WritePacket(ref stream);
-            var data = ms.ToArray();
+            using (var ms = new MemoryStream())
+            {
+                packet.WritePacket(new MinecraftStream(ms, NetworkMode));
+                var data = ms.ToArray();
 
-            _baseSock.BeginSend(ms.ToArray(), 0, data.Length, SocketFlags.None, null, null);
+                _baseSock.BeginSend(data, 0, data.Length, SocketFlags.None, null, null);
+            }
         }
 
         /// <summary>
-        ///     Stops and dispose the network handler.
+        /// Stops and dispose the network handler.
         /// </summary>
         public void Dispose()
         {
-            if (_listener != null && _listener.IsAlive)
-                _listener.Abort();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
-            if (_baseSock != null)
-                _baseSock.Close();
+        private void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
 
-            if (_stream != null)
-                _stream.Dispose();
+            if (disposing)
+            {
+                if (_baseSock != null)
+                    _baseSock.Close();
 
-            if (_reader != null)
-                _reader.Dispose();
+                if (_stream != null)
+                    _stream.Dispose();
+
+                if (_readerThread != null && _readerThread.IsAlive)
+                    _readerThread.Abort();
+            }
+
+            _disposed = true;
+        }
+
+        ~NetworkHandler()
+        {
+            Dispose(false);
         }
     }
 }

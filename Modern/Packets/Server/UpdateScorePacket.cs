@@ -11,7 +11,7 @@ namespace MineLib.Network.Modern.Packets.Server
 
         public byte ID { get { return 0x3C; } }
 
-        public void ReadPacket(PacketByteReader reader)
+        public IPacket ReadPacket(MinecraftDataReader reader)
         {
             ScoreName = reader.ReadString();
             RemoveItem = reader.ReadBoolean();
@@ -20,9 +20,11 @@ namespace MineLib.Network.Modern.Packets.Server
                 ObjectiveName = reader.ReadString();
                 Value = reader.ReadInt();
             }
+
+            return this;
         }
 
-        public void WritePacket(ref PacketStream stream)
+        public IPacket WritePacket(MinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteString(ScoreName);
@@ -33,6 +35,8 @@ namespace MineLib.Network.Modern.Packets.Server
                 stream.WriteInt(Value.Value);
             }
             stream.Purge();
+
+            return this;
         }
     }
 }

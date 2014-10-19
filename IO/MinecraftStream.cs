@@ -8,7 +8,7 @@ using Org.BouncyCastle.Math;
 namespace MineLib.Network.IO
 {
     // -- Credits to umby24 for encryption support, as taken from CWrapped.
-    public partial class PacketStream : IDisposable
+    public sealed partial class MinecraftStream
     {
         // -- Credits to SirCmpwn for encryption support, as taken from SMProxy.
         public readonly NetworkMode Mode;
@@ -21,7 +21,9 @@ namespace MineLib.Network.IO
         private byte[] _buffer;
         private readonly Encoding _encoding;
 
-        public PacketStream(Stream stream, NetworkMode mode)
+        private bool _disposed;
+
+        public MinecraftStream(Stream stream, NetworkMode mode)
         {
             _stream = stream;
             Mode = mode;
@@ -131,8 +133,8 @@ namespace MineLib.Network.IO
         {
             Write(new[]
             {
-                (byte)((value & 0xFF00) >> 8),
-                (byte)(value & 0xFF)
+                (byte) ((value & 0xFF00) >> 8),
+                (byte) (value & 0xFF)
             }, 0, 2);
         }
 
@@ -371,7 +373,7 @@ namespace MineLib.Network.IO
             }
             else
                 _buffer = new[] {thisByte};
-            
+
         }
 
         public void Purge()
@@ -419,7 +421,7 @@ namespace MineLib.Network.IO
         {
             int packetLength = 0; // data.Length + GetVarIntBytes(data.Length).Length
             int dataLength = 0; // UncompressedData.Length
-            byte[] data = _buffer;
+            var data = _buffer;
 
             packetLength = _buffer.Length + GetVarIntBytes(_buffer.Length).Length; // Get first Packet length
             if (CompressionEnabled)
@@ -462,11 +464,32 @@ namespace MineLib.Network.IO
 
         public new void Dispose()
         {
-            if (_stream != null)
-                _stream.Dispose();
+            Close();
 
-            if (_crypto != null)
-                _crypto.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                if (_stream != null)
+                    _stream.Dispose();
+
+                if (_crypto != null)
+                    _crypto.Dispose();
+            }
+
+            _disposed = true;
+        }
+
+        ~MinecraftStream()
+        {
+            Dispose(false);
         }
     }
 }

@@ -9,18 +9,22 @@ namespace MineLib.Network.Modern.Packets.Server.Login
 
         public byte ID { get { return 0x02; } }
 
-        public void ReadPacket(PacketByteReader reader)
+        public IPacket ReadPacket(MinecraftDataReader reader)
         {
             UUID = reader.ReadString();
             Username = reader.ReadString();
+
+            return this;
         }
 
-        public void WritePacket(ref PacketStream stream)
+        public IPacket WritePacket(MinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteString(UUID);
             stream.WriteString(Username);
             stream.Purge();
+
+            return this;
         }
     }
 }

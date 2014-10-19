@@ -29,14 +29,14 @@ namespace MineLib.Network.Modern.Data.EntityMetadataEntries
             Rotation = rotation;
         }
 
-        public override void FromReader(PacketByteReader reader)
+        public override void FromReader(MinecraftDataReader reader)
         {
             Rotation.Pitch = reader.ReadFloat();
             Rotation.Yaw = reader.ReadFloat();
             Rotation.Roll = reader.ReadFloat();
         }
 
-        public override void ToStream(ref PacketStream stream, byte index)
+        public override void ToStream(MinecraftStream stream, byte index)
         {
             stream.WriteByte(GetKey(index));
             stream.WriteFloat(Rotation.Pitch);

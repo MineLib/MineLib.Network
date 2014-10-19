@@ -285,6 +285,5 @@ namespace MineLib.Network.Modern.Packets
             null // 0xFF
         };
         #endregion
-
     }
 }

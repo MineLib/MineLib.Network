@@ -5,22 +5,22 @@ namespace MineLib.Network.Modern.Packets.Server
 {
     public interface ITitle
     {
-        ITitle FromReader(PacketByteReader reader);
-        void ToStream(ref PacketStream stream);
+        ITitle FromReader(MinecraftDataReader reader);
+        void ToStream(ref MinecraftStream stream);
     }
 
     public struct TitleTitle : ITitle
     {
         public string Text;
 
-        public ITitle FromReader(PacketByteReader reader)
+        public ITitle FromReader(MinecraftDataReader reader)
         {
             Text = reader.ReadString();
 
             return this;
         }
 
-        public void ToStream(ref PacketStream stream)
+        public void ToStream(ref MinecraftStream stream)
         {
             stream.WriteString(Text);
         }
@@ -30,14 +30,14 @@ namespace MineLib.Network.Modern.Packets.Server
     {
         public string Text;
 
-        public ITitle FromReader(PacketByteReader reader)
+        public ITitle FromReader(MinecraftDataReader reader)
         {
             Text = reader.ReadString();
 
             return this;
         }
 
-        public void ToStream(ref PacketStream stream)
+        public void ToStream(ref MinecraftStream stream)
         {
             stream.WriteString(Text);
         }
@@ -49,7 +49,7 @@ namespace MineLib.Network.Modern.Packets.Server
         public int Stay;
         public int FadeOut;
 
-        public ITitle FromReader(PacketByteReader reader)
+        public ITitle FromReader(MinecraftDataReader reader)
         {
             FadeIn = reader.ReadInt();
             Stay = reader.ReadInt();
@@ -58,7 +58,7 @@ namespace MineLib.Network.Modern.Packets.Server
             return this;
         }
 
-        public void ToStream(ref PacketStream stream)
+        public void ToStream(ref MinecraftStream stream)
         {
             stream.WriteInt(FadeIn);
             stream.WriteInt(Stay);
@@ -68,24 +68,24 @@ namespace MineLib.Network.Modern.Packets.Server
 
     public struct TitleClear : ITitle
     {
-        public ITitle FromReader(PacketByteReader reader)
+        public ITitle FromReader(MinecraftDataReader reader)
         {
             return this;
         }
 
-        public void ToStream(ref PacketStream stream)
+        public void ToStream(ref MinecraftStream stream)
         {
         }
     }
 
     public struct TitleReset : ITitle
     {
-        public ITitle FromReader(PacketByteReader reader)
+        public ITitle FromReader(MinecraftDataReader reader)
         {
             return this;
         }
 
-        public void ToStream(ref PacketStream stream)
+        public void ToStream(ref MinecraftStream stream)
         {
         }
     }
@@ -97,7 +97,7 @@ namespace MineLib.Network.Modern.Packets.Server
 
         public byte ID { get { return 0x45; } }
 
-        public void ReadPacket(PacketByteReader reader)
+        public IPacket ReadPacket(MinecraftDataReader reader)
         {
             Action = (TitleAction) reader.ReadVarInt();
 
@@ -124,14 +124,18 @@ namespace MineLib.Network.Modern.Packets.Server
                     Title.FromReader(reader);
                     break;
             }
+
+            return this;
         }
 
-        public void WritePacket(ref PacketStream stream)
+        public IPacket WritePacket(MinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteVarInt((byte) Action);
             Title.ToStream(ref  stream);
             stream.Purge();
+
+            return this;
         }
     }
 }

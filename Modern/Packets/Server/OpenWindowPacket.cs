@@ -12,7 +12,7 @@ namespace MineLib.Network.Modern.Packets.Server
 
         public byte ID { get { return 0x2D; } }
 
-        public void ReadPacket(PacketByteReader reader)
+        public IPacket ReadPacket(MinecraftDataReader reader)
         {
             WindowID = reader.ReadByte();
             InventoryType = reader.ReadString();
@@ -20,9 +20,11 @@ namespace MineLib.Network.Modern.Packets.Server
             NumberOfSlots = reader.ReadByte();
             if (InventoryType == "EntityHorse")
                 EntityID = reader.ReadInt();
+
+            return this;
         }
 
-        public void WritePacket(ref PacketStream stream)
+        public IPacket WritePacket(MinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteByte(WindowID);
@@ -32,6 +34,8 @@ namespace MineLib.Network.Modern.Packets.Server
             if (InventoryType == "EntityHorse")
                 stream.WriteInt(EntityID.GetValueOrDefault());
             stream.Purge();
+
+            return this;
         }
     }
 }

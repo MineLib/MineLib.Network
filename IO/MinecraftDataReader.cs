@@ -5,21 +5,23 @@ using Org.BouncyCastle.Math;
 
 namespace MineLib.Network.IO
 {
-    // Read only decrypted data
-    public class PacketByteReader
+    // Reads only decrypted data
+    public sealed class MinecraftDataReader : IDisposable
     {
         public readonly NetworkMode Mode;
 
         private readonly Stream _stream;
 
-        public PacketByteReader(Stream stream, NetworkMode mode)
+        private bool _disposed;
+
+        public MinecraftDataReader(Stream stream, NetworkMode mode)
         {
             _stream = stream;
 
             Mode = mode;
         }
 
-        public PacketByteReader(byte[] data, NetworkMode mode)
+        public MinecraftDataReader(byte[] data, NetworkMode mode)
         {
             _stream = new MemoryStream(data);
 
@@ -32,10 +34,10 @@ namespace MineLib.Network.IO
         {
             switch (Mode)
             {
-                case NetworkMode.Modern: 
+                case NetworkMode.Modern:
                     return ReadStringModern();
 
-                case NetworkMode.Classic: 
+                case NetworkMode.Classic:
                     return ReadStringClassic();
 
                 case NetworkMode.PocketEdition:
@@ -83,7 +85,7 @@ namespace MineLib.Network.IO
 
         public ushort ReadUShort()
         {
-            return (ushort)((ReadByte() << 8) | ReadByte());
+            return (ushort) ((ReadByte() << 8) | ReadByte());
         }
 
         // -- Int
@@ -253,13 +255,32 @@ namespace MineLib.Network.IO
 
         private byte ReadSingleByte()
         {
-            return (byte)_stream.ReadByte();
+            return (byte) _stream.ReadByte();
         }
 
         public void Dispose()
         {
-            if (_stream != null)
-                _stream.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                if (_stream != null)
+                    _stream.Dispose();
+            }
+
+            _disposed = true;
+        }
+
+        ~MinecraftDataReader()
+        {
+            Dispose(false);
         }
     }
 }

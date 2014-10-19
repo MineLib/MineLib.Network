@@ -11,18 +11,27 @@ namespace MineLib.Network.Classic.Packets.Extension.Server
         public byte ID { get { return 0x14; } }
         public short Size { get { return 3; } }
 
-        public void ReadPacket(PacketByteReader stream)
+        public IPacketWithSize ReadPacket(MinecraftDataReader stream)
         {
             BlockToHold = stream.ReadByte();
             PreventChange = (PreventChange) stream.ReadByte();
+
+            return this;
         }
 
-        public void WritePacket(ref PacketStream stream)
+        IPacket IPacket.ReadPacket(MinecraftDataReader stream)
+        {
+            return ReadPacket(stream);
+        }
+
+        public IPacket WritePacket(MinecraftStream stream)
         {
             stream.WriteByte(ID);
             stream.WriteByte(BlockToHold);
             stream.WriteByte((byte) PreventChange);
             stream.Purge();
+
+            return this;
         }
     }
 }

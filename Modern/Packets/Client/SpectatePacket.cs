@@ -9,16 +9,20 @@ namespace MineLib.Network.Modern.Packets.Client
 
         public byte ID { get { return 0x18; } }
 
-        public void ReadPacket(PacketByteReader reader)
+        public IPacket ReadPacket(MinecraftDataReader reader)
         {
             UUID = reader.ReadBigInteger();
+
+            return this;
         }
 
-        public void WritePacket(ref PacketStream stream)
+        public IPacket WritePacket(MinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteBigInteger(UUID);
             stream.Purge();
+
+            return this;
         }
     }
 }

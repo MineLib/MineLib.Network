@@ -10,18 +10,22 @@ namespace MineLib.Network.Modern.Packets.Server
 
         public byte ID { get { return 0x02; } }
 
-        public void ReadPacket(PacketByteReader reader)
+        public IPacket ReadPacket(MinecraftDataReader reader)
         {
             Message = reader.ReadString();
             Position = (ChatMessagePosition) reader.ReadByte();
+
+            return this;
         }
 
-        public void WritePacket(ref PacketStream stream)
+        public IPacket WritePacket(MinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteString(Message);
             stream.WriteByte((byte) Position);
             stream.Purge();
+
+            return this;
         }
     }
 }

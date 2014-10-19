@@ -13,22 +13,26 @@ namespace MineLib.Network.Modern.Packets.Client
 
         public byte ID { get { return 0x08; } }
 
-        public void ReadPacket(PacketByteReader reader)
+        public IPacket ReadPacket(MinecraftDataReader reader)
         {
             Location = Position.FromReaderLong(reader);
             Direction = (Direction) reader.ReadByte();
             Slot = ItemStack.FromReader(reader);
             CursorVector3 = Vector3.FromReaderByte(reader);
+
+            return this;
         }
 
-        public void WritePacket(ref PacketStream stream)
+        public IPacket WritePacket(MinecraftStream stream)
         {
             stream.WriteVarInt(ID);
-            Location.ToStreamLong(ref stream);
+            Location.ToStreamLong(stream);
             stream.WriteByte((byte) Direction);
-            Slot.ToStream(ref stream);
-            CursorVector3.ToStreamByte(ref stream);
+            Slot.ToStream(stream);
+            CursorVector3.ToStreamByte(stream);
             stream.Purge();
+
+            return this;
         }
     }
 }
