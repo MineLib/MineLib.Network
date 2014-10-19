@@ -247,7 +247,6 @@ namespace MineLib.Network
             if (!Yggdrasil.ClientAuth(_minecraft.AccessToken, _minecraft.SelectedProfile, hash))
             {
                 throw new Exception("Auth failure");
-                return;
             }
 
             // -- You pass it the key data and ask it to parse, and it will 
@@ -266,14 +265,11 @@ namespace MineLib.Network
 
             _stream.InitializeEncryption(request.SharedKey);
 
-            // Directly send packet because i have troubles with synchronizing "make EncEnabled after sending this packet".
-            var packetToSend = new EncryptionResponsePacket
+            Send(new EncryptionResponsePacket
             {
                 SharedSecret = encryptedSecret,
                 VerificationToken = encryptedVerify
-            };
-
-            packetToSend.WritePacket(ref _stream);
+            });
 
             _stream.EncryptionEnabled = true;
         }

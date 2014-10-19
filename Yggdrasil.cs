@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Net;
+using System.Text;
 using Newtonsoft.Json;
 
 namespace MineLib.Network
@@ -28,10 +29,13 @@ namespace MineLib.Network
         {
             try
             {
-                var wClient = new WebClient();
-                wClient.Headers.Add("Content-Type: application/json");
+                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
 
-                string json =
+                var request = (HttpWebRequest) WebRequest.Create("https://authserver.mojang.com/authenticate");
+                request.ContentType = "application/json";
+                request.Method = "POST";
+
+                var json =
                     JsonConvert.SerializeObject(new JsonLogin
                     {
                         Agent = Agent.Minecraft,
@@ -39,11 +43,14 @@ namespace MineLib.Network
                         Password = password
                     });
 
-   
-                var response = JsonConvert.DeserializeObject<Response>(
-                    wClient.UploadString("https://authserver.mojang.com/authenticate", json));
+                using (var writer = new StreamWriter(request.GetRequestStream()))
+                    writer.Write(json);
 
-                return new YggdrasilAnswer {Status = YggdrasilStatus.Success, Response = response};
+                using (var reader = new StreamReader(request.GetResponse().GetResponseStream(), Encoding.UTF8))
+                {
+                    var response = JsonConvert.DeserializeObject<Response>(reader.ReadToEnd());
+                    return new YggdrasilAnswer {Status = YggdrasilStatus.Success, Response = response};
+                }
             }
             catch (WebException e)
             {
@@ -61,8 +68,11 @@ namespace MineLib.Network
         {
             try
             {
-                var wClient = new WebClient();
-                wClient.Headers.Add("Content-Type: application/json");
+                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+
+                var request = (HttpWebRequest)WebRequest.Create("https://authserver.mojang.com/refresh");
+                request.ContentType = "application/json";
+                request.Method = "POST";
 
                 var json =
                     JsonConvert.SerializeObject(new JsonRefreshSession
@@ -71,10 +81,14 @@ namespace MineLib.Network
                         ClientToken = clientToken,
                     });
 
-                var response = JsonConvert.DeserializeObject<Response>(
-                    wClient.UploadString("https://authserver.mojang.com/refresh", json));
+                using (var writer = new StreamWriter(request.GetRequestStream()))
+                    writer.Write(json);
 
-                return new YggdrasilAnswer { Status = YggdrasilStatus.Success, Response =  response };
+                using (var reader = new StreamReader(request.GetResponse().GetResponseStream(), Encoding.UTF8))
+                {
+                    var response = JsonConvert.DeserializeObject<Response>(reader.ReadToEnd());
+                    return new YggdrasilAnswer { Status = YggdrasilStatus.Success, Response = response };
+                }
             }
             catch (WebException e)
             {
@@ -91,14 +105,19 @@ namespace MineLib.Network
         {
             try
             {
-                var wClient = new WebClient();
-                wClient.Headers.Add("Content-Type: application/json");
+                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
 
-                var json = JsonConvert.SerializeObject(new JsonVerifySession {AccessToken = accessToken});
+                var request = (HttpWebRequest)WebRequest.Create("https://authserver.mojang.com/validate");
+                request.ContentType = "application/json";
+                request.Method = "POST";
 
-                var response = wClient.UploadString("https://authserver.mojang.com/validate", json);
+                var json = JsonConvert.SerializeObject(new JsonVerifySession { AccessToken = accessToken });
 
-                return string.IsNullOrEmpty(response);
+                using (var writer = new StreamWriter(request.GetRequestStream()))
+                    writer.Write(json);
+
+                using (var reader = new StreamReader(request.GetResponse().GetResponseStream(), Encoding.UTF8))
+                    return string.IsNullOrEmpty(reader.ReadToEnd());
             }
             catch (WebException)
             {
@@ -116,8 +135,11 @@ namespace MineLib.Network
         {
             try
             {
-                var wClient = new WebClient();
-                wClient.Headers.Add("Content-Type: application/json");
+                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+
+                var request = (HttpWebRequest)WebRequest.Create("https://authserver.mojang.com/signout");
+                request.ContentType = "application/json";
+                request.Method = "POST";
 
                 var json =
                     JsonConvert.SerializeObject(new JsonLogout
@@ -126,9 +148,11 @@ namespace MineLib.Network
                         Password = password
                     });
 
-                var response =  wClient.UploadString("https://authserver.mojang.com/signout", json);
+                using (var writer = new StreamWriter(request.GetRequestStream()))
+                    writer.Write(json);
 
-                return string.IsNullOrEmpty(response);
+                using (var reader = new StreamReader(request.GetResponse().GetResponseStream(), Encoding.UTF8))
+                    return string.IsNullOrEmpty(reader.ReadToEnd());
             }
             catch (WebException)
             {
@@ -146,8 +170,11 @@ namespace MineLib.Network
         {
             try
             {
-                var wClient = new WebClient();
-                wClient.Headers.Add("Content-Type: application/json");
+                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+
+                var request = (HttpWebRequest)WebRequest.Create("https://authserver.mojang.com/signout");
+                request.ContentType = "application/json";
+                request.Method = "POST";
 
                 var json =
                     JsonConvert.SerializeObject(new JsonInvalidate
@@ -156,9 +183,11 @@ namespace MineLib.Network
                         ClientToken = clientToken
                     });
 
-                var response = wClient.UploadString("https://authserver.mojang.com/signout", json);
+                using (var writer = new StreamWriter(request.GetRequestStream()))
+                    writer.Write(json);
 
-                return string.IsNullOrEmpty(response);
+                using (var reader = new StreamReader(request.GetResponse().GetResponseStream(), Encoding.UTF8))
+                    return string.IsNullOrEmpty(reader.ReadToEnd());
             }
             catch (WebException)
             {
@@ -177,8 +206,11 @@ namespace MineLib.Network
         {
             try
             {
-                var wClient = new WebClient();
-                wClient.Headers.Add("Content-Type: application/json");
+                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+
+                var request = (HttpWebRequest)WebRequest.Create("https://sessionserver.mojang.com/session/minecraft/join");
+                request.ContentType = "application/json";
+                request.Method = "POST";
 
                 var json =
                     JsonConvert.SerializeObject(new JsonClientAuth
@@ -188,9 +220,11 @@ namespace MineLib.Network
                         ServerID = serverHash
                     });
 
-                var response = wClient.UploadString("https://sessionserver.mojang.com/session/minecraft/join", json);
+                using (var writer = new StreamWriter(request.GetRequestStream()))
+                    writer.Write(json);
 
-                return string.IsNullOrEmpty(response);
+                using (var reader = new StreamReader(request.GetResponse().GetResponseStream(), Encoding.UTF8))
+                    return string.IsNullOrEmpty(reader.ReadToEnd());
             }
             catch (WebException)
             {
@@ -219,20 +253,20 @@ namespace MineLib.Network
                     string result = sr.ReadToEnd();
 
                     if (!response.ContentType.Contains("application/json"))
-                        return new YggdrasilAnswer {Status = YggdrasilStatus.Error};
+                        return new YggdrasilAnswer { Status = YggdrasilStatus.Error };
 
                     var error = JsonConvert.DeserializeObject<Error>(result);
 
                     if (error.ErrorDescription != ErrorType.ForbiddenOperationException)
-                        return new YggdrasilAnswer {Status = YggdrasilStatus.Error};
+                        return new YggdrasilAnswer { Status = YggdrasilStatus.Error };
 
                     if (error.Cause != null && error.Cause.Contains("UserMigratedException"))
-                        return new YggdrasilAnswer {Status = YggdrasilStatus.AccountMigrated};
+                        return new YggdrasilAnswer { Status = YggdrasilStatus.AccountMigrated };
 
                     if (error.ErrorMessage.Contains("Invalid token"))
                         return new YggdrasilAnswer { Status = YggdrasilStatus.InvalidToken };
 
-                    return new YggdrasilAnswer {Status = YggdrasilStatus.WrongPassword};
+                    return new YggdrasilAnswer { Status = YggdrasilStatus.WrongPassword };
                 }
 
             }

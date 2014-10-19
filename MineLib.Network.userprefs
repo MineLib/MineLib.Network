@@ -3,7 +3,7 @@
   <MonoDevelop.Ide.Workbench ActiveDocument="NetworkHandler.Modern.cs">
     <Files>
       <File FileName="NetworkHandler.Modern.cs" Line="81" Column="41" />
-      <File FileName="Modern\Data\Anvil\Chunk.cs" Line="138" Column="21" />
+      <File FileName="Modern\Data\Anvil\Chunk.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
