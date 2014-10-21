@@ -28,7 +28,7 @@ namespace MineLib.Network.IO
             Mode = mode;
         }
 
-        // -- Strings
+        // -- String
 
         public string ReadString()
         {
@@ -71,7 +71,7 @@ namespace MineLib.Network.IO
             return Encoding.ASCII.GetString(stringBytes);
         }
 
-        // -- Shorts
+        // -- Short
 
         public short ReadShort()
         {
@@ -160,18 +160,18 @@ namespace MineLib.Network.IO
             return BitConverter.ToSingle(bytes, 0);
         }
 
-        // -- Bytes
+        // -- Byte
 
         public byte ReadByte()
         {
-            return ReadSingleByte();
+            return (byte)_stream.ReadByte();
         }
 
         // -- SByte
 
         public sbyte ReadSByte()
         {
-            return unchecked((sbyte) ReadSingleByte());
+            return unchecked((sbyte)ReadByte());
 
         }
 
@@ -179,7 +179,7 @@ namespace MineLib.Network.IO
 
         public bool ReadBoolean()
         {
-            return Convert.ToBoolean(ReadSingleByte());
+            return Convert.ToBoolean(ReadByte());
 
         }
 
@@ -253,10 +253,6 @@ namespace MineLib.Network.IO
             return myBytes;
         }
 
-        private byte ReadSingleByte()
-        {
-            return (byte) _stream.ReadByte();
-        }
 
         public void Dispose()
         {

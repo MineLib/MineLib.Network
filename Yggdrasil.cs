@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Net;
 using System.Text;
 using Newtonsoft.Json;
@@ -29,9 +30,10 @@ namespace MineLib.Network
         {
             try
             {
-                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+                if (Type.GetType("Mono.Runtime") != null) // -- Running on Mono
+                    ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
 
-                var request = (HttpWebRequest) WebRequest.Create("https://authserver.mojang.com/authenticate");
+                var request = (HttpWebRequest) WebRequest.Create(new Uri("https://authserver.mojang.com/authenticate"));
                 request.ContentType = "application/json";
                 request.Method = "POST";
 
@@ -68,9 +70,10 @@ namespace MineLib.Network
         {
             try
             {
-                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+                if (Type.GetType("Mono.Runtime") != null) // -- Running on Mono
+                    ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
 
-                var request = (HttpWebRequest)WebRequest.Create("https://authserver.mojang.com/refresh");
+                var request = (HttpWebRequest)WebRequest.Create(new Uri("https://authserver.mojang.com/refresh"));
                 request.ContentType = "application/json";
                 request.Method = "POST";
 
@@ -105,9 +108,10 @@ namespace MineLib.Network
         {
             try
             {
-                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+                if (Type.GetType("Mono.Runtime") != null) // -- Running on Mono
+                    ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
 
-                var request = (HttpWebRequest)WebRequest.Create("https://authserver.mojang.com/validate");
+                var request = (HttpWebRequest)WebRequest.Create(new Uri("https://authserver.mojang.com/validate"));
                 request.ContentType = "application/json";
                 request.Method = "POST";
 
@@ -135,9 +139,10 @@ namespace MineLib.Network
         {
             try
             {
-                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+                if (Type.GetType("Mono.Runtime") != null) // -- Running on Mono
+                    ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
 
-                var request = (HttpWebRequest)WebRequest.Create("https://authserver.mojang.com/signout");
+                var request = (HttpWebRequest)WebRequest.Create(new Uri("https://authserver.mojang.com/signout"));
                 request.ContentType = "application/json";
                 request.Method = "POST";
 
@@ -170,9 +175,10 @@ namespace MineLib.Network
         {
             try
             {
-                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+                if (Type.GetType("Mono.Runtime") != null) // -- Running on Mono
+                    ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
 
-                var request = (HttpWebRequest)WebRequest.Create("https://authserver.mojang.com/signout");
+                var request = (HttpWebRequest)WebRequest.Create(new Uri("https://authserver.mojang.com/signout"));
                 request.ContentType = "application/json";
                 request.Method = "POST";
 
@@ -206,9 +212,10 @@ namespace MineLib.Network
         {
             try
             {
-                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+                if (Type.GetType("Mono.Runtime") != null) // -- Running on Mono
+                    ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
 
-                var request = (HttpWebRequest)WebRequest.Create("https://sessionserver.mojang.com/session/minecraft/join");
+                var request = (HttpWebRequest)WebRequest.Create(new Uri("https://sessionserver.mojang.com/session/minecraft/join"));
                 request.ContentType = "application/json";
                 request.Method = "POST";
 

@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Security.Cryptography;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Engines;
 using Org.BouncyCastle.Crypto.Modes;
@@ -14,93 +13,11 @@ namespace MineLib.Network.IO
 
         int ReadByte();
         int Read(byte[] buffer, int offset, int count);
+        IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object state);
+        int EndRead(IAsyncResult asyncResult);
 
         void Write(byte[] buffer, int offset, int count);
-
-    }
-
-    // -- Credits to umby24 for encryption support, as taken from CWrapped.
-    public sealed class NativeAesStream : IAesStream
-    {
-        public Stream BaseStream { get; private set; }
-
-        private readonly CryptoStream _decryptStream;
-        private readonly CryptoStream _encryptStream;
-
-        private bool _disposed;
-
-        public NativeAesStream(Stream stream, byte[] key)
-        {
-            BaseStream = stream;
-
-            var raj = GenerateAes(key);
-            var encTrans = raj.CreateEncryptor();
-            var decTrans = raj.CreateDecryptor();
-
-            _encryptStream = new CryptoStream(BaseStream, encTrans, CryptoStreamMode.Write);
-            _decryptStream = new CryptoStream(BaseStream, decTrans, CryptoStreamMode.Read);
-        }
-
-        public int ReadByte()
-        {
-            return _decryptStream.ReadByte();
-        }
-
-        public int Read(byte[] buffer, int offset, int count)
-        {
-            return _decryptStream.Read(buffer, offset, count);
-        }
-
-        public void Write(byte[] buffer, int offset, int count)
-        {
-            _encryptStream.Write(buffer, offset, count);
-        }
-
-        private static Rijndael GenerateAes(byte[] key)
-        {
-            var cipher = new RijndaelManaged
-            {
-                Mode = CipherMode.CFB,
-                Padding = PaddingMode.None,
-                KeySize = 128,
-                FeedbackSize = 8,
-                Key = key,
-                IV = key
-            };
-
-            return cipher;
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        private void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
-            if (disposing)
-            {
-                if (_decryptStream != null)
-                    _decryptStream.Dispose();
-
-                if (_encryptStream != null)
-                    _encryptStream.Dispose();
-
-                if (BaseStream != null)
-                    BaseStream.Dispose();
-            }
-
-            _disposed = true;
-        }
-
-        ~NativeAesStream()
-        {
-            Dispose(false);
-        }
+        IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state);
     }
 
     public sealed class BouncyAesStream : IAesStream
@@ -133,14 +50,30 @@ namespace MineLib.Network.IO
         {
             var length = BaseStream.Read(buffer, offset, count);
             var decrypted = _decryptCipher.ProcessBytes(buffer, offset, length);
-            Array.Copy(decrypted, 0, buffer, offset, decrypted.Length);
+            Buffer.BlockCopy(decrypted, 0, buffer, offset, decrypted.Length);
             return length;
+        }
+
+        public IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
+        {
+            return BaseStream.BeginRead(buffer, offset, count, callback, state);
+        }
+
+        public int EndRead(IAsyncResult asyncResult)
+        {
+            return BaseStream.EndRead(asyncResult);
         }
 
         public void Write(byte[] buffer, int offset, int count)
         {
             var encrypted = _encryptCipher.ProcessBytes(buffer, offset, count);
             BaseStream.Write(encrypted, 0, encrypted.Length);
+        }
+
+        public IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
+        {
+            var encrypted = _encryptCipher.ProcessBytes(buffer, offset, count);
+            return BaseStream.BeginWrite(encrypted, 0, encrypted.Length, callback, state);
         }
 
         public void Dispose()

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net.Sockets;
-using System.Threading;
 using MineLib.Network.IO;
 
 namespace MineLib.Network
@@ -19,8 +17,6 @@ namespace MineLib.Network
         private Socket _baseSock;
         private MinecraftStream _stream;
 
-        private Thread _readerThread;
-
         private bool _disposed;
 
         #region Properties
@@ -29,10 +25,7 @@ namespace MineLib.Network
 
         public bool DebugPackets { get; set; }
 
-        public bool Connected
-        {
-            get { return _baseSock.Connected; }
-        }
+        public bool Connected { get { return _baseSock.Connected; } }
 
         public bool Crashed { get; private set; }
 
@@ -48,7 +41,7 @@ namespace MineLib.Network
         /// <summary>
         /// Starts the network handler.
         /// </summary>
-        public void Start(bool sync = true, bool debugPackets = true)
+        public void Start(bool sync = false, bool debugPackets = true)
         {
             DebugPackets = debugPackets;
 
@@ -76,9 +69,7 @@ namespace MineLib.Network
             }
 
             // -- Create our Wrapped socket.
-            var nStream = new NetworkStream(_baseSock);
-            var bStream = new BufferedStream(nStream);
-            _stream = new MinecraftStream(bStream, NetworkMode);
+            _stream = new MinecraftStream(new NetworkStream(_baseSock), NetworkMode);
 
             // -- Subscribe to DataReceived event.
             switch (NetworkMode)
@@ -86,57 +77,19 @@ namespace MineLib.Network
                     // -- We can choose if we want to handle any packet
                 case NetworkMode.Modern:
                     OnDataReceived += HandlePacketModern;
+                    _stream.BeginRead(new byte[0], 0, 0, PacketReceiverModernAsync, _baseSock);
                     break;
 
                     // -- In Classic and PocketEdition we need to handle every packet
                 case NetworkMode.Classic:
                     OnDataReceived += HandlePacketClassic;
+                    _stream.BeginRead(new byte[0], 0, 0, PacketReceiverClassicAsync, _baseSock);
                     break;
 
                 case NetworkMode.PocketEdition:
                     OnDataReceived += HandlePacketPocketEdition;
+                    _stream.BeginRead(new byte[0], 0, 0, PacketReceiverPocketEditionAsync, _baseSock);
                     break;
-            }
-
-            if (sync)
-            {
-                switch (NetworkMode)
-                {
-                    case NetworkMode.Modern:
-                        _readerThread = new Thread(StartReceivingModernSync) {Name = "PacketListener"};
-                        break;
-
-                    case NetworkMode.Classic:
-                        _readerThread = new Thread(StartReceivingClassicSync) {Name = "PacketListenerClassic"};
-                        break;
-
-                    case NetworkMode.PocketEdition:
-                        _readerThread = new Thread(StartReceivingPocketEditionSync)
-                        {
-                            Name = "PacketListenerPocketEdition"
-                        };
-                        break;
-                }
-                _readerThread.Start();
-            }
-            else // -- Async
-            {
-                switch (NetworkMode)
-                {
-                    case NetworkMode.Modern:
-                        _baseSock.BeginReceive(new byte[0], 0, 0, SocketFlags.None, PacketReceiverModernAsync, _baseSock);
-                        break;
-
-                    case NetworkMode.Classic:
-                        _baseSock.BeginReceive(new byte[0], 0, 0, SocketFlags.None, PacketReceiverClassicAsync,
-                            _baseSock);
-                        break;
-
-                    case NetworkMode.PocketEdition:
-                        _baseSock.BeginReceive(new byte[0], 0, 0, SocketFlags.None, PacketReceiverPocketEditionAsync,
-                            _baseSock);
-                        break;
-                }
             }
         }
 
@@ -145,13 +98,7 @@ namespace MineLib.Network
             if (DebugPackets)
                 PacketsSended.Add(packet);
 
-            using (var ms = new MemoryStream())
-            {
-                packet.WritePacket(new MinecraftStream(ms, NetworkMode));
-                var data = ms.ToArray();
-
-                _baseSock.BeginSend(data, 0, data.Length, SocketFlags.None, null, null);
-            }
+            _stream.BeginWrite(packet, null, null);
         }
 
         /// <summary>
@@ -175,9 +122,6 @@ namespace MineLib.Network
 
                 if (_stream != null)
                     _stream.Dispose();
-
-                if (_readerThread != null && _readerThread.IsAlive)
-                    _readerThread.Abort();
             }
 
             _disposed = true;

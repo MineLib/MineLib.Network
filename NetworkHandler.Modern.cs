@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
 using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 using MineLib.Network.Cryptography;
 using MineLib.Network.IO;
@@ -14,146 +12,100 @@ using MineLib.Network.Modern.Packets.Server.Login;
 
 namespace MineLib.Network
 {
+    public class NetworkHandlerException : Exception
+    {
+        public NetworkHandlerException()
+            : base() { }
+
+        public NetworkHandlerException(string message)
+            : base(message) { }
+
+        public NetworkHandlerException(string format, params object[] args)
+            : base(string.Format(format, args)) { }
+
+        public NetworkHandlerException(string message, Exception innerException)
+            : base(message, innerException) { }
+
+        public NetworkHandlerException(string format, Exception innerException, params object[] args)
+            : base(string.Format(format, args), innerException) { }
+
+    }
+
     public sealed partial class NetworkHandler
     {
-        public bool CompressionEnabled { get { return _stream.CompressionEnabled; } }
-        public int CompressionThreshold { get { return _stream.CompressionThreshold; } }
-
-
-        private void StartReceivingModernSync()
-        {
-            try
-            {
-                do
-                {
-                    Thread.Sleep(50);
-                } while (PacketReceiverModernSync());
-            }
-            catch (SocketException)
-            {
-                Crashed = true;
-            }
-        }
-
-        private bool PacketReceiverModernSync()
-        {
-            if (_baseSock == null || !Connected)
-                return false;
-
-            while (_baseSock.Available > 0)
-            {
-                int packetLength;
-                int packetId;
-
-                if (!CompressionEnabled)
-                {
-                    packetLength = _stream.ReadVarInt();
-                    packetId = _stream.ReadVarInt();
-
-                    OnDataReceived(packetId, _stream.ReadByteArray(packetLength - 1));
-                }
-                else
-                {
-                    packetLength = _stream.ReadVarInt();
-                    var dataLength = _stream.ReadVarInt();
-                    
-                    if (dataLength == 0)
-                    {
-                        if (packetLength >= CompressionThreshold)
-                            throw new Exception("Received uncompressed message of size " + packetLength + " greater than threshold " + CompressionThreshold);
-
-                        packetId = _stream.ReadVarInt();
-
-                        var packetLengthBytes = MinecraftStream.GetVarIntBytes(packetLength).Length;
-                        var dataLengthBytes = MinecraftStream.GetVarIntBytes(dataLength).Length;
-                        var t = packetLengthBytes + dataLengthBytes;
-                        OnDataReceived(packetId, _stream.ReadByteArray(packetLength - 2)); // TODO: What is 2 here? (packetLength - packetLengthBytes - dataLengthBytes)?
-                    }
-                    else // (dataLength > 0)
-                    {
-                        var dataLengthBytes = MinecraftStream.GetVarIntBytes(dataLength).Length;
-
-                        var tempBuff = _stream.ReadByteArray(packetLength - dataLengthBytes);
-
-                        using (var outputStream = new MemoryStream())
-                        using (var inputStream = new InflaterInputStream(new MemoryStream(tempBuff)))
-                        {
-                            inputStream.CopyTo(outputStream);
-                            tempBuff = outputStream.ToArray();
-                        }
-
-                        packetId = tempBuff[0]; // TODO: Will be broken when ID will be more than 256.
-
-                        var data = new byte[tempBuff.Length - 1];
-                        Array.Copy(tempBuff, 1, data, 0, data.Length);
-
-                        OnDataReceived(packetId, data);
-                    }
-                }
-            }
-
-            return true;
-        }
+        public bool CompressionEnabled { get { return _stream.ModernCompressionEnabled; } }
+        public int CompressionThreshold { get { return _stream.ModernCompressionThreshold; } }
 
         private void PacketReceiverModernAsync(IAsyncResult ar)
         {
             if (_baseSock == null || !Connected)
                 return;
 
-            int packetLength;
-            int packetId;
+            int packetId = 0;
+            byte[] data = null;
 
-            byte[] data;
+            #region No Compression
 
             if (!CompressionEnabled)
             {
-                packetLength = _stream.ReadVarInt();
+                var packetLength = _stream.ReadVarInt();
+                if (packetLength == 0)
+                    throw new NetworkHandlerException("Reading Error: Packet Length size is 0");
+
                 packetId = _stream.ReadVarInt();
+
                 data = _stream.ReadByteArray(packetLength - 1);
             }
-            else
+
+            #endregion
+
+            #region Compression
+
+            else // (CompressionEnabled)
             {
-                packetLength = _stream.ReadVarInt();
+                var packetLength = _stream.ReadVarInt();
+                if (packetLength == 0)
+                    throw new NetworkHandlerException("Reading Error: Packet Length size is 0");
+
                 var dataLength = _stream.ReadVarInt();
                 if (dataLength == 0)
                 {
                     if (packetLength >= CompressionThreshold)
-                        throw new Exception("Received uncompressed message of size " + packetLength +
-                                            " greater than threshold " + CompressionThreshold);
+                        throw new NetworkHandlerException("Reading Error: Received uncompressed message of size " + packetLength + " greater than threshold " + CompressionThreshold);
 
                     packetId = _stream.ReadVarInt();
 
-                    var packetLengthBytes = MinecraftStream.GetVarIntBytes(packetLength).Length;
-                    var dataLengthBytes = MinecraftStream.GetVarIntBytes(dataLength).Length;
-                    var t = packetLengthBytes + dataLengthBytes;
                     data = _stream.ReadByteArray(packetLength - 2);
                 }
                 else // (dataLength > 0)
                 {
                     var dataLengthBytes = MinecraftStream.GetVarIntBytes(dataLength).Length;
 
-                    var tempBuff = _stream.ReadByteArray(packetLength - dataLengthBytes);
+                    var tempBuff = _stream.ReadByteArray(packetLength - dataLengthBytes); // -- Compressed
 
                     using (var outputStream = new MemoryStream())
                     using (var inputStream = new InflaterInputStream(new MemoryStream(tempBuff)))
+                    using (var reader = new MinecraftDataReader(new MemoryStream(tempBuff), NetworkMode))
                     {
                         inputStream.CopyTo(outputStream);
-                        tempBuff = outputStream.ToArray();
+                        tempBuff = outputStream.ToArray(); // -- Decompressed
+
+                        packetId = reader.ReadVarInt();
+                        var packetIdBytes = MinecraftStream.GetVarIntBytes(packetId).Length;
+
+                        data = new byte[tempBuff.Length - packetIdBytes];
+                        Buffer.BlockCopy(tempBuff, packetIdBytes, data, 0, data.Length);
                     }
-
-                    packetId = tempBuff[0]; // TODO: Will be broken when ID will be more than 256. Use ReadVarInt
-
-                    data = new byte[tempBuff.Length - 1];
-                    Array.Copy(tempBuff, 1, data, 0, data.Length);
                 }
             }
 
+            #endregion
+
             OnDataReceived(packetId, data);
 
-            _baseSock.EndReceive(ar);
-            _baseSock.BeginReceive(new byte[0], 0, 0, SocketFlags.None, PacketReceiverModernAsync, _baseSock);
+            _stream.EndRead(ar);
+            _stream.BeginRead(new byte[0], 0, 0, PacketReceiverModernAsync, _baseSock);
         }
-
 
         /// <summary>
         /// Packets are handled here. Compression and encryption are handled here too
@@ -216,10 +168,7 @@ namespace MineLib.Network
 
                     // Connection lost
                     if (id == 0x40)
-                    {
-                        Crashed = true;
-                        return;
-                    }
+                        Crashed = true;                   
 
                     break;
 
