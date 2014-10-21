@@ -18,7 +18,7 @@ namespace MineLib.Network.Modern.BaseClients
     }
 
     // TODO: Handle this mess
-    public sealed partial class ServerInfoParser : IMinecraftClient, IDisposable
+    public sealed partial class ServerInfoParser : IMinecraftClient
     {
         #region Variables
 

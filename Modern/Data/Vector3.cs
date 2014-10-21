@@ -1,8 +1,7 @@
-﻿// From https://github.com/SirCmpwn/Craft.Net
-
-using System;
+﻿using System;
 using MineLib.Network.IO;
 
+// From https://github.com/SirCmpwn/Craft.Net
 namespace MineLib.Network.Modern.Data
 {
     /// <summary>
@@ -100,16 +99,16 @@ namespace MineLib.Network.Modern.Data
         // TODO: Check that
         public void ToStreamSByteFixedPoint(MinecraftStream stream)
         {
-            stream.WriteSByte((sbyte)(X * 32));
-            stream.WriteSByte((sbyte)(Y * 32));
-            stream.WriteSByte((sbyte)(Z * 32));
+            stream.WriteSByte((sbyte) (X * 32));
+            stream.WriteSByte((sbyte) (Y * 32));
+            stream.WriteSByte((sbyte) (Z * 32));
         }
         // TODO: Check that
         public void ToStreamIntFixedPoint(MinecraftStream stream)
         {
-            stream.WriteInt((int)X * 32);
-            stream.WriteInt((int)Y * 32);
-            stream.WriteInt((int)Z * 32);
+            stream.WriteInt((int) X * 32);
+            stream.WriteInt((int) Y * 32);
+            stream.WriteInt((int) Z * 32);
         }
 
         #endregion
@@ -357,9 +356,10 @@ namespace MineLib.Network.Modern.Data
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (obj.GetType() != typeof(Vector3)) return false;
-            return Equals((Vector3)obj);
+            if (obj.GetType() != typeof(Vector3))
+                return false;
+
+            return Equals((Vector3) obj);
         }
 
         public override int GetHashCode()

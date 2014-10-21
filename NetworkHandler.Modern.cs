@@ -12,25 +12,6 @@ using MineLib.Network.Modern.Packets.Server.Login;
 
 namespace MineLib.Network
 {
-    public class NetworkHandlerException : Exception
-    {
-        public NetworkHandlerException()
-            : base() { }
-
-        public NetworkHandlerException(string message)
-            : base(message) { }
-
-        public NetworkHandlerException(string format, params object[] args)
-            : base(string.Format(format, args)) { }
-
-        public NetworkHandlerException(string message, Exception innerException)
-            : base(message, innerException) { }
-
-        public NetworkHandlerException(string format, Exception innerException, params object[] args)
-            : base(string.Format(format, args), innerException) { }
-
-    }
-
     public sealed partial class NetworkHandler
     {
         public bool CompressionEnabled { get { return _stream.ModernCompressionEnabled; } }
@@ -50,7 +31,7 @@ namespace MineLib.Network
             {
                 var packetLength = _stream.ReadVarInt();
                 if (packetLength == 0)
-                    throw new NetworkHandlerException("Reading Error: Packet Length size is 0");
+                    throw new Exception("Reading Error: Packet Length size is 0");
 
                 packetId = _stream.ReadVarInt();
 
@@ -65,13 +46,13 @@ namespace MineLib.Network
             {
                 var packetLength = _stream.ReadVarInt();
                 if (packetLength == 0)
-                    throw new NetworkHandlerException("Reading Error: Packet Length size is 0");
-
+                    throw new Exception("Reading Error: Packet Length size is 0");
+    
                 var dataLength = _stream.ReadVarInt();
                 if (dataLength == 0)
                 {
                     if (packetLength >= CompressionThreshold)
-                        throw new NetworkHandlerException("Reading Error: Received uncompressed message of size " + packetLength + " greater than threshold " + CompressionThreshold);
+                        throw new Exception("Reading Error: Received uncompressed message of size " + packetLength + " greater than threshold " + CompressionThreshold);
 
                     packetId = _stream.ReadVarInt();
 
@@ -85,12 +66,12 @@ namespace MineLib.Network
 
                     using (var outputStream = new MemoryStream())
                     using (var inputStream = new InflaterInputStream(new MemoryStream(tempBuff)))
-                    using (var reader = new MinecraftDataReader(new MemoryStream(tempBuff), NetworkMode))
+                    //using (var reader = new MinecraftDataReader(new MemoryStream(tempBuff), NetworkMode))
                     {
                         inputStream.CopyTo(outputStream);
                         tempBuff = outputStream.ToArray(); // -- Decompressed
 
-                        packetId = reader.ReadVarInt();
+                        packetId = tempBuff[0]; // -- Only 255 packets available. ReadVarInt doesn't work.
                         var packetIdBytes = MinecraftStream.GetVarIntBytes(packetId).Length;
 
                         data = new byte[tempBuff.Length - packetIdBytes];
@@ -104,7 +85,7 @@ namespace MineLib.Network
             OnDataReceived(packetId, data);
 
             _stream.EndRead(ar);
-            _stream.BeginRead(new byte[0], 0, 0, PacketReceiverModernAsync, _baseSock);
+            _stream.BeginRead(new byte[0], 0, 0, PacketReceiverModernAsync, null);
         }
 
         /// <summary>
@@ -161,6 +142,9 @@ namespace MineLib.Network
 
                     packet = ServerResponse.Play[id]().ReadPacket(reader);
 
+                    if (ServerResponse.Play[id]() == null)
+                        throw new Exception("");
+
                     RaisePacketHandled(id, packet, ServerState.ModernPlay);
 
                     if (id == 0x46)
@@ -195,9 +179,7 @@ namespace MineLib.Network
             var hash = JavaHelper.JavaHexDigest(hashData);
 
             if (!Yggdrasil.ClientAuth(_minecraft.AccessToken, _minecraft.SelectedProfile, hash))
-            {
                 throw new Exception("Auth failure");
-            }
 
             // -- You pass it the key data and ask it to parse, and it will 
             // -- Extract the server's public key, then parse that into RSA for us.

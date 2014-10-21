@@ -27,7 +27,7 @@ namespace MineLib.Network
             OnDataReceived(packetId, data);
 
             _baseSock.EndReceive(ar);
-            _baseSock.BeginReceive(new byte[0], 0, 0, SocketFlags.None,  PacketReceiverClassicAsync, _baseSock);
+            _baseSock.BeginReceive(new byte[0], 0, 0, SocketFlags.None, PacketReceiverClassicAsync, null);
         }
         
         /// <summary>

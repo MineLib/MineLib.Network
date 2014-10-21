@@ -8,7 +8,7 @@ using Org.BouncyCastle.Math;
 namespace MineLib.Network.IO
 {
     // -- Credits to umby24 for encryption support, as taken from CWrapped.
-    public sealed partial class MinecraftStream : IDisposable
+    public sealed partial class MinecraftStream
     {
         // -- Credits to SirCmpwn for encryption support, as taken from SMProxy.
         public NetworkMode Mode { get; set; }
@@ -545,19 +545,19 @@ namespace MineLib.Network.IO
 
         #endregion
 
-        public new void Dispose()
+        public override void Close()
         {
+            base.Close();
+
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
-        private new void Dispose(bool disposing)
+        protected override void Dispose(bool disposing)
         {
-            if (_disposed)
-                return;
+            base.Dispose(disposing);
 
-            //base.Dispose(disposing);
-            if (disposing)
+            if (!_disposed)
             {
                 if (_stream != null)
                     _stream.Dispose();

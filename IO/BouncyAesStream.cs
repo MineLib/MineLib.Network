@@ -7,20 +7,7 @@ using Org.BouncyCastle.Crypto.Parameters;
 
 namespace MineLib.Network.IO
 {
-    public interface IAesStream : IDisposable
-    {
-        Stream BaseStream { get; }
-
-        int ReadByte();
-        int Read(byte[] buffer, int offset, int count);
-        IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object state);
-        int EndRead(IAsyncResult asyncResult);
-
-        void Write(byte[] buffer, int offset, int count);
-        IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state);
-    }
-
-    public sealed class BouncyAesStream : IAesStream
+    public sealed class BouncyAesStream : IDisposable
     {
         public Stream BaseStream { get; private set; }
 

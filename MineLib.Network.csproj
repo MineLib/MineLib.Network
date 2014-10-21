@@ -297,7 +297,7 @@
     <Compile Include="NetworkHandler.cs" />
     <Compile Include="NetworkHandler.Modern.cs" />
     <Compile Include="NetworkHandler.PocketEdition.cs" />
-    <Compile Include="IO\AesStream.cs" />
+    <Compile Include="IO\BouncyAesStream.cs" />
     <Compile Include="IO\MinecraftStream.cs" />
     <Compile Include="Yggdrasil.cs" />
     <Compile Include="Yggdrasil.Json.cs" />

@@ -13,9 +13,6 @@ namespace MineLib.Network
             if (DebugPackets)
                 PacketsReceived.Add(packet);
 
-            if (packet == null)
-                throw new NetworkHandlerException("Packet with ID: " + id + " is null");
-
             if (OnPacketHandled != null)
                 OnPacketHandled(id, packet, state);
         }

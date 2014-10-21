@@ -11,7 +11,6 @@ namespace MineLib.Network.IO
         public readonly NetworkMode Mode;
 
         private readonly Stream _stream;
-
         private bool _disposed;
 
         public MinecraftDataReader(Stream stream, NetworkMode mode)

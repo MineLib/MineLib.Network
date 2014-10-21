@@ -12,13 +12,6 @@ namespace MineLib.Network
         public readonly List<IPacket> PacketsSended = new List<IPacket>();
         // -- Debugging.
 
-        private readonly IMinecraftClient _minecraft;
-
-        private Socket _baseSock;
-        private MinecraftStream _stream;
-
-        private bool _disposed;
-
         #region Properties
 
         public NetworkMode NetworkMode { get; private set; }
@@ -31,6 +24,13 @@ namespace MineLib.Network
 
         #endregion
 
+        private readonly IMinecraftClient _minecraft;
+
+        private Socket _baseSock;
+        private MinecraftStream _stream;
+
+        private bool _disposed;
+
         public NetworkHandler(IMinecraftClient client, NetworkMode mode)
         {
             _minecraft = client;
@@ -41,7 +41,7 @@ namespace MineLib.Network
         /// <summary>
         /// Starts the network handler.
         /// </summary>
-        public void Start(bool sync = false, bool debugPackets = true)
+        public void Start(bool debugPackets = true)
         {
             DebugPackets = debugPackets;
 
@@ -74,21 +74,19 @@ namespace MineLib.Network
             // -- Subscribe to DataReceived event.
             switch (NetworkMode)
             {
-                    // -- We can choose if we want to handle any packet
                 case NetworkMode.Modern:
                     OnDataReceived += HandlePacketModern;
-                    _stream.BeginRead(new byte[0], 0, 0, PacketReceiverModernAsync, _baseSock);
+                    _stream.BeginRead(new byte[0], 0, 0, PacketReceiverModernAsync, null);
                     break;
 
-                    // -- In Classic and PocketEdition we need to handle every packet
                 case NetworkMode.Classic:
                     OnDataReceived += HandlePacketClassic;
-                    _stream.BeginRead(new byte[0], 0, 0, PacketReceiverClassicAsync, _baseSock);
+                    _stream.BeginRead(new byte[0], 0, 0, PacketReceiverClassicAsync, null);
                     break;
 
                 case NetworkMode.PocketEdition:
                     OnDataReceived += HandlePacketPocketEdition;
-                    _stream.BeginRead(new byte[0], 0, 0, PacketReceiverPocketEditionAsync, _baseSock);
+                    _stream.BeginRead(new byte[0], 0, 0, PacketReceiverPocketEditionAsync, null);
                     break;
             }
         }
