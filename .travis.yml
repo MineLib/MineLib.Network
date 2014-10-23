@@ -1,10 +1,12 @@
-language: objective-c
+language: c
+
+notifications:
+  email:
+    on_success: always
 
 before_install:
- # Make sure mono is installed,
- - wget http://download.mono-project.com/archive/3.0.10/macos-10-x86/MonoFramework-MDK-3.0.10.macos10.xamarin.x86.dmg
- - hdid MonoFramework-MDK-3.0.10.macos10.xamarin.x86.dmg
- - sudo installer -pkg "/Volumes/Mono Framework MDK 3.0.10/MonoFramework-MDK-3.0.10.macos10.xamarin.x86.pkg" -target /
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq mono-devel mono-utils
 
 install:
- - xbuild MineLib.Network.sln
+  - xbuild MineLib.Network.sln
