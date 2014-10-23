@@ -1,12 +1,16 @@
-language: c
+language: objective-c
 
 notifications:
   email:
     on_success: always
 
+env:
+  matrix:
+    - MONO_VERSION="3.2.7"
+
 before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq mono-devel mono-utils
+  - wget "http://download.xamarin.com/MonoFrameworkMDK/Macx86/MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.x86.pkg"
+  - sudo installer -pkg MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.x86.pkg -target /
 
 install:
   - xbuild MineLib.Network.sln
