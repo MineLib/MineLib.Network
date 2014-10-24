@@ -5,8 +5,23 @@ using MineLib.Network.IO;
 
 namespace MineLib.Network
 {
+    // -- Classic logic is stored here
     public sealed partial class NetworkHandler
     {
+        private void ConnectedClassic(IAsyncResult asyncResult)
+        {
+            _baseSock.EndConnect(asyncResult);
+
+            // -- Create our Wrapped socket.
+            _stream = new MinecraftStream(new NetworkStream(_baseSock), NetworkMode);
+
+            // -- Subscribe to DataReceived event.
+            OnDataReceived += HandlePacketClassic;
+
+            // -- Begin data reading.
+            _stream.BeginRead(new byte[0], 0, 0, PacketReceiverClassicAsync, null);
+        }
+
         private void PacketReceiverClassicAsync(IAsyncResult ar)
         {
             if (_baseSock == null || !Connected)
@@ -37,14 +52,15 @@ namespace MineLib.Network
         /// <param name="data">Packet byte[] data</param>
         private void HandlePacketClassic(int id, byte[] data)
         {
-            var reader = new MinecraftDataReader(data, NetworkMode);
+            using (var reader = new MinecraftDataReader(data, NetworkMode))
+            {
+                if (ServerResponseClassic.ServerResponse[id] == null)
+                    return;
 
-            if (ServerResponseClassic.ServerResponse[id] == null)
-                return;
+                var packet = ServerResponseClassic.ServerResponse[id]().ReadPacket(reader);
 
-            var packet = ServerResponseClassic.ServerResponse[id]().ReadPacket(reader);
-
-            RaisePacketHandled(id, packet, null);
+                RaisePacketHandled(id, packet, null);
+            }
         }
     }
 }

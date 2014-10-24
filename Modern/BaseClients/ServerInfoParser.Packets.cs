@@ -6,7 +6,8 @@ namespace MineLib.Network.Modern.BaseClients
     {
         private void RaisePacketHandled(int id, IPacket packet, ServerState? state)
         {
-            if (state != ServerState.ModernStatus) return;
+            if (state != ServerState.ModernStatus) 
+                return;
 
             switch ((PacketsServer) id)
             {

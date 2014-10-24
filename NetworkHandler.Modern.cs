@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
@@ -12,78 +13,99 @@ using MineLib.Network.Modern.Packets.Server.Login;
 
 namespace MineLib.Network
 {
+    // -- Modern logic is stored here.
     public sealed partial class NetworkHandler
     {
         public bool CompressionEnabled { get { return _stream.ModernCompressionEnabled; } }
         public int CompressionThreshold { get { return _stream.ModernCompressionThreshold; } }
 
+
+        private void ConnectedModern(IAsyncResult asyncResult)
+        {
+            _baseSock.EndConnect(asyncResult);
+
+            // -- Create our Wrapped socket.
+            _stream = new MinecraftStream(new NetworkStream(_baseSock), NetworkMode);
+
+            // -- Subscribe to DataReceived event.
+            OnDataReceived += HandlePacketModern;
+
+            // -- Begin data reading.
+            _stream.BeginRead(new byte[0], 0, 0, PacketReceiverModernAsync, null);
+        }
+
         private void PacketReceiverModernAsync(IAsyncResult ar)
         {
-            if (_baseSock == null || !Connected)
-                return;
+            if (_baseSock == null || _stream == null || !Connected || Crashed)
+                return; // -- Terminate cycle
 
-            int packetId = 0;
-            byte[] data = null;
-
-            #region No Compression
-
-            if (!CompressionEnabled)
+            if (_baseSock.Available > 0)
             {
-                var packetLength = _stream.ReadVarInt();
-                if (packetLength == 0)
-                    throw new Exception("Reading Error: Packet Length size is 0");
+                int packetId = 0;
+                byte[] data = new byte[0];
 
-                packetId = _stream.ReadVarInt();
+                #region No Compression
 
-                data = _stream.ReadByteArray(packetLength - 1);
-            }
-
-            #endregion
-
-            #region Compression
-
-            else // (CompressionEnabled)
-            {
-                var packetLength = _stream.ReadVarInt();
-                if (packetLength == 0)
-                    throw new Exception("Reading Error: Packet Length size is 0");
-    
-                var dataLength = _stream.ReadVarInt();
-                if (dataLength == 0)
+                if (!CompressionEnabled)
                 {
-                    if (packetLength >= CompressionThreshold)
-                        throw new Exception("Reading Error: Received uncompressed message of size " + packetLength + " greater than threshold " + CompressionThreshold);
+                    var packetLength = _stream.ReadVarInt();
+                    if (packetLength == 0)
+                        throw new Exception("Reading Error: Packet Length size is 0");
 
                     packetId = _stream.ReadVarInt();
 
-                    data = _stream.ReadByteArray(packetLength - 2);
+                    data = _stream.ReadByteArray(packetLength - 1);
                 }
-                else // (dataLength > 0)
+
+                #endregion
+
+                #region Compression
+
+                else // (CompressionEnabled)
                 {
-                    var dataLengthBytes = MinecraftStream.GetVarIntBytes(dataLength).Length;
+                    var packetLength = _stream.ReadVarInt();
+                    if (packetLength == 0)
+                        throw new Exception("Reading Error: Packet Length size is 0");
 
-                    var tempBuff = _stream.ReadByteArray(packetLength - dataLengthBytes); // -- Compressed
-
-                    using (var outputStream = new MemoryStream())
-                    using (var inputStream = new InflaterInputStream(new MemoryStream(tempBuff)))
-                    //using (var reader = new MinecraftDataReader(new MemoryStream(tempBuff), NetworkMode))
+                    var dataLength = _stream.ReadVarInt();
+                    if (dataLength == 0)
                     {
-                        inputStream.CopyTo(outputStream);
-                        tempBuff = outputStream.ToArray(); // -- Decompressed
+                        if (packetLength >= CompressionThreshold)
+                            throw new Exception("Reading Error: Received uncompressed message of size " + packetLength +
+                                                " greater than threshold " + CompressionThreshold);
 
-                        packetId = tempBuff[0]; // -- Only 255 packets available. ReadVarInt doesn't work.
-                        var packetIdBytes = MinecraftStream.GetVarIntBytes(packetId).Length;
+                        packetId = _stream.ReadVarInt();
 
-                        data = new byte[tempBuff.Length - packetIdBytes];
-                        Buffer.BlockCopy(tempBuff, packetIdBytes, data, 0, data.Length);
+                        data = _stream.ReadByteArray(packetLength - 2);
+                    }
+                    else // (dataLength > 0)
+                    {
+                        var dataLengthBytes = MinecraftStream.GetVarIntBytes(dataLength).Length;
+
+                        var tempBuff = _stream.ReadByteArray(packetLength - dataLengthBytes); // -- Compressed
+
+                        using (var outputStream = new MemoryStream())
+                        using (var inputStream = new InflaterInputStream(new MemoryStream(tempBuff)))
+                            //using (var reader = new MinecraftDataReader(new MemoryStream(tempBuff), NetworkMode))
+                        {
+                            inputStream.CopyTo(outputStream);
+                            tempBuff = outputStream.ToArray(); // -- Decompressed
+
+                            packetId = tempBuff[0]; // -- Only 255 packets available. ReadVarInt doesn't work.
+                            var packetIdBytes = MinecraftStream.GetVarIntBytes(packetId).Length;
+
+                            data = new byte[tempBuff.Length - packetIdBytes];
+                            Buffer.BlockCopy(tempBuff, packetIdBytes, data, 0, data.Length);
+                        }
                     }
                 }
+
+                #endregion
+
+                OnDataReceived(packetId, data);
             }
 
-            #endregion
-
-            OnDataReceived(packetId, data);
-
+            // -- If it will throw an error, then the cause is too slow _stream dispose
             _stream.EndRead(ar);
             _stream.BeginRead(new byte[0], 0, 0, PacketReceiverModernAsync, null);
         }
@@ -95,68 +117,70 @@ namespace MineLib.Network
         /// <param name="data">Packet byte[] data</param>
         private void HandlePacketModern(int id, byte[] data)
         {
-            var reader = new MinecraftDataReader(data, NetworkMode);
-            IPacket packet;
-
-            switch (_minecraft.State)
+            using (var reader = new MinecraftDataReader(data, NetworkMode))
             {
-                #region Status
+                IPacket packet;
 
-                case ServerState.ModernStatus:
-                    if (ServerResponse.Status[id] == null)
+                switch (_minecraft.State)
+                {
+                    #region Status
+
+                    case ServerState.ModernStatus:
+                        if (ServerResponse.Status[id] == null)
+                            break;
+
+                        packet = ServerResponse.Status[id]().ReadPacket(reader);
+
+                        RaisePacketHandled(id, packet, ServerState.ModernStatus);
+
                         break;
 
-                    packet = ServerResponse.Status[id]().ReadPacket(reader);
+                    #endregion Status
 
-                    RaisePacketHandled(id, packet, ServerState.ModernStatus);
+                    #region Login
 
-                    break;
+                    case ServerState.ModernLogin:
+                        if (ServerResponse.Login[id] == null)
+                            break;
 
-                #endregion Status
+                        packet = ServerResponse.Login[id]().ReadPacket(reader);
 
-                #region Login
+                        RaisePacketHandled(id, packet, ServerState.ModernLogin);
 
-                case ServerState.ModernLogin:
-                    if (ServerResponse.Login[id] == null)
+                        if (id == 0x01)
+                            ModernEnableEncryption(packet);  // -- Low-level encryption handle
+
+                        if (id == 0x03)
+                            ModernSetCompression(packet); // -- Low-level compression handle
+
                         break;
 
-                    packet = ServerResponse.Login[id]().ReadPacket(reader);
+                    #endregion Login
 
-                    RaisePacketHandled(id, packet, ServerState.ModernLogin);
+                    #region Play
 
-                    if (id == 0x01)
-                        ModernEnableEncryption(packet);  // -- Low-level encryption handle
+                    case ServerState.ModernPlay:
+                        if (ServerResponse.Play[id] == null)
+                            break;
 
-                    if (id == 0x03)
-                        ModernSetCompression(packet); // -- Low-level compression handle
+                        packet = ServerResponse.Play[id]().ReadPacket(reader);
 
-                    break;
+                        if (ServerResponse.Play[id]() == null)
+                            throw new Exception("");
 
-                #endregion Login
+                        RaisePacketHandled(id, packet, ServerState.ModernPlay);
 
-                #region Play
+                        if (id == 0x46)
+                            ModernSetCompression(packet); // -- Low-level compression handle
 
-                case ServerState.ModernPlay:
-                    if (ServerResponse.Play[id] == null)
+                        // Connection lost
+                        if (id == 0x40)
+                            Crashed = true;
+
                         break;
 
-                    packet = ServerResponse.Play[id]().ReadPacket(reader);
-
-                    if (ServerResponse.Play[id]() == null)
-                        throw new Exception("");
-
-                    RaisePacketHandled(id, packet, ServerState.ModernPlay);
-
-                    if (id == 0x46)
-                        ModernSetCompression(packet); // -- Low-level compression handle
-
-                    // Connection lost
-                    if (id == 0x40)
-                        Crashed = true;                   
-
-                    break;
-
-                #endregion Play
+                    #endregion Play
+                }
             }
         }
 
@@ -197,11 +221,11 @@ namespace MineLib.Network
 
             _stream.InitializeEncryption(request.SharedKey);
 
-            Send(new EncryptionResponsePacket
+            BeginSendPacket(new EncryptionResponsePacket
             {
                 SharedSecret = encryptedSecret,
                 VerificationToken = encryptedVerify
-            });
+            }, null, null);
 
             _stream.EncryptionEnabled = true;
         }

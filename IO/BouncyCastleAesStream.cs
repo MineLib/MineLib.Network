@@ -7,16 +7,14 @@ using Org.BouncyCastle.Crypto.Parameters;
 
 namespace MineLib.Network.IO
 {
-    public sealed class BouncyAesStream : IDisposable
+    public sealed class BouncyCastleAesStream : IDisposable
     {
         public Stream BaseStream { get; private set; }
 
         private readonly BufferedBlockCipher _decryptCipher;
         private readonly BufferedBlockCipher _encryptCipher;
 
-        private bool _disposed;
-
-        public BouncyAesStream(Stream stream, byte[] key)
+        public BouncyCastleAesStream(Stream stream, byte[] key)
         {
             BaseStream = stream;
 
@@ -63,35 +61,21 @@ namespace MineLib.Network.IO
             return BaseStream.BeginWrite(encrypted, 0, encrypted.Length, callback, state);
         }
 
+        public void EndWrite(IAsyncResult asyncResult)
+        {
+            BaseStream.EndWrite(asyncResult);
+        }
+
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+            if (_decryptCipher != null)
+                _decryptCipher.Reset();
 
-        private void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
+            if (_encryptCipher != null)
+                _encryptCipher.Reset();
 
-            if (disposing)
-            {
-                if (_decryptCipher != null)
-                    _decryptCipher.Reset();
-
-                if (_encryptCipher != null)
-                    _encryptCipher.Reset();
-
-                if (BaseStream != null)
-                    BaseStream.Dispose();
-            }
-
-            _disposed = true;
-        }
-
-        ~BouncyAesStream()
-        {
-            Dispose(false);
+            if (BaseStream != null)
+                BaseStream.Dispose();
         }
     }
 }

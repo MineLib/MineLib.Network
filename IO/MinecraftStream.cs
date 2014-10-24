@@ -8,9 +8,13 @@ using Org.BouncyCastle.Math;
 namespace MineLib.Network.IO
 {
     // -- Credits to umby24 for encryption support, as taken from CWrapped.
+    // -- Credits to SirCmpwn for encryption support, as taken from SMProxy.
+    // -- All Write methods doesn't write to any stream. It writes to _buffer. Purge write _buffer to any stream.
     public sealed partial class MinecraftStream
     {
-        // -- Credits to SirCmpwn for encryption support, as taken from SMProxy.
+        private delegate IAsyncResult PacketWrite(IPacket packet);
+        private PacketWrite _packetWriteDelegate;
+
         public NetworkMode Mode { get; set; }
         public bool EncryptionEnabled { get; set; }
 
@@ -19,12 +23,10 @@ namespace MineLib.Network.IO
         public int ModernCompressionThreshold { get; set; }
         // -- Modern
 
-        private readonly Stream _stream;
-        private BouncyAesStream _crypto;
+        private Stream _stream;
+        private BouncyCastleAesStream _crypto;
         private byte[] _buffer;
         private readonly Encoding _encoding;
-
-        private bool _disposed;
 
         public MinecraftStream(Stream stream, NetworkMode mode)
         {
@@ -45,7 +47,7 @@ namespace MineLib.Network.IO
 
         public void InitializeEncryption(byte[] key)
         {
-            _crypto = new BouncyAesStream(_stream, key);
+            _crypto = new BouncyCastleAesStream(_stream, key);
         }
 
         public void SetCompression(int threshold)
@@ -157,7 +159,7 @@ namespace MineLib.Network.IO
                 result |= (current & 0x7F) << length++*7;
 
                 if (length > 6)
-                    throw new InvalidDataException("Invalid varint: Too long.");
+                     throw new InvalidDataException("Invalid varint: Too long.");
 
                 if ((current & 0x80) != 0x80)
                     break;
@@ -439,7 +441,21 @@ namespace MineLib.Network.IO
 
         #region BeginWrite and BeginRead
 
+        public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
+        {
+            throw new NotSupportedException("Use BeginWrite(IPacket packet, AsyncCallback callback, object state)");
+        }
+
         public IAsyncResult BeginWrite(IPacket packet, AsyncCallback callback, object state)
+        {
+            _packetWriteDelegate = WriteFunction;
+
+            return _packetWriteDelegate.BeginInvoke(packet, callback, state);
+        }
+
+        #region BeginWrite
+
+        private IAsyncResult WriteFunction(IPacket packet)
         {
             using (var ms = new MemoryStream())
             using (var stream = new MinecraftStream(ms, Mode))
@@ -451,12 +467,12 @@ namespace MineLib.Network.IO
                 {
                     case NetworkMode.Modern:
                         if (ModernCompressionEnabled)
-                            return BeginWriteWithCompression(data, callback, state);
+                            return BeginWriteWithCompression(data, null, null);
                         else
-                            return BeginWriteWithoutCompression(data, callback, state);
+                            return BeginWriteWithoutCompression(data, null, null);
 
                     case NetworkMode.Classic:
-                        return BeginWriteClassic(data, callback, state);
+                        return BeginWriteClassic(data, null, null);
                 }
             }
 
@@ -526,8 +542,19 @@ namespace MineLib.Network.IO
                 return _stream.BeginWrite(data, 0, data.Length, callback, state);
         }
 
+        #endregion
 
-        public new IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
+        public override void EndWrite(IAsyncResult asyncResult)
+        {
+            try
+            {
+                _packetWriteDelegate.EndInvoke(asyncResult);
+            }
+            catch (Exception) { }
+        }
+
+
+        public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
         {
             if (EncryptionEnabled)
                 return _crypto.BeginRead(buffer, offset, count, callback, state);
@@ -535,7 +562,7 @@ namespace MineLib.Network.IO
                 return _stream.BeginRead(buffer, offset, count, callback, state);
         }
 
-        public new int EndRead(IAsyncResult asyncResult)
+        public override int EndRead(IAsyncResult asyncResult)
         {
             if (EncryptionEnabled)
                 return _crypto.EndRead(asyncResult);
@@ -547,31 +574,15 @@ namespace MineLib.Network.IO
 
         public override void Close()
         {
+            if (_stream != null)
+                _stream.Dispose();
+
+            if (_crypto != null)
+                _crypto.Dispose();
+
+            _buffer = null;
+
             base.Close();
-
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
-
-            if (!_disposed)
-            {
-                if (_stream != null)
-                    _stream.Dispose();
-
-                if (_crypto != null)
-                    _crypto.Dispose();
-            }
-
-            _disposed = true;
-        }
-
-        ~MinecraftStream()
-        {
-            Dispose(false);
         }
     }
 }

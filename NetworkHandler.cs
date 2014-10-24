@@ -14,7 +14,7 @@ namespace MineLib.Network
 
         #region Properties
 
-        public NetworkMode NetworkMode { get; private set; }
+        public NetworkMode NetworkMode { get { return _minecraft.Mode; } }
 
         public bool DebugPackets { get; set; }
 
@@ -29,105 +29,77 @@ namespace MineLib.Network
         private Socket _baseSock;
         private MinecraftStream _stream;
 
-        private bool _disposed;
-
-        public NetworkHandler(IMinecraftClient client, NetworkMode mode)
+        public NetworkHandler(IMinecraftClient client)
         {
             _minecraft = client;
-            NetworkMode = mode;
-            Crashed = false;
         }
 
         /// <summary>
-        /// Starts the network handler.
+        /// Start NetworkHandler.
         /// </summary>
         public void Start(bool debugPackets = true)
         {
             DebugPackets = debugPackets;
 
             // -- Connect to server.
-            try
-            {
-                switch (NetworkMode)
-                {
-                    case NetworkMode.Modern:
-                    case NetworkMode.Classic:
-                        _baseSock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                        break;
-
-                    case NetworkMode.PocketEdition:
-                        _baseSock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Udp);
-                        break;
-                }
-
-                _baseSock.Connect(_minecraft.ServerHost, _minecraft.ServerPort);
-            }
-            catch (SocketException)
-            {
-                Crashed = true;
-                return;
-            }
-
-            // -- Create our Wrapped socket.
-            _stream = new MinecraftStream(new NetworkStream(_baseSock), NetworkMode);
-
-            // -- Subscribe to DataReceived event.
             switch (NetworkMode)
             {
                 case NetworkMode.Modern:
-                    OnDataReceived += HandlePacketModern;
-                    _stream.BeginRead(new byte[0], 0, 0, PacketReceiverModernAsync, null);
+                    _baseSock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                    _baseSock.BeginConnect(_minecraft.ServerHost, _minecraft.ServerPort, ConnectedModern, null);
                     break;
 
                 case NetworkMode.Classic:
-                    OnDataReceived += HandlePacketClassic;
-                    _stream.BeginRead(new byte[0], 0, 0, PacketReceiverClassicAsync, null);
+                    _baseSock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                    _baseSock.BeginConnect(_minecraft.ServerHost, _minecraft.ServerPort, ConnectedClassic, null);
                     break;
 
                 case NetworkMode.PocketEdition:
-                    OnDataReceived += HandlePacketPocketEdition;
-                    _stream.BeginRead(new byte[0], 0, 0, PacketReceiverPocketEditionAsync, null);
+                    _baseSock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Udp);
+                    _baseSock.BeginConnect(_minecraft.ServerHost, _minecraft.ServerPort, ConnectedPocketEdition, null);
                     break;
             }
         }
 
-        public void Send(IPacket packet)
+        public IAsyncResult BeginSendPacket(IPacket packet, AsyncCallback asyncCallback, object state)
         {
+            if (!Connected)
+                throw new Exception("Connection error");
+
             if (DebugPackets)
                 PacketsSended.Add(packet);
 
-            _stream.BeginWrite(packet, null, null);
+            IAsyncResult result = BeginSend(packet, asyncCallback, state);
+            EndSend(result);
+            return result;
+        }
+
+        public IAsyncResult BeginSend(IPacket packet, AsyncCallback asyncCallback, object state)
+        {
+            return _stream.BeginWrite(packet, asyncCallback, state);
+        }
+
+        public void EndSend(IAsyncResult asyncResult)
+        {
+            _stream.EndWrite(asyncResult);
         }
 
         /// <summary>
-        /// Stops and dispose the network handler.
+        /// Dispose NetworkHandler.
         /// </summary>
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+            if (_baseSock != null)
+                _baseSock.Close();
+            
+            if (_stream != null)        
+                _stream.Dispose();       
 
-        private void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
+            if (PacketsReceived != null)
+                PacketsReceived.Clear();
 
-            if (disposing)
-            {
-                if (_baseSock != null)
-                    _baseSock.Close();
-
-                if (_stream != null)
-                    _stream.Dispose();
-            }
-
-            _disposed = true;
-        }
-
-        ~NetworkHandler()
-        {
-            Dispose(false);
+            if (PacketsSended != null)
+                PacketsSended.Clear();
         }
     }
 }

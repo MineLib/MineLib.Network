@@ -9,6 +9,7 @@ namespace MineLib.Network
 
         ServerState State { get; set; }
 
+        // -- Modern encryption support
         string AccessToken { get; set; }
         string SelectedProfile { get; set; }
 

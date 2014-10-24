@@ -5,8 +5,23 @@ using MineLib.Network.PocketEdition.Packets;
 
 namespace MineLib.Network
 {
+    // -- Don't even analyze this.
     public sealed partial class NetworkHandler
     {
+        private void ConnectedPocketEdition(IAsyncResult asyncResult)
+        {
+            _baseSock.EndConnect(asyncResult);
+
+            // -- Create our Wrapped socket.
+            _stream = new MinecraftStream(new NetworkStream(_baseSock), NetworkMode);
+
+            // -- Subscribe to DataReceived event.
+            OnDataReceived += HandlePacketPocketEdition;
+
+            // -- Begin data reading.
+            _stream.BeginRead(new byte[0], 0, 0, PacketReceiverPocketEditionAsync, null);
+        }
+
         private void PacketReceiverPocketEditionAsync(IAsyncResult ar)
         {
             if (_baseSock == null || !Connected)
@@ -22,7 +37,7 @@ namespace MineLib.Network
             _baseSock.EndReceive(ar);
             _baseSock.BeginReceive(new byte[0], 0, 0, SocketFlags.None,  PacketReceiverPocketEditionAsync, null);
         }
-        
+
         /// <summary>
         /// Packets are handled here.
         /// </summary>
@@ -30,14 +45,15 @@ namespace MineLib.Network
         /// <param name="data">Packet byte[] data</param>
         private void HandlePacketPocketEdition(int id, byte[] data)
         {
-            var reader = new MinecraftDataReader(data, NetworkMode);
+            using (var reader = new MinecraftDataReader(data, NetworkMode))
+            {
+                if (ServerResponsePocketEdition.ServerResponse[id] == null)
+                    return;
 
-            if (ServerResponsePocketEdition.ServerResponse[id] == null)
-                return;
+                var packet = ServerResponsePocketEdition.ServerResponse[id]().ReadPacket(reader);
 
-            var packet = ServerResponsePocketEdition.ServerResponse[id]().ReadPacket(reader);
-
-            RaisePacketHandled(id, packet, null);
+                RaisePacketHandled(id, packet, null);
+            }
         }
     }
 }

@@ -11,7 +11,6 @@ namespace MineLib.Network.IO
         public readonly NetworkMode Mode;
 
         private readonly Stream _stream;
-        private bool _disposed;
 
         public MinecraftDataReader(Stream stream, NetworkMode mode)
         {
@@ -255,27 +254,8 @@ namespace MineLib.Network.IO
 
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        private void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
-            if (disposing)
-            {
-                if (_stream != null)
-                    _stream.Dispose();
-            }
-
-            _disposed = true;
-        }
-
-        ~MinecraftDataReader()
-        {
-            Dispose(false);
+            if (_stream != null)
+                _stream.Dispose();
         }
     }
 }

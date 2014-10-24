@@ -46,18 +46,16 @@ namespace MineLib.Network.Modern.BaseClients
 
         private NetworkHandler _handler;
 
-        private bool ConnectionClosed
-        {
-            get { return !_handler.Connected; }
-        }
+        private bool Connected { get { return _handler.Connected; } }
 
-        private bool _disposed;
+        private bool Crashed { get { return _handler.Crashed; } }
 
         public ServerInfoParser()
         {
             Mode = NetworkMode.Modern;
             State = ServerState.ModernStatus;
         }
+
 
         public ResponseData GetResponseData(string host, short port, int protocolVersion)
         {
@@ -67,16 +65,21 @@ namespace MineLib.Network.Modern.BaseClients
             var pingPacketReceived = false;
             var info = new ServerInfo();
 
-            _handler = new NetworkHandler(this, Mode);
+            _handler = new NetworkHandler(this);
             _handler.OnPacketHandled += RaisePacketHandled;
             _handler.Start();
 
             #region Handle Early connect error
 
-            if (ConnectionClosed)
+            while (!Connected)
             {
-                Dispose();
-                return new ResponseData {Info = new ServerInfo(), Ping = int.MaxValue};
+                if (Crashed)
+                {
+                    Dispose();
+                    return new ResponseData {Info = new ServerInfo(), Ping = int.MaxValue};
+                }
+
+                Thread.Sleep(250);
             }
 
             #endregion
@@ -130,11 +133,10 @@ namespace MineLib.Network.Modern.BaseClients
 
             #endregion
 
-            // Create a new TCP connection, if something is wrong use _handler TCP client
-            var ping = (int) PingServer(host, port);
+            var ping = PingServer(host, port);
 
             Dispose();
-            return new ResponseData {Info = info, Ping = ping};
+            return new ResponseData {Info = info, Ping = (int) ping};
         }
 
         public ServerInfo GetServerInfo(string host, short port, int protocolVersion)
@@ -145,16 +147,21 @@ namespace MineLib.Network.Modern.BaseClients
             var responsePacketReceived = false;
             var info = new ServerInfo();
 
-            _handler = new NetworkHandler(this, Mode);
+            _handler = new NetworkHandler(this);
             _handler.OnPacketHandled += RaisePacketHandled;
             _handler.Start();
 
             #region Handle Early connect error
 
-            if (ConnectionClosed)
+            while (!Connected)
             {
-                Dispose();
-                return new ServerInfo();
+                if (Crashed)
+                {
+                    Dispose();
+                    return new ServerInfo();
+                }
+
+                Thread.Sleep(250);
             }
 
             #endregion
@@ -200,23 +207,28 @@ namespace MineLib.Network.Modern.BaseClients
             return info;
         }
 
-        public long GetPing(string host, short port, int protocolVersion)
+        public int GetPing(string host, short port, int protocolVersion)
         {
             ServerHost = host;
             ServerPort = port;
 
             var pingPacketReceived = false;
 
-            _handler = new NetworkHandler(this, Mode);
+            _handler = new NetworkHandler(this);
             _handler.OnPacketHandled += RaisePacketHandled;
             _handler.Start();
 
             #region Handle Early connect error
 
-            if (ConnectionClosed)
+            while (!Connected)
             {
-                Dispose();
-                return int.MaxValue;
+                if (Crashed)
+                {
+                    Dispose();
+                    return int.MaxValue;
+                }
+
+                Thread.Sleep(250);
             }
 
             #endregion
@@ -239,7 +251,7 @@ namespace MineLib.Network.Modern.BaseClients
 
             while (!pingPacketReceived)
             {
-                if (_handler != null && ConnectionClosed)
+                if (_handler != null && Connected)
                 {
                     Dispose();
                     return int.MaxValue;
@@ -253,7 +265,7 @@ namespace MineLib.Network.Modern.BaseClients
             var ping = PingServer(host, port);
 
             Dispose();
-            return ping;
+            return (int) ping;
         }
 
 
@@ -280,7 +292,7 @@ namespace MineLib.Network.Modern.BaseClients
         private void SendPacket(IPacket packet)
         {
             if (_handler != null)
-                _handler.Send(packet);
+                _handler.BeginSendPacket(packet, null, null);
         }
 
         private static long PingServer(string host, int port)
@@ -288,35 +300,16 @@ namespace MineLib.Network.Modern.BaseClients
             var watch = new Stopwatch();
             watch.Start();
             var client = new TcpClient(host, port);
-            watch.Stop();
             client.Close();
+            watch.Stop();
 
             return watch.ElapsedMilliseconds;
         }
 
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        private void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
-            if (disposing)
-            {
-                if (_handler != null)
-                    _handler.Dispose();
-            }
-
-            _disposed = true;
-        }
-
-        ~ServerInfoParser()
-        {
-            Dispose(false);
+            if (_handler != null)
+                _handler.Dispose();
         }
     }
 }
