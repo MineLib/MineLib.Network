@@ -170,7 +170,6 @@ namespace MineLib.Network.IO
         public sbyte ReadSByte()
         {
             return unchecked((sbyte)ReadByte());
-
         }
 
         // -- Boolean
@@ -178,7 +177,6 @@ namespace MineLib.Network.IO
         public bool ReadBoolean()
         {
             return Convert.ToBoolean(ReadByte());
-
         }
 
         // -- IntArray

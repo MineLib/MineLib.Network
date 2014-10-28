@@ -53,13 +53,6 @@ namespace MineLib.Network
             public List<AvailableProfiles> AvailableProfiles { get; set; }
         }
 
-        public struct YggdrasilAnswer
-        {
-            public YggdrasilStatus Status;
-
-            public Response Response;
-        }
-
         public struct Error
         {
             [JsonProperty("error")]
@@ -72,16 +65,20 @@ namespace MineLib.Network
             public string Cause { get; set; }
         }
 
+        public struct YggdrasilAnswer
+        {
+            public YggdrasilStatus Status;
+
+            public Response Response;
+        }
+
         #endregion Response
 
         #region Requests
-        
+
         private struct Agent
         {
-            public static Agent Minecraft
-            {
-                get { return new Agent { Name = "Minecraft", Version = 1 }; }
-            }
+            public static Agent Minecraft { get { return new Agent { Name = "Minecraft", Version = 1 }; } }
 
             [JsonProperty("name")]
             public string Name { get; set; }
