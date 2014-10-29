@@ -61,7 +61,7 @@ namespace MineLib.Network.IO
 
         int ReadVarInt();
 
-        byte[] ReadByteArray(long value);
+        byte[] ReadByteArray(int value);
 
 
         IAsyncResult BeginWrite(IPacket packet, AsyncCallback callback, object state);

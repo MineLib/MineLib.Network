@@ -251,7 +251,7 @@ namespace MineLib.Network.IO
         {
             var myBytes = new byte[value];
 
-            var bytesRead = _stream.Read(myBytes, 0, value);
+            var bytesRead = _stream.Read(myBytes, 0, myBytes.Length);
 
             while (true)
             {

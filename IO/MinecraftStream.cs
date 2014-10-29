@@ -355,23 +355,36 @@ namespace MineLib.Network.IO
             return result;
         }
 
-        public byte[] ReadByteArray(long value)
+        public byte[] ReadByteArray(int value)
         {
             if (!EncryptionEnabled)
             {
                 var result = new byte[value];
-
-                _stream.Read(result, 0, result.Length);
+                if (value == 0) return result;
+                int n = value;
+                while (true)
+                {
+                    n -= _stream.Read(result, value - n, n);
+                    if (n == 0)
+                        break;
+                }
                 return result;
             }
             else
             {
                 var result = new byte[value];
-
-                _aesStream.Read(result, 0, result.Length);
+                if (value == 0) return result;
+                int n = value;
+                while (true)
+                {
+                    n -= _aesStream.Read(result, value - n, n);
+                    if (n == 0)
+                        break;
+                }
                 return result;
             }
         }
+
 
 
         #region BeginWrite and BeginRead
