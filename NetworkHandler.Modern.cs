@@ -17,7 +17,7 @@ namespace MineLib.Network
     public sealed partial class NetworkHandler
     {
         public bool CompressionEnabled { get { return _stream.ModernCompressionEnabled; } }
-        public int CompressionThreshold { get { return _stream.ModernCompressionThreshold; } }
+        public long CompressionThreshold { get { return _stream.ModernCompressionThreshold; } }
 
 
         private void ConnectedModern(IAsyncResult asyncResult)

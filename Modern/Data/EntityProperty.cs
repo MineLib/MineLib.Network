@@ -41,7 +41,7 @@ namespace MineLib.Network.Modern.Data
 
         #region Network
 
-        public static EntityPropertyList FromReader(MinecraftDataReader reader)
+        public static EntityPropertyList FromReader(IMinecraftDataReader reader)
         {
             var count = reader.ReadInt();
 
@@ -73,7 +73,7 @@ namespace MineLib.Network.Modern.Data
             return value;
         }
 
-        public void ToStream(ref MinecraftStream stream)
+        public void ToStream(ref IMinecraftStream stream)
         {
             stream.WriteInt(Count);
 

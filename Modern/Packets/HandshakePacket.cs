@@ -13,7 +13,7 @@ namespace MineLib.Network.Modern.Packets
         public const byte PacketID = 0x00;
         public byte ID { get { return PacketID; } }
 
-        public IPacket ReadPacket(MinecraftDataReader reader)
+        public IPacket ReadPacket(IMinecraftDataReader reader)
         {
             ProtocolVersion = reader.ReadVarInt();
             ServerAddress = reader.ReadString();
@@ -23,7 +23,7 @@ namespace MineLib.Network.Modern.Packets
             return this;
         }
 
-        public IPacket WritePacket(MinecraftStream stream)
+        public IPacket WritePacket(IMinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteVarInt(ProtocolVersion);

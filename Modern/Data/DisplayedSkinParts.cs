@@ -14,7 +14,7 @@ namespace MineLib.Network.Modern.Data
         public bool HatEnabled;
         public bool Unused;
 
-        public static DisplayedSkinParts FromReader(MinecraftDataReader reader)
+        public static DisplayedSkinParts FromReader(IMinecraftDataReader reader)
         {
             var value = reader.ReadByte();
 
@@ -40,7 +40,7 @@ namespace MineLib.Network.Modern.Data
             };
         }
 
-        public void ToStream(MinecraftStream stream)
+        public void ToStream(IMinecraftStream stream)
         {
             var value = ToByte();
 

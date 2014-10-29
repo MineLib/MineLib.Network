@@ -8,14 +8,14 @@ namespace MineLib.Network.Modern.Packets.Server.Status
 
         public byte ID { get { return 0x00; } }
 
-        public IPacket ReadPacket(MinecraftDataReader reader)
+        public IPacket ReadPacket(IMinecraftDataReader reader)
         {
             Response = reader.ReadString();
 
             return this;
         }
 
-        public IPacket WritePacket(MinecraftStream stream)
+        public IPacket WritePacket(IMinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteString(Response);

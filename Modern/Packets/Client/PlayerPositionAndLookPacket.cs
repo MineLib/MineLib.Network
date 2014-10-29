@@ -11,7 +11,7 @@ namespace MineLib.Network.Modern.Packets.Client
 
         public byte ID { get { return 0x06; } }
 
-        public IPacket ReadPacket(MinecraftDataReader reader)
+        public IPacket ReadPacket(IMinecraftDataReader reader)
         {
             X = reader.ReadDouble();
             FeetY = reader.ReadDouble();
@@ -23,7 +23,7 @@ namespace MineLib.Network.Modern.Packets.Client
             return this;
         }
 
-        public IPacket WritePacket(MinecraftStream stream)
+        public IPacket WritePacket(IMinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteDouble(X);

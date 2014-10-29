@@ -9,19 +9,19 @@ namespace MineLib.Network.Classic.Packets.Extension.Server
         public byte ID { get { return 0x12; } }
         public short Size { get { return 3; } }
 
-        public IPacketWithSize ReadPacket(MinecraftDataReader stream)
+        public IPacketWithSize ReadPacket(IMinecraftDataReader stream)
         {
             Distance = stream.ReadShort();
 
             return this;
         }
 
-        IPacket IPacket.ReadPacket(MinecraftDataReader stream)
+        IPacket IPacket.ReadPacket(IMinecraftDataReader stream)
         {
             return ReadPacket(stream);
         }
 
-        public IPacket WritePacket(MinecraftStream stream)
+        public IPacket WritePacket(IMinecraftStream stream)
         {
             stream.WriteByte(ID);
             stream.WriteShort(Distance);

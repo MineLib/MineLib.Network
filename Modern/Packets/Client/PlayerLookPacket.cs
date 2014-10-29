@@ -10,7 +10,7 @@ namespace MineLib.Network.Modern.Packets.Client
 
         public byte ID { get { return 0x05; } }
 
-        public IPacket ReadPacket(MinecraftDataReader reader)
+        public IPacket ReadPacket(IMinecraftDataReader reader)
         {
             Yaw = reader.ReadFloat();
             Pitch = reader.ReadFloat();
@@ -19,7 +19,7 @@ namespace MineLib.Network.Modern.Packets.Client
             return this;
         }
 
-        public IPacket WritePacket(MinecraftStream stream)
+        public IPacket WritePacket(IMinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteFloat(Yaw);

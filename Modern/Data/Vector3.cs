@@ -42,7 +42,7 @@ namespace MineLib.Network.Modern.Data
 
         #region Network
 
-        public static Vector3 FromReaderByte(MinecraftDataReader reader)
+        public static Vector3 FromReaderByte(IMinecraftDataReader reader)
         {
             return new Vector3
             {
@@ -52,7 +52,7 @@ namespace MineLib.Network.Modern.Data
             };
         }
 
-        public static Vector3 FromReaderDouble(MinecraftDataReader reader)
+        public static Vector3 FromReaderDouble(IMinecraftDataReader reader)
         {
             return new Vector3
             {
@@ -62,7 +62,7 @@ namespace MineLib.Network.Modern.Data
             };
         }
 
-        public static Vector3 FromReaderSByteFixedPoint(MinecraftDataReader reader)
+        public static Vector3 FromReaderSByteFixedPoint(IMinecraftDataReader reader)
         {
             return new Vector3
             {
@@ -72,7 +72,7 @@ namespace MineLib.Network.Modern.Data
             };
         }
 
-        public static Vector3 FromReaderIntFixedPoint(MinecraftDataReader reader)
+        public static Vector3 FromReaderIntFixedPoint(IMinecraftDataReader reader)
         {
             return new Vector3
             {
@@ -83,28 +83,28 @@ namespace MineLib.Network.Modern.Data
         }
 
 
-        public void ToStreamByte(MinecraftStream stream)
+        public void ToStreamByte(IMinecraftStream stream)
         {
             stream.WriteByte((byte)X);
             stream.WriteByte((byte)Y);
             stream.WriteByte((byte)Z);
         }
 
-        public void ToStreamDouble(MinecraftStream stream)
+        public void ToStreamDouble(IMinecraftStream stream)
         {
             stream.WriteDouble(X);
             stream.WriteDouble(Y);
             stream.WriteDouble(Z);
         }
         // TODO: Check that
-        public void ToStreamSByteFixedPoint(MinecraftStream stream)
+        public void ToStreamSByteFixedPoint(IMinecraftStream stream)
         {
             stream.WriteSByte((sbyte) (X * 32));
             stream.WriteSByte((sbyte) (Y * 32));
             stream.WriteSByte((sbyte) (Z * 32));
         }
         // TODO: Check that
-        public void ToStreamIntFixedPoint(MinecraftStream stream)
+        public void ToStreamIntFixedPoint(IMinecraftStream stream)
         {
             stream.WriteInt((int) X * 32);
             stream.WriteInt((int) Y * 32);

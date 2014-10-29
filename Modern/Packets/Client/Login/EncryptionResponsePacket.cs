@@ -9,7 +9,7 @@ namespace MineLib.Network.Modern.Packets.Client.Login
 
         public byte ID { get { return 0x01; } }
 
-        public IPacket ReadPacket(MinecraftDataReader reader)
+        public IPacket ReadPacket(IMinecraftDataReader reader)
         {
             var ssLength = reader.ReadVarInt();
             SharedSecret = reader.ReadByteArray(ssLength);
@@ -19,7 +19,7 @@ namespace MineLib.Network.Modern.Packets.Client.Login
             return this;
         }
 
-        public IPacket WritePacket(MinecraftStream stream)
+        public IPacket WritePacket(IMinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteVarInt(SharedSecret.Length);

@@ -12,7 +12,7 @@ namespace MineLib.Network.Modern.Packets.Server.Login
 
         public byte ID { get { return 0x01; } }
 
-        public IPacket ReadPacket(MinecraftDataReader reader)
+        public IPacket ReadPacket(IMinecraftDataReader reader)
         {
             ServerId = reader.ReadString();
             var pkLength = reader.ReadVarInt();
@@ -28,7 +28,7 @@ namespace MineLib.Network.Modern.Packets.Server.Login
             return this;
         }
 
-        public IPacket WritePacket(MinecraftStream stream)
+        public IPacket WritePacket(IMinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteString(ServerId);

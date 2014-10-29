@@ -10,8 +10,8 @@ namespace MineLib.Network.Modern.Data.EntityMetadataEntries
         public abstract string FriendlyName { get; }
         internal byte Index { get; set; }
 
-        public abstract void FromReader(MinecraftDataReader reader);
-        public abstract void ToStream(MinecraftStream stream, byte index);
+        public abstract void FromReader(IMinecraftDataReader reader);
+        public abstract void ToStream(IMinecraftStream stream, byte index);
 
         public static implicit operator MetadataEntry(byte value)
         {

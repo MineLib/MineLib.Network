@@ -48,7 +48,7 @@ namespace MineLib.Network.Modern.Data
 
         #region Network
 
-        public static Position FromReaderInt(MinecraftDataReader reader)
+        public static Position FromReaderInt(IMinecraftDataReader reader)
         {
             return new Position
             {
@@ -58,7 +58,7 @@ namespace MineLib.Network.Modern.Data
             };
         }
 
-        public static Position FromReaderVarInt(MinecraftDataReader reader)
+        public static Position FromReaderVarInt(IMinecraftDataReader reader)
         {
             return new Position
             {
@@ -68,27 +68,27 @@ namespace MineLib.Network.Modern.Data
             };
         }
 
-        public static Position FromReaderLong(MinecraftDataReader reader)
+        public static Position FromReaderLong(IMinecraftDataReader reader)
         {
             return FromLong(reader.ReadLong());
         }
 
 
-        public void ToStreamInt(MinecraftStream stream)
+        public void ToStreamInt(IMinecraftStream stream)
         {
             stream.WriteInt(X);
             stream.WriteInt(Y);
             stream.WriteInt(Z);
         }
 
-        public void ToStreamVarInt(MinecraftStream stream)
+        public void ToStreamVarInt(IMinecraftStream stream)
         {
             stream.WriteVarInt(X);
             stream.WriteVarInt(Y);
             stream.WriteVarInt(Z);
         }
 
-        public void ToStreamLong(MinecraftStream stream)
+        public void ToStreamLong(IMinecraftStream stream)
         {
             stream.WriteLong(ToLong());
         }

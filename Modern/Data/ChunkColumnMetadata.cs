@@ -38,7 +38,7 @@ namespace MineLib.Network.Modern.Data
             return _entries.ToArray();
         }
 
-        public static ChunkColumnMetadataList FromReader(MinecraftDataReader reader)
+        public static ChunkColumnMetadataList FromReader(IMinecraftDataReader reader)
         {
             var value = new ChunkColumnMetadataList();
 
@@ -57,7 +57,7 @@ namespace MineLib.Network.Modern.Data
             return value;
         }
 
-        public void ToStream(MinecraftStream stream)
+        public void ToStream(IMinecraftStream stream)
         {
             stream.WriteVarInt(Count);
 

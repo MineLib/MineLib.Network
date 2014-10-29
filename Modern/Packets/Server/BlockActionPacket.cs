@@ -6,8 +6,8 @@ namespace MineLib.Network.Modern.Packets.Server
 {
     public interface IBlockAction
     {
-        IBlockAction FromReader(MinecraftDataReader reader); // --- Is not used
-        void ToStream(MinecraftStream stream);
+        IBlockAction FromReader(IMinecraftDataReader reader); // --- Is not used
+        void ToStream(IMinecraftStream stream);
     }
 
     public struct BlockActionNoteBlock : IBlockAction
@@ -24,12 +24,12 @@ namespace MineLib.Network.Modern.Packets.Server
             BlockType = blockType;
         }
 
-        public IBlockAction FromReader(MinecraftDataReader reader)
+        public IBlockAction FromReader(IMinecraftDataReader reader)
         {
             return null;
         }
 
-        public void ToStream(MinecraftStream stream)
+        public void ToStream(IMinecraftStream stream)
         {
             stream.WriteByte((byte) NoteBlockType);
             stream.WriteByte((byte) Pitch);
@@ -51,12 +51,12 @@ namespace MineLib.Network.Modern.Packets.Server
             BlockType = blockType;
         }
 
-        public IBlockAction FromReader(MinecraftDataReader reader)
+        public IBlockAction FromReader(IMinecraftDataReader reader)
         {
             return null;
         }
 
-        public void ToStream(MinecraftStream stream)
+        public void ToStream(IMinecraftStream stream)
         {
             stream.WriteByte((byte) PistonState);
             stream.WriteByte((byte) PistonDirection);
@@ -78,12 +78,12 @@ namespace MineLib.Network.Modern.Packets.Server
             BlockType = blockType;
         }
 
-        public IBlockAction FromReader(MinecraftDataReader reader)
+        public IBlockAction FromReader(IMinecraftDataReader reader)
         {
             return null;
         }
 
-        public void ToStream(MinecraftStream stream)
+        public void ToStream(IMinecraftStream stream)
         {
             stream.WriteByte(Byte1);
             stream.WriteByte((byte) ChestState);
@@ -102,7 +102,7 @@ namespace MineLib.Network.Modern.Packets.Server
 
         public byte ID { get { return 0x24; } }
 
-        public IPacket ReadPacket(MinecraftDataReader reader)
+        public IPacket ReadPacket(IMinecraftDataReader reader)
         {
             Location = Position.FromReaderLong(reader);
             Byte1 = reader.ReadByte();
@@ -131,7 +131,7 @@ namespace MineLib.Network.Modern.Packets.Server
             return this;
         }
 
-        public IPacket WritePacket(MinecraftStream stream)
+        public IPacket WritePacket(IMinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             Location.ToStreamLong(stream);

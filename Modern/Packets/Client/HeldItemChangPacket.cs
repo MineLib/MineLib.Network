@@ -8,14 +8,14 @@ namespace MineLib.Network.Modern.Packets.Client
 
         public byte ID { get { return 0x09; } }
 
-        public IPacket ReadPacket(MinecraftDataReader reader)
+        public IPacket ReadPacket(IMinecraftDataReader reader)
         {
             Slot = reader.ReadShort();
 
             return this;
         }
 
-        public IPacket WritePacket(MinecraftStream stream)
+        public IPacket WritePacket(IMinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteShort(Slot);

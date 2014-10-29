@@ -9,7 +9,7 @@ namespace MineLib.Network.Modern.Packets.Server
 
         public byte ID { get { return 0x3A; } }
 
-        public IPacket ReadPacket(MinecraftDataReader reader)
+        public IPacket ReadPacket(IMinecraftDataReader reader)
         {
             Count = reader.ReadVarInt();
             Text = reader.ReadString();
@@ -17,7 +17,7 @@ namespace MineLib.Network.Modern.Packets.Server
             return this;
         }
 
-        public IPacket WritePacket(MinecraftStream stream)
+        public IPacket WritePacket(IMinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteVarInt(Count);

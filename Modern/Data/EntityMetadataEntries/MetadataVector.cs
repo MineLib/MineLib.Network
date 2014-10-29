@@ -28,14 +28,14 @@ namespace MineLib.Network.Modern.Data.EntityMetadataEntries
             Coordinates = position;
         }
 
-        public override void FromReader(MinecraftDataReader reader)
+        public override void FromReader(IMinecraftDataReader reader)
         {
             Coordinates.X = reader.ReadInt();
             Coordinates.Y = reader.ReadInt();
             Coordinates.Z = reader.ReadInt();
         }
 
-        public override void ToStream(MinecraftStream stream, byte index)
+        public override void ToStream(IMinecraftStream stream, byte index)
         {
             stream.WriteByte(GetKey(index));
             stream.WriteInt(Coordinates.X);

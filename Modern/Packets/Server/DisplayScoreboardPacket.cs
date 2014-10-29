@@ -10,7 +10,7 @@ namespace MineLib.Network.Modern.Packets.Server
 
         public byte ID { get { return 0x3D; } }
 
-        public IPacket ReadPacket(MinecraftDataReader reader)
+        public IPacket ReadPacket(IMinecraftDataReader reader)
         {
             Position = (ScoreboardPosition) reader.ReadSByte();
             ScoreName = reader.ReadString();
@@ -18,7 +18,7 @@ namespace MineLib.Network.Modern.Packets.Server
             return this;
         }
 
-        public IPacket WritePacket(MinecraftStream stream)
+        public IPacket WritePacket(IMinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteSByte((sbyte) Position);

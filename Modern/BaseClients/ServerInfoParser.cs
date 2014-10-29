@@ -44,7 +44,7 @@ namespace MineLib.Network.Modern.BaseClients
 
         #endregion Variables
 
-        private NetworkHandler _handler;
+        private INetworkHandler _handler;
 
         private bool Connected { get { return _handler.Connected; } }
 

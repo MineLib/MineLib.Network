@@ -9,19 +9,19 @@ namespace MineLib.Network.PocketEdition.Packets.Client
         public byte ID { get { return 0x85; } }
         public short Size { get { return 0; } }
 
-        public IPacketWithSize ReadPacket(MinecraftDataReader reader)
+        public IPacketWithSize ReadPacket(IMinecraftDataReader reader)
         {
             Message = reader.ReadString();
 
             return this;
         }
 
-        IPacket IPacket.ReadPacket(MinecraftDataReader stream)
+        IPacket IPacket.ReadPacket(IMinecraftDataReader stream)
         {
             return ReadPacket(stream);
         }
 
-        public IPacket WritePacket(MinecraftStream stream)
+        public IPacket WritePacket(IMinecraftStream stream)
         {
             stream.WriteVarInt(ID);
             stream.WriteString(Message);

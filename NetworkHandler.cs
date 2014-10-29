@@ -5,11 +5,11 @@ using MineLib.Network.IO;
 
 namespace MineLib.Network
 {
-    public sealed partial class NetworkHandler : IDisposable
+    public sealed partial class NetworkHandler : INetworkHandler
     {
         // -- Debugging
-        public readonly List<IPacket> PacketsReceived = new List<IPacket>();
-        public readonly List<IPacket> PacketsSended = new List<IPacket>();
+        public List<IPacket> PacketsReceived { get; set; }
+        public List<IPacket> PacketsSended { get; set; }
         // -- Debugging.
 
         #region Properties
@@ -27,11 +27,14 @@ namespace MineLib.Network
         private readonly IMinecraftClient _minecraft;
 
         private Socket _baseSock;
-        private MinecraftStream _stream;
+        private IMinecraftStream _stream;
 
         public NetworkHandler(IMinecraftClient client)
         {
             _minecraft = client;
+
+            PacketsReceived = new List<IPacket>();
+            PacketsSended = new List<IPacket>();
         }
 
         /// <summary>

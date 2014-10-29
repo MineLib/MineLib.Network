@@ -7,17 +7,17 @@ namespace MineLib.Network.Classic.Packets.Server
         public byte ID { get { return 0x01; } }
         public short Size { get { return 1; } }
 
-        public IPacketWithSize ReadPacket(MinecraftDataReader stream)
+        public IPacketWithSize ReadPacket(IMinecraftDataReader stream)
         {
             return this;
         }
 
-        IPacket IPacket.ReadPacket(MinecraftDataReader stream)
+        IPacket IPacket.ReadPacket(IMinecraftDataReader stream)
         {
             return ReadPacket(stream);
         }
 
-        public IPacket WritePacket(MinecraftStream stream)
+        public IPacket WritePacket(IMinecraftStream stream)
         {
             stream.WriteByte(ID);
             stream.Purge();

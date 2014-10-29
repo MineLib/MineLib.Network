@@ -101,11 +101,15 @@
     <Compile Include="Classic\Packets\Server\UpdateUserType.cs" />
     <Compile Include="Classic\Enums\UserType.cs" />
     <Compile Include="Cryptography.cs" />
+    <Compile Include="INetworkHandler.cs" />
+    <Compile Include="IO\IAesStream.cs" />
+    <Compile Include="IO\IMinecraftDataReader.cs" />
+    <Compile Include="IO\IMinecraftStream.cs" />
+    <Compile Include="IO\NativeAesStream.cs" />
     <Compile Include="Modern\DebugHelpers.cs" />
     <Compile Include="IMinecraftClient.cs" />
     <Compile Include="Events\Events.cs" />
     <Compile Include="IO\MinecraftDataReader.cs" />
-    <Compile Include="IO\MinecraftStream.Stream.cs" />
     <Compile Include="Modern\BaseClients\ServerInfoParser.cs" />
     <Compile Include="Modern\BaseClients\ServerInfoParser.Events.cs" />
     <Compile Include="Modern\BaseClients\ServerInfoParser.Json.cs" />

@@ -13,7 +13,7 @@ namespace MineLib.Network.Classic.Packets.Server
         public byte ID { get { return 0x00; } }
         public short Size { get { return 131; } }
 
-        public IPacketWithSize ReadPacket(MinecraftDataReader stream)
+        public IPacketWithSize ReadPacket(IMinecraftDataReader stream)
         {
             ProtocolVersion = stream.ReadByte();
             ServerName = stream.ReadString();
@@ -23,12 +23,12 @@ namespace MineLib.Network.Classic.Packets.Server
             return this;
         }
 
-        IPacket IPacket.ReadPacket(MinecraftDataReader stream)
+        IPacket IPacket.ReadPacket(IMinecraftDataReader stream)
         {
             return ReadPacket(stream);
         }
 
-        public IPacket WritePacket(MinecraftStream stream)
+        public IPacket WritePacket(IMinecraftStream stream)
         {
             stream.WriteByte(ID);
             stream.WriteByte(ProtocolVersion);

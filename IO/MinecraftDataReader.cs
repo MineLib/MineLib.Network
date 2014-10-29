@@ -6,9 +6,9 @@ using Org.BouncyCastle.Math;
 namespace MineLib.Network.IO
 {
     // Reads only decrypted data
-    public sealed class MinecraftDataReader : IDisposable
+    public sealed class MinecraftDataReader : IMinecraftDataReader
     {
-        public readonly NetworkMode Mode;
+        public NetworkMode Mode { get; set; }
 
         private readonly Stream _stream;
 
@@ -69,33 +69,6 @@ namespace MineLib.Network.IO
             return Encoding.ASCII.GetString(stringBytes);
         }
 
-        // -- Short
-
-        public short ReadShort()
-        {
-            var bytes = ReadByteArray(2);
-            Array.Reverse(bytes);
-
-            return BitConverter.ToInt16(bytes, 0);
-        }
-
-        // -- UShort
-
-        public ushort ReadUShort()
-        {
-            return (ushort) ((ReadByte() << 8) | ReadByte());
-        }
-
-        // -- Int
-
-        public int ReadInt()
-        {
-            var bytes = ReadByteArray(4);
-            Array.Reverse(bytes);
-
-            return BitConverter.ToInt32(bytes, 0);
-        }
-
         // -- VarInt
 
         public int ReadVarInt()
@@ -106,7 +79,7 @@ namespace MineLib.Network.IO
             while (true)
             {
                 var current = ReadByte();
-                result |= (current & 0x7F) << length++*7;
+                result |= (current & 0x7F) << length++ * 7;
 
                 if (length > 6)
                     throw new InvalidDataException("Invalid varint: Too long.");
@@ -118,7 +91,60 @@ namespace MineLib.Network.IO
             return result;
         }
 
-        // -- Long
+        // -- Boolean
+
+        public bool ReadBoolean()
+        {
+            return Convert.ToBoolean(ReadByte());
+        }
+
+        // -- SByte & Byte
+
+        public sbyte ReadSByte()
+        {
+            return unchecked((sbyte)ReadByte());
+        }
+
+        public byte ReadByte()
+        {
+            return (byte)_stream.ReadByte();
+        }
+
+        // -- Short & UShort
+
+        public short ReadShort()
+        {
+            var bytes = ReadByteArray(2);
+            Array.Reverse(bytes);
+
+            return BitConverter.ToInt16(bytes, 0);
+        }
+
+        public ushort ReadUShort()
+        {
+            return (ushort) ((ReadByte() << 8) | ReadByte());
+        }
+
+        // -- Int & UInt
+
+        public int ReadInt()
+        {
+            var bytes = ReadByteArray(4);
+            Array.Reverse(bytes);
+
+            return BitConverter.ToInt32(bytes, 0);
+        }
+
+        public uint ReadUInt()
+        {
+            return (uint)(
+                (ReadUShort() << 24) |
+                (ReadUShort() << 16) |
+                (ReadUShort() << 8 ) |
+                 ReadUShort());
+        }
+
+        // -- Long & ULong
 
         public long ReadLong()
         {
@@ -128,7 +154,20 @@ namespace MineLib.Network.IO
             return BitConverter.ToInt64(bytes, 0);
         }
 
-        // -- BigInt
+        public ulong ReadULong()
+        {
+            return unchecked(
+                   ((ulong)ReadUShort() << 56) |
+                   ((ulong)ReadUShort() << 48) |
+                   ((ulong)ReadUShort() << 40) |
+                   ((ulong)ReadUShort() << 32) |
+                   ((ulong)ReadUShort() << 24) |
+                   ((ulong)ReadUShort() << 16) |
+                   ((ulong)ReadUShort() << 8) |
+                    (ulong)ReadUShort());
+        }
+
+        // -- BigInt & UBigInt
 
         public BigInteger ReadBigInteger()
         {
@@ -137,15 +176,10 @@ namespace MineLib.Network.IO
 
             return new BigInteger(bytes);
         }
-
-        // -- Doubles
-
-        public double ReadDouble()
+        
+        public BigInteger ReadUBigInteger()
         {
-            var bytes = ReadByteArray(8);
-            Array.Reverse(bytes);
-
-            return BitConverter.ToDouble(bytes, 0);
+            throw new NotImplementedException();
         }
 
         // -- Floats
@@ -158,40 +192,16 @@ namespace MineLib.Network.IO
             return BitConverter.ToSingle(bytes, 0);
         }
 
-        // -- Byte
+        // -- Doubles
 
-        public byte ReadByte()
+        public double ReadDouble()
         {
-            return (byte)_stream.ReadByte();
+            var bytes = ReadByteArray(8);
+            Array.Reverse(bytes);
+
+            return BitConverter.ToDouble(bytes, 0);
         }
 
-        // -- SByte
-
-        public sbyte ReadSByte()
-        {
-            return unchecked((sbyte)ReadByte());
-        }
-
-        // -- Boolean
-
-        public bool ReadBoolean()
-        {
-            return Convert.ToBoolean(ReadByte());
-        }
-
-        // -- IntArray
-
-        public int[] ReadIntArray(int value)
-        {
-            var myInts = new int[value];
-
-            for (var i = 0; i < value; i++)
-            {
-                myInts[i] = ReadInt();
-            }
-
-            return myInts;
-        }
 
         // -- StringArray
 
@@ -216,6 +226,20 @@ namespace MineLib.Network.IO
             for (var i = 0; i < value; i++)
             {
                 myInts[i] = ReadVarInt();
+            }
+
+            return myInts;
+        }
+
+        // -- IntArray
+
+        public int[] ReadIntArray(int value)
+        {
+            var myInts = new int[value];
+
+            for (var i = 0; i < value; i++)
+            {
+                myInts[i] = ReadInt();
             }
 
             return myInts;
