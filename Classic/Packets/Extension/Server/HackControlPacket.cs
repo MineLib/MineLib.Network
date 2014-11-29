@@ -15,21 +15,21 @@ namespace MineLib.Network.Classic.Packets.Extension.Server
         public byte ID { get { return 0x20; } }
         public short Size { get { return 8; } }
 
-        public IPacketWithSize ReadPacket(IMinecraftDataReader stream)
+        public IPacketWithSize ReadPacket(IMinecraftDataReader reader)
         {
-            Flying = (Flying) stream.ReadByte();
-            NoClip = (NoClip) stream.ReadByte();
-            Speeding = (Speeding) stream.ReadByte();
-            SpawnControl = (SpawnControl) stream.ReadByte();
-            ThirdPersonView = (ThirdPersonView) stream.ReadByte();
-            JumpHeight = stream.ReadShort();
+            Flying = (Flying) reader.ReadByte();
+            NoClip = (NoClip) reader.ReadByte();
+            Speeding = (Speeding) reader.ReadByte();
+            SpawnControl = (SpawnControl) reader.ReadByte();
+            ThirdPersonView = (ThirdPersonView) reader.ReadByte();
+            JumpHeight = reader.ReadShort();
 
             return this;
         }
 
-        IPacket IPacket.ReadPacket(IMinecraftDataReader stream)
+        IPacket IPacket.ReadPacket(IMinecraftDataReader reader)
         {
-            return ReadPacket(stream);
+            return ReadPacket(reader);
         }
 
         public IPacket WritePacket(IMinecraftStream stream)

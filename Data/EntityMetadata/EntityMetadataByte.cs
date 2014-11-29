@@ -1,27 +1,27 @@
 ﻿using MineLib.Network.IO;
 
-namespace MineLib.Network.Modern.Data.EntityMetadataEntries
+namespace MineLib.Network.Data.EntityMetadata
 {
     /// <summary>
     /// Byte Metadata
     /// </summary>
-    public class MetadataByte : MetadataEntry
+    public class EntityMetadataByte : EntityMetadataEntry
     {
         public override byte Identifier { get { return 0; } }
         public override string FriendlyName { get { return "byte"; } }
 
         public byte Value;
 
-        public static implicit operator MetadataByte(byte value)
+        public static implicit operator EntityMetadataByte(byte value)
         {
-            return new MetadataByte(value);
+            return new EntityMetadataByte(value);
         }
 
-        public MetadataByte()
+        public EntityMetadataByte()
         {
         }
 
-        public MetadataByte(byte value)
+        public EntityMetadataByte(byte value)
         {
             Value = value;
         }

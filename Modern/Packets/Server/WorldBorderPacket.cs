@@ -36,7 +36,7 @@ namespace MineLib.Network.Modern.Packets.Server
         {
             OldRadius = reader.ReadDouble();
             NewRadius = reader.ReadDouble();
-            //Speed = stream.ReadVarLong(); TODO: VarLong
+            //Speed = reader.ReadVarLong(); TODO: VarLong
 
             return this;
         }
@@ -85,7 +85,7 @@ namespace MineLib.Network.Modern.Packets.Server
 
             OldRadius = reader.ReadDouble();
             NewRadius = reader.ReadDouble();
-            //Speed = stream.ReadVarLong(); TODO: VarLong
+            //Speed = reader.ReadVarLong(); TODO: VarLong
             PortalTeleportBoundary = reader.ReadVarInt();
             WarningTime = reader.ReadVarInt();
             WarningBlocks = reader.ReadVarInt();

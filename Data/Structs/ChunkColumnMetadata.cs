@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using MineLib.Network.IO;
+using MineLib.Network.Modern;
 
-namespace MineLib.Network.Modern.Data
+namespace MineLib.Network.Data.Structs
 {
     public struct ChunkColumnMetadata
     {
@@ -43,17 +44,13 @@ namespace MineLib.Network.Modern.Data
             var value = new ChunkColumnMetadataList();
 
             var count = reader.ReadVarInt();
-            for (var i = 0; i < count; i++)
-            {
-                var metadata = new ChunkColumnMetadata();
-
-                metadata.Coordinates.X = reader.ReadInt();
-                metadata.Coordinates.Z = reader.ReadInt();
-                metadata.PrimaryBitMap = reader.ReadUShort();
-
-                value[i] = metadata;
-            }
-
+            for (int i = 0; i < count; i++)
+                value[i] = new ChunkColumnMetadata
+                {
+                    Coordinates = new Coordinates2D(reader.ReadInt(), reader.ReadInt()),
+                    PrimaryBitMap = reader.ReadUShort()
+                };
+            
             return value;
         }
 

@@ -1,19 +1,26 @@
-﻿namespace MineLib.Network.Modern.Data
+﻿namespace MineLib.Network.Data
 {
     /// <summary>
     /// Represents the size of an object in 3D space.
     /// </summary>
     public struct Size
     {
-        public double Width;
-        public double Height;
-        public double Depth;
+        public readonly float Width;
+        public readonly float Height;
+        public readonly float Depth;
 
-        public Size(double width, double height, double depth)
+        public Size(float width, float height, float depth)
         {
             Width = width;
             Height = height;
             Depth = depth;
+        }
+
+        public Size(double width, double height, double depth)
+        {
+            Width = (float) width;
+            Height = (float) height;
+            Depth = (float) depth;
         }
 
         public Size(Size s)
@@ -31,21 +38,25 @@
         {
             return string.Format("Width: {0}, Height: {1}, Depth: {2}", Width, Height, Depth);
         }
-        
+
         // TODO: More operators
-        public static Size operator /(Size a, double b)
+        public static Size operator /(Size a, float b)
         {
-            return new Size(a.Width/b, a.Height/b, a.Depth/b);
+            return new Size(
+                a.Width / b,
+                a.Height / b,
+                a.Depth / b
+            );
         }
 
-        public static bool operator ==(Size a, double b)
+        public static bool operator ==(Size a, float b)
         {
             return a.Width == b && a.Height == b && a.Depth == b;
         }
 
-        public static bool operator !=(Size a, double b)
+        public static bool operator !=(Size a, float b)
         {
-            return a.Width!= b && a.Height != b && a.Depth != b;
+            return a.Width != b && a.Height != b && a.Depth != b;
         }
 
         public bool Equals(Size other)

@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using MineLib.Network.IO;
 using Org.BouncyCastle.Math;
 
-namespace MineLib.Network.Modern.Data
+namespace MineLib.Network.Data.Structs
 {
     public struct Modifiers
     {
         public BigInteger UUID;
-        public double Amount;
+        public float Amount;
         public sbyte Operation;
     }
 
     public struct EntityProperty
     {
         public string Key;
-        public double Value;
+        public float Value;
         public Modifiers[] Modifiers;
     }
 
@@ -46,12 +46,12 @@ namespace MineLib.Network.Modern.Data
             var count = reader.ReadInt();
 
             var value = new EntityPropertyList();
-            for (var i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
                 var property = new EntityProperty();
 
                 property.Key = reader.ReadString();
-                property.Value = reader.ReadDouble();
+                property.Value = (float) reader.ReadDouble();
                 var listLength = reader.ReadVarInt();
 
                 property.Modifiers = new Modifiers[listLength];
@@ -60,7 +60,7 @@ namespace MineLib.Network.Modern.Data
                     var item = new Modifiers
                     {
                         UUID = reader.ReadBigInteger(),
-                        Amount = reader.ReadDouble(),
+                        Amount = (float) reader.ReadDouble(),
                         Operation = reader.ReadSByte()
                     };
 
@@ -96,23 +96,21 @@ namespace MineLib.Network.Modern.Data
 
         public bool Equals(EntityPropertyList other)
         {
-            if (!other.Count.Equals(Count))
+            if (!Count.Equals(other.Count))
                 return false;
 
-            for (byte i = 0; i < (byte)Count; i++)
-            {
-                if (!other[i].Equals(this[i]))
-                    return false;
-            }
-
+            for (int i = 0; i < Count; i++)
+                if (!this[i].Equals(other[i])) return false;
+            
             return true;
         }
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (obj.GetType() != typeof(EntityPropertyList)) return false;
-            return Equals((EntityPropertyList)obj);
+            if (obj.GetType() != typeof(EntityPropertyList))
+                return false;
+
+            return Equals((EntityPropertyList) obj);
         }
 
         public override int GetHashCode()

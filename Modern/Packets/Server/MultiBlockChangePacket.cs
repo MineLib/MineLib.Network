@@ -1,5 +1,6 @@
+using MineLib.Network.Data;
+using MineLib.Network.Data.Structs;
 using MineLib.Network.IO;
-using MineLib.Network.Modern.Data;
 
 namespace MineLib.Network.Modern.Packets.Server
 {
@@ -12,8 +13,7 @@ namespace MineLib.Network.Modern.Packets.Server
 
         public IPacket ReadPacket(IMinecraftDataReader reader)
         {
-            Coordinates.X = reader.ReadInt();
-            Coordinates.Z = reader.ReadInt();
+            Coordinates = Coordinates2D.FromReaderInt(reader);
             RecordList = RecordList.FromReader(reader);
 
             return this;
@@ -22,8 +22,7 @@ namespace MineLib.Network.Modern.Packets.Server
         public IPacket WritePacket(IMinecraftStream stream)
         {
             stream.WriteVarInt(ID);
-            stream.WriteInt(Coordinates.X);
-            stream.WriteInt(Coordinates.Z);
+            Coordinates.ToStreamInt(stream);
             RecordList.ToStream(stream);
             stream.Purge();
 

@@ -1,5 +1,5 @@
+using MineLib.Network.Data.Anvil;
 using MineLib.Network.IO;
-using MineLib.Network.Modern.Data.Anvil;
 
 namespace MineLib.Network.Modern.Packets.Server
 {

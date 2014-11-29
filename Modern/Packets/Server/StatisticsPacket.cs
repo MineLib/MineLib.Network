@@ -1,5 +1,5 @@
-﻿using MineLib.Network.IO;
-using MineLib.Network.Modern.Data;
+﻿using MineLib.Network.Data.Structs;
+using MineLib.Network.IO;
 
 namespace MineLib.Network.Modern.Packets.Server
 {

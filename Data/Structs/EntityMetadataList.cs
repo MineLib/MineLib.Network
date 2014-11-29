@@ -1,21 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using MineLib.Network.Data.EntityMetadata;
 using MineLib.Network.IO;
-using MineLib.Network.Modern.Data.EntityMetadataEntries;
 
-namespace MineLib.Network.Modern.Data
+namespace MineLib.Network.Data.Structs
 {
     /// <summary>
     /// Used to send metadata with entities
     /// </summary>
-    public class EntityMetadata : IEquatable<EntityMetadata>
+    public class EntityMetadataList : IEquatable<EntityMetadataList>
     {
-        private readonly Dictionary<byte, MetadataEntry> _entries;
+        private readonly Dictionary<byte, EntityMetadataEntry> _entries;
 
-        public EntityMetadata()
+        public EntityMetadataList()
         {
-            _entries = new Dictionary<byte, MetadataEntry>();
+            _entries = new Dictionary<byte, EntityMetadataEntry>();
         }
 
         public int Count
@@ -23,24 +23,24 @@ namespace MineLib.Network.Modern.Data
             get { return _entries.Count; }
         }
 
-        public MetadataEntry this[byte index]
+        public EntityMetadataEntry this[byte index]
         {
             get { return _entries[index]; }
             set { _entries[index] = value; }
         }
 
-        delegate MetadataEntry CreateEntryInstance();
+        delegate EntityMetadataEntry CreateEntryInstance();
 
         private static readonly CreateEntryInstance[] EntryTypes =
         {
-            () => new MetadataByte(),           // 0
-            () => new MetadataShort(),          // 1
-            () => new MetadataInt(),            // 2
-            () => new MetadataFloat(),          // 3
-            () => new MetadataString(),         // 4
-            () => new MetadataSlot(),           // 5
-            () => new MetadataVector(),         // 6
-            () => new MetadataRotation()        // 7
+            () => new EntityMetadataByte(),           // 0
+            () => new EntityMetadataShort(),          // 1
+            () => new EntityMetadataInt(),            // 2
+            () => new EntityMetadataFloat(),          // 3
+            () => new EntityMetadataString(),         // 4
+            () => new EntityMetadataSlot(),           // 5
+            () => new EntityMetadataVector(),         // 6
+            () => new EntityMetadataRotation()        // 7
         };
 
         /// <summary>
@@ -69,16 +69,16 @@ namespace MineLib.Network.Modern.Data
 
         #region Network
 
-        public static EntityMetadata FromReader(IMinecraftDataReader reader)
+        public static EntityMetadataList FromReader(IMinecraftDataReader reader)
         {
-            var value = new EntityMetadata();
+            var value = new EntityMetadataList();
             while (true)
             {
                 byte key = reader.ReadByte();
                 if (key == 127) break;
 
-                byte type = (byte)((key & 0xE0) >> 5);
-                byte index = (byte)(key & 0x1F);
+                var type = (byte)((key & 0xE0) >> 5);
+                var index = (byte)(key & 0x1F);
 
                 var entry = EntryTypes[type]();
                 entry.FromReader(reader);
@@ -93,30 +93,29 @@ namespace MineLib.Network.Modern.Data
         {
             foreach (var entry in _entries)
                 entry.Value.ToStream(stream, entry.Key);
+
             stream.WriteByte(0x7F);
         }
 
         #endregion
 
-        public bool Equals(EntityMetadata other)
+        public bool Equals(EntityMetadataList other)
         {
-            if(other.Count != Count)
+            if (!Count.Equals(other.Count))
                 return false;
 
-            for (byte i = 0; i < (byte)Count; i++)
-            {
-                if (other[i] != this[i])
-                    return false;
-            }
-
+            for (int i = 0; i < Count; i++)
+                if (!this[(byte) i].Equals(other[(byte) i])) return false;
+            
             return true;
         }
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (obj.GetType() != typeof(EntityMetadata)) return false;
-            return Equals((EntityMetadata)obj);
+            if (obj.GetType() != typeof(EntityMetadataList))
+                return false;
+
+            return Equals((EntityMetadataList) obj);
         }
 
         public override int GetHashCode()

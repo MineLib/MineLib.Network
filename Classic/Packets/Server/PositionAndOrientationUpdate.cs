@@ -1,43 +1,38 @@
-﻿using MineLib.Network.IO;
+﻿using MineLib.Network.Data;
+using MineLib.Network.IO;
 
 namespace MineLib.Network.Classic.Packets.Server
 {
     public struct PositionAndOrientationUpdatePacket : IPacketWithSize
     {
         public sbyte PlayerID;
-        public sbyte ChangeX;
-        public sbyte ChangeY;
-        public sbyte ChangeZ;
+        public Position ChangeLocation;
         public byte Yaw;
         public byte Pitch;
 
         public byte ID { get { return 0x09; } }
         public short Size { get { return 7; } }
 
-        public IPacketWithSize ReadPacket(IMinecraftDataReader stream)
+        public IPacketWithSize ReadPacket(IMinecraftDataReader reader)
         {
-            PlayerID = stream.ReadSByte();
-            ChangeX = stream.ReadSByte();
-            ChangeY = stream.ReadSByte();
-            ChangeZ = stream.ReadSByte();
-            Yaw = stream.ReadByte();
-            Pitch = stream.ReadByte();
+            PlayerID = reader.ReadSByte();
+            ChangeLocation = Position.FromReaderSByte(reader);
+            Yaw = reader.ReadByte();
+            Pitch = reader.ReadByte();
 
             return this;
         }
 
-        IPacket IPacket.ReadPacket(IMinecraftDataReader stream)
+        IPacket IPacket.ReadPacket(IMinecraftDataReader reader)
         {
-            return ReadPacket(stream);
+            return ReadPacket(reader);
         }
 
         public IPacket WritePacket(IMinecraftStream stream)
         {
             stream.WriteByte(ID);
             stream.WriteSByte(PlayerID);
-            stream.WriteSByte(ChangeX);
-            stream.WriteSByte(ChangeY);
-            stream.WriteSByte(ChangeZ);
+            ChangeLocation.ToStreamSByte(stream);
             stream.WriteByte(Yaw);
             stream.WriteByte(Pitch);
             stream.Purge();

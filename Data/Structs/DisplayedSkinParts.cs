@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using MineLib.Network.IO;
 
-namespace MineLib.Network.Modern.Data
+namespace MineLib.Network.Data.Structs
 {
     public struct DisplayedSkinParts
     {

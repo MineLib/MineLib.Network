@@ -10,17 +10,17 @@ namespace MineLib.Network.Classic.Packets.Extension.Client
         public byte ID { get { return 0x11; } }
         public short Size { get { return 69; } }
 
-        public IPacketWithSize ReadPacket(IMinecraftDataReader stream)
+        public IPacketWithSize ReadPacket(IMinecraftDataReader reader)
         {
-            ExtName = stream.ReadString();
-            Version = stream.ReadInt();
+            ExtName = reader.ReadString();
+            Version = reader.ReadInt();
 
             return this;
         }
 
-        IPacket IPacket.ReadPacket(IMinecraftDataReader stream)
+        IPacket IPacket.ReadPacket(IMinecraftDataReader reader)
         {
-            return ReadPacket(stream);
+            return ReadPacket(reader);
         }
 
         public IPacket WritePacket(IMinecraftStream stream)

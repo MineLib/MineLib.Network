@@ -13,19 +13,19 @@ namespace MineLib.Network.Classic.Packets.Extension.Server
         public byte ID { get { return 0x15; } }
         public short Size { get { return 134; } }
 
-        public IPacketWithSize ReadPacket(IMinecraftDataReader stream)
+        public IPacketWithSize ReadPacket(IMinecraftDataReader reader)
         {
-            Label = stream.ReadString();
-            Action = stream.ReadString();
-            KeyCode = stream.ReadInt();
-            KeyMods = (KeyMods) stream.ReadByte();
+            Label = reader.ReadString();
+            Action = reader.ReadString();
+            KeyCode = reader.ReadInt();
+            KeyMods = (KeyMods) reader.ReadByte();
 
             return this;
         }
 
-        IPacket IPacket.ReadPacket(IMinecraftDataReader stream)
+        IPacket IPacket.ReadPacket(IMinecraftDataReader reader)
         {
-            return ReadPacket(stream);
+            return ReadPacket(reader);
         }
 
         public IPacket WritePacket(IMinecraftStream stream)

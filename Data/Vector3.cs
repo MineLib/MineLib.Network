@@ -1,26 +1,36 @@
-﻿using System;
+﻿// From https://github.com/SirCmpwn/Craft.Net
+
+using System;
 using MineLib.Network.IO;
 
-// From https://github.com/SirCmpwn/Craft.Net
-namespace MineLib.Network.Modern.Data
+namespace MineLib.Network.Data
 {
     /// <summary>
     /// Represents the location of an object in 3D space (double).
     /// </summary>
     public struct Vector3 : IEquatable<Vector3>
     {
-        public double X, Y, Z;
+        public readonly float X;
+        public readonly float Y;
+        public readonly float Z;
 
-        public Vector3(double value)
+        public Vector3(float value)
         {
             X = Y = Z = value;
         }
 
-        public Vector3(double x, double y, double z)
+        public Vector3(float x, float y, float z)
         {
             X = x;
             Y = y;
             Z = z;
+        }
+
+        public Vector3(double x, double y, double z)
+        {
+            X = (float) x;
+            Y = (float) y;
+            Z = (float) z;
         }
 
         public Vector3(Vector3 v)
@@ -32,62 +42,73 @@ namespace MineLib.Network.Modern.Data
 
         public static Vector3 FromFixedPoint(int x, int y, int z)
         {
-            return new Vector3
-            {
-                X = x / 32.0,
-                Y = y / 32.0,
-                Z = z / 32.0
-            };
+            return new Vector3(
+                x / 32.0f,
+                y / 32.0f,
+                z / 32.0f
+            );
         }
 
         #region Network
 
         public static Vector3 FromReaderByte(IMinecraftDataReader reader)
         {
-            return new Vector3
-            {
-                X = reader.ReadByte(),
-                Y = reader.ReadByte(),
-                Z = reader.ReadByte()
-            };
+            return new Vector3(
+                reader.ReadByte(),
+                reader.ReadByte(),
+                reader.ReadByte()
+            );
+        }
+
+        public static Vector3 FromReaderShort(IMinecraftDataReader reader)
+        {
+            return new Vector3(
+                reader.ReadShort(),
+                reader.ReadShort(),
+                reader.ReadShort()
+            );
         }
 
         public static Vector3 FromReaderDouble(IMinecraftDataReader reader)
         {
-            return new Vector3
-            {
-                X = reader.ReadDouble(),
-                Y = reader.ReadDouble(),
-                Z = reader.ReadDouble()
-            };
+            return new Vector3(
+                reader.ReadDouble(),
+                reader.ReadDouble(),
+                reader.ReadDouble()
+            );
         }
 
         public static Vector3 FromReaderSByteFixedPoint(IMinecraftDataReader reader)
         {
-            return new Vector3
-            {
-                X = reader.ReadSByte() / 32.0,
-                Y = reader.ReadSByte() / 32.0,
-                Z = reader.ReadSByte() / 32.0
-            };
+            return new Vector3(
+                reader.ReadSByte() / 32.0f,
+                reader.ReadSByte() / 32.0f,
+                reader.ReadSByte() / 32.0f
+            );
         }
 
         public static Vector3 FromReaderIntFixedPoint(IMinecraftDataReader reader)
         {
-            return new Vector3
-            {
-                X = reader.ReadInt() / 32.0,
-                Y = reader.ReadInt() / 32.0,
-                Z = reader.ReadInt() / 32.0
-            };
+            return new Vector3(
+                reader.ReadInt() / 32.0f,
+                reader.ReadInt() / 32.0f,
+                reader.ReadInt() / 32.0f
+            );
         }
 
 
         public void ToStreamByte(IMinecraftStream stream)
         {
-            stream.WriteByte((byte)X);
-            stream.WriteByte((byte)Y);
-            stream.WriteByte((byte)Z);
+            stream.WriteByte((byte) X);
+            stream.WriteByte((byte) Y);
+            stream.WriteByte((byte) Z);
+        }
+
+        public void ToStreamShort(IMinecraftStream stream)
+        {
+            stream.WriteShort((short) X);
+            stream.WriteShort((short) Y);
+            stream.WriteShort((short) Z);
         }
 
         public void ToStreamDouble(IMinecraftStream stream)
@@ -99,9 +120,9 @@ namespace MineLib.Network.Modern.Data
         // TODO: Check that
         public void ToStreamSByteFixedPoint(IMinecraftStream stream)
         {
-            stream.WriteSByte((sbyte) (X * 32));
-            stream.WriteSByte((sbyte) (Y * 32));
-            stream.WriteSByte((sbyte) (Z * 32));
+            stream.WriteSByte((sbyte)(X * 32));
+            stream.WriteSByte((sbyte)(Y * 32));
+            stream.WriteSByte((sbyte)(Z * 32));
         }
         // TODO: Check that
         public void ToStreamIntFixedPoint(IMinecraftStream stream)
@@ -359,7 +380,7 @@ namespace MineLib.Network.Modern.Data
             if (obj.GetType() != typeof(Vector3))
                 return false;
 
-            return Equals((Vector3) obj);
+            return Equals((Vector3)obj);
         }
 
         public override int GetHashCode()

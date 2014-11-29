@@ -1,5 +1,6 @@
+using MineLib.Network.Data;
+using MineLib.Network.Data.Structs;
 using MineLib.Network.IO;
-using MineLib.Network.Modern.Data;
 using Org.BouncyCastle.Math;
 
 namespace MineLib.Network.Modern.Packets.Server
@@ -11,7 +12,7 @@ namespace MineLib.Network.Modern.Packets.Server
         public Vector3 Vector3;
         public sbyte Yaw, Pitch;
         public short CurrentItem;
-        public EntityMetadata EntityMetadata;
+        public EntityMetadataList EntityMetadata;
 
         public byte ID { get { return 0x0C; } }
     
@@ -23,7 +24,7 @@ namespace MineLib.Network.Modern.Packets.Server
             Yaw = reader.ReadSByte();
             Pitch = reader.ReadSByte();
             CurrentItem = reader.ReadShort();
-            EntityMetadata = EntityMetadata.FromReader(reader);
+            EntityMetadata = EntityMetadataList.FromReader(reader);
 
             return this;
         }

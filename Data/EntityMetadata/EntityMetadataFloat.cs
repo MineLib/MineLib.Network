@@ -1,27 +1,27 @@
 ﻿using MineLib.Network.IO;
 
-namespace MineLib.Network.Modern.Data.EntityMetadataEntries
+namespace MineLib.Network.Data.EntityMetadata
 {
     /// <summary>
     /// Float Metadata
     /// </summary>
-    public class MetadataFloat : MetadataEntry
+    public class EntityMetadataFloat : EntityMetadataEntry
     {
         public override byte Identifier { get { return 3; } }
         public override string FriendlyName { get { return "float"; } }
 
         public float Value;
 
-        public static implicit operator MetadataFloat(float value)
+        public static implicit operator EntityMetadataFloat(float value)
         {
-            return new MetadataFloat(value);
+            return new EntityMetadataFloat(value);
         }
 
-        public MetadataFloat()
+        public EntityMetadataFloat()
         {
         }
 
-        public MetadataFloat(float value)
+        public EntityMetadataFloat(float value)
         {
             Value = value;
         }

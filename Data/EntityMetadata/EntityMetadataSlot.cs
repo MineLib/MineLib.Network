@@ -1,27 +1,28 @@
-﻿using MineLib.Network.IO;
+﻿using MineLib.Network.Data.Structs;
+using MineLib.Network.IO;
 
-namespace MineLib.Network.Modern.Data.EntityMetadataEntries
+namespace MineLib.Network.Data.EntityMetadata
 {
     /// <summary>
     /// Slot Metadata
     /// </summary>
-    public class MetadataSlot : MetadataEntry
+    public class EntityMetadataSlot : EntityMetadataEntry
     {
         public override byte Identifier { get { return 5; } }
         public override string FriendlyName { get { return "slot"; } }
 
         public ItemStack Value;
 
-        public static implicit operator MetadataSlot(ItemStack value)
+        public static implicit operator EntityMetadataSlot(ItemStack value)
         {
-            return new MetadataSlot(value);
+            return new EntityMetadataSlot(value);
         }
 
-        public MetadataSlot()
+        public EntityMetadataSlot()
         {
         }
 
-        public MetadataSlot(ItemStack value)
+        public EntityMetadataSlot(ItemStack value)
         {
             Value = value;
         }

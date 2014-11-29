@@ -1,19 +1,19 @@
+using MineLib.Network.Data.Structs;
 using MineLib.Network.IO;
-using MineLib.Network.Modern.Data;
 
 namespace MineLib.Network.Modern.Packets.Server
 {
     public struct EntityMetadataPacket : IPacket
     {
         public int EntityID;
-        public EntityMetadata Metadata;
+        public EntityMetadataList Metadata;
 
         public byte ID { get { return 0x1C; } }
 
         public IPacket ReadPacket(IMinecraftDataReader reader)
         {
             EntityID = reader.ReadVarInt();
-            Metadata = EntityMetadata.FromReader(reader);
+            Metadata = EntityMetadataList.FromReader(reader);
 
             return this;
         }

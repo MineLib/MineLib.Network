@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using MineLib.Network.IO;
 
-namespace MineLib.Network.Modern.Data
+namespace MineLib.Network.Data.Structs
 {
     public struct Icon : IEquatable<Icon>
     {
@@ -24,7 +24,7 @@ namespace MineLib.Network.Modern.Data
 
         public bool Equals(Icon other)
         {
-            return other.Direction.Equals(Direction) && other.Type.Equals(Type) && other.X.Equals(X) && other.Y.Equals(Y);
+            return Direction.Equals(other.Direction) && Type.Equals(other.Type) && X.Equals(other.X) && Y.Equals(other.Y);
         }
 
         public override bool Equals(object obj)
@@ -32,7 +32,7 @@ namespace MineLib.Network.Modern.Data
             if (obj.GetType() != typeof(Icon))
                 return false;
 
-            return Equals((Icon)obj);
+            return Equals((Icon) obj);
         }
 
         public override int GetHashCode()
@@ -73,7 +73,7 @@ namespace MineLib.Network.Modern.Data
             var value = new IconList();
 
             var count = reader.ReadVarInt();
-            for (var i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
                 var icon = new Icon();
 
@@ -96,9 +96,9 @@ namespace MineLib.Network.Modern.Data
 
             foreach (var entry in _entries)
             {
-                stream.WriteByte((byte)((byte)(entry.Direction << 4) | entry.Type));
-                stream.WriteByte((byte)entry.X);
-                stream.WriteByte((byte)entry.Y);
+                stream.WriteByte((byte) ((entry.Direction << 4) | entry.Type));
+                stream.WriteByte((byte) entry.X);
+                stream.WriteByte((byte) entry.Y);
             }
         }
     }

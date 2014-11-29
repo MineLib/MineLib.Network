@@ -1,27 +1,27 @@
 ﻿using MineLib.Network.IO;
 
-namespace MineLib.Network.Modern.Data.EntityMetadataEntries
+namespace MineLib.Network.Data.EntityMetadata
 {
     /// <summary>
     /// Short Metadata
     /// </summary>
-    public class MetadataShort : MetadataEntry
+    public class EntityMetadataShort : EntityMetadataEntry
     {
         public override byte Identifier { get { return 1; } }
         public override string FriendlyName { get { return "short"; } }
 
         public short Value;
 
-        public static implicit operator MetadataShort(short value)
+        public static implicit operator EntityMetadataShort(short value)
         {
-            return new MetadataShort(value);
+            return new EntityMetadataShort(value);
         }
 
-        public MetadataShort()
+        public EntityMetadataShort()
         {
         }
 
-        public MetadataShort(short value)
+        public EntityMetadataShort(short value)
         {
             Value = value;
         }

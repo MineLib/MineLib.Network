@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using MineLib.Network.IO;
 
-namespace MineLib.Network.Modern.Data
+namespace MineLib.Network.Data.Structs
 {
     public struct StatisticsEntry
     {
@@ -34,15 +34,9 @@ namespace MineLib.Network.Modern.Data
             var count = reader.ReadVarInt();
 
             var value = new StatisticsEntryList();
-            for (var i = 0; i < count; i++)
-            {
-                var entry = new StatisticsEntry();
-
-                entry.StatisticsName = reader.ReadString();
-                entry.Value = reader.ReadVarInt();
-
-                value[i] = entry;
-            }
+            for (int i = 0; i < count; i++)
+                value[i] = new StatisticsEntry { StatisticsName = reader.ReadString(), Value = reader.ReadVarInt() };
+            
 
             return value;
         }

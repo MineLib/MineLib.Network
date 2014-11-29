@@ -1,28 +1,28 @@
 ﻿using System;
 using MineLib.Network.IO;
 
-namespace MineLib.Network.Modern.Data.EntityMetadataEntries
+namespace MineLib.Network.Data.EntityMetadata
 {
     /// <summary>
     /// String Metadata
     /// </summary>
-    public class MetadataString : MetadataEntry
+    public class EntityMetadataString : EntityMetadataEntry
     {
         public override byte Identifier { get { return 4; } }
         public override string FriendlyName { get { return "string"; } }
 
         public string Value;
 
-        public static implicit operator MetadataString(string value)
+        public static implicit operator EntityMetadataString(string value)
         {
-            return new MetadataString(value);
+            return new EntityMetadataString(value);
         }
 
-        public MetadataString()
+        public EntityMetadataString()
         {
         }
 
-        public MetadataString(string value)
+        public EntityMetadataString(string value)
         {
             if (value.Length > 16)
                 throw new ArgumentOutOfRangeException("value", "Maximum string length is 16 characters");

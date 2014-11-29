@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MineLib.Network.Modern.Data.Anvil
+namespace MineLib.Network.Data.Anvil
 {
     public struct Block : IEquatable<Block>
     {

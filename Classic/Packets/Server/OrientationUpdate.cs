@@ -11,18 +11,18 @@ namespace MineLib.Network.Classic.Packets.Server
         public byte ID { get { return 0x0B; } }
         public short Size { get { return 4; } }
 
-        public IPacketWithSize ReadPacket(IMinecraftDataReader stream)
+        public IPacketWithSize ReadPacket(IMinecraftDataReader reader)
         {
-            PlayerID = stream.ReadSByte();
-            Yaw = stream.ReadByte();
-            Pitch = stream.ReadByte();
+            PlayerID = reader.ReadSByte();
+            Yaw = reader.ReadByte();
+            Pitch = reader.ReadByte();
 
             return this;
         }
 
-        IPacket IPacket.ReadPacket(IMinecraftDataReader stream)
+        IPacket IPacket.ReadPacket(IMinecraftDataReader reader)
         {
-            return ReadPacket(stream);
+            return ReadPacket(reader);
         }
 
         public IPacket WritePacket(IMinecraftStream stream)

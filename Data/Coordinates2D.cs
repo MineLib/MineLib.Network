@@ -1,13 +1,15 @@
 ﻿using System;
+using MineLib.Network.IO;
 
-namespace MineLib.Network.Modern.Data
+namespace MineLib.Network.Data
 {
     /// <summary>
     /// Represents mostly Chunk coordinates
     /// </summary>
     public struct Coordinates2D : IEquatable<Coordinates2D>
     {
-        public int X, Z;
+        public readonly int X;
+        public readonly int Z;
 
         public Coordinates2D(int value)
         {
@@ -25,6 +27,71 @@ namespace MineLib.Network.Modern.Data
             X = v.X;
             Z = v.Z;
         }
+
+        #region Network
+
+        public static Coordinates2D FromReaderVarInt(IMinecraftDataReader reader)
+        {
+            return new Coordinates2D
+            (
+                reader.ReadVarInt(),
+                reader.ReadVarInt()
+            );
+        }
+
+        public static Coordinates2D FromReaderByte(IMinecraftDataReader reader)
+        {
+            return new Coordinates2D
+            (
+                reader.ReadByte(),
+                reader.ReadByte()
+            );
+        }
+
+        public static Coordinates2D FromReaderShort(IMinecraftDataReader reader)
+        {
+            return new Coordinates2D
+            (
+                reader.ReadShort(),
+                reader.ReadShort()
+            );
+        }
+
+        public static Coordinates2D FromReaderInt(IMinecraftDataReader reader)
+        {
+            return new Coordinates2D
+            (
+                reader.ReadInt(),
+                reader.ReadInt()
+            );
+        }
+
+
+        public void ToStreamVarInt(IMinecraftStream stream)
+        {
+            stream.WriteVarInt(X);
+            stream.WriteVarInt(Z);
+        }
+
+        public void ToStreamByte(IMinecraftStream stream)
+        {
+            stream.WriteByte((byte) X);
+            stream.WriteByte((byte) Z);
+        }
+
+        public void ToStreamShort(IMinecraftStream stream)
+        {
+            stream.WriteShort((short) X);
+            stream.WriteShort((short) Z);
+        }
+
+        public void ToStreamInt(IMinecraftStream stream)
+        {
+            stream.WriteInt(X);
+            stream.WriteInt(Z);
+        }
+
+        #endregion
 
         /// <summary>
         /// Converts this Coordinates2D to a string.
@@ -107,9 +174,7 @@ namespace MineLib.Network.Modern.Data
 
         public static Coordinates2D operator -(Coordinates2D a)
         {
-            return new Coordinates2D(
-                -a.X,
-                -a.Z);
+            return new Coordinates2D(-a.X, -a.Z);
         }
 
         public static Coordinates2D operator *(Coordinates2D a, Coordinates2D b)
@@ -188,7 +253,7 @@ namespace MineLib.Network.Modern.Data
 
         public static readonly Coordinates2D Zero = new Coordinates2D(0);
         public static readonly Coordinates2D One = new Coordinates2D(1);
-        
+
         public static readonly Coordinates2D Forward = new Coordinates2D(0, 1);
         public static readonly Coordinates2D Backward = new Coordinates2D(0, -1);
         public static readonly Coordinates2D Left = new Coordinates2D(-1, 0);

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using MineLib.Network.Data.Structs;
 using MineLib.Network.IO;
+using MineLib.Network.Modern;
 
-namespace MineLib.Network.Modern.Data.Anvil
+namespace MineLib.Network.Data.Anvil
 {
     public class Chunk : IEquatable<Chunk>
     {
@@ -167,12 +169,11 @@ namespace MineLib.Network.Modern.Data.Anvil
         {
             var sectionPosition = Section.GetSectionPositionByIndex(index);
 
-            return new Position
-            {
-                X = 16 * Coordinates.X + sectionPosition.X,
-                Y = 16 * section.Position.Y + sectionPosition.Y,
-                Z = 16 * Coordinates.Z + sectionPosition.Z
-            };
+            return new Position(
+                16 * Coordinates.X + sectionPosition.X,
+                16 * section.Position.Y + sectionPosition.Y,
+                16 * Coordinates.Z + sectionPosition.Z
+            );
         }
 
         public Block GetBlock(Position coordinates)
@@ -193,8 +194,7 @@ namespace MineLib.Network.Modern.Data.Anvil
         {
             var destSection = GetSectionByY(coordinates.Y);
 
-            var coords = coordinates;
-            coords.Y = GetYinSection(coordinates.Y);
+            var coords = new Position(coordinates.X, GetYinSection(coordinates.Y), coordinates.Z);
 
             destSection.SetBlock(coords, block);
         }
@@ -260,12 +260,11 @@ namespace MineLib.Network.Modern.Data.Anvil
 
         public static Position GetSectionCoordinates(Position coordinates, Coordinates2D chunkCoordinates)
         {
-            return new Position
-            {
-                X = Math.Abs(coordinates.X - (chunkCoordinates.X * 16)),
-                Y = coordinates.Y % 16,
-                Z = coordinates.Z % chunkCoordinates.Z
-            };
+            return new Position(
+                Math.Abs(coordinates.X - (chunkCoordinates.X * 16)),
+                coordinates.Y % 16,
+                coordinates.Z % chunkCoordinates.Z
+            );
         }
 
         private Position GetSectionCoordinates(Position coordinates)
@@ -276,21 +275,19 @@ namespace MineLib.Network.Modern.Data.Anvil
             if (chunk.X != Coordinates.X || chunk.Z != Coordinates.Z)
                 throw new ArgumentOutOfRangeException("coordinates","You stupid asshole!");
 
-            return new Position
-            {
-                X = GetXinSection(coordinates.X),
-                Y = GetYinSection(coordinates.Y),
-                Z = GetZinSection(coordinates.Z)
-            };
+            return new Position(
+                GetXinSection(coordinates.X),
+                GetYinSection(coordinates.Y),
+                GetZinSection(coordinates.Z)
+            );
         }
 
         private static Coordinates2D GetChunkCoordinates(Position worldCoordinates)
         {
-            return new Coordinates2D
-            {
-                X = worldCoordinates.X >> 4,
-                Z = worldCoordinates.Z >> 4
-            };
+            return new Coordinates2D(
+                worldCoordinates.X >> 4,
+                worldCoordinates.Z >> 4
+            );
         }
 
         private int GetXinSection(int blockX)

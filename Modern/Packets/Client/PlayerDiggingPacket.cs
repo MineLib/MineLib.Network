@@ -1,5 +1,5 @@
+using MineLib.Network.Data;
 using MineLib.Network.IO;
-using MineLib.Network.Modern.Data;
 using MineLib.Network.Modern.Enums;
 
 namespace MineLib.Network.Modern.Packets.Client

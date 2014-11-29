@@ -10,16 +10,16 @@ namespace MineLib.Network.Classic.Packets.Server
         public byte ID { get { return 0x0F; } }
         public short Size { get { return 2; } }
 
-        public IPacketWithSize ReadPacket(IMinecraftDataReader stream)
+        public IPacketWithSize ReadPacket(IMinecraftDataReader reader)
         {
-            UserType = (UserType) stream.ReadByte();
+            UserType = (UserType) reader.ReadByte();
 
             return this;
         }
 
-        IPacket IPacket.ReadPacket(IMinecraftDataReader stream)
+        IPacket IPacket.ReadPacket(IMinecraftDataReader reader)
         {
-            return ReadPacket(stream);
+            return ReadPacket(reader);
         }
 
         public IPacket WritePacket(IMinecraftStream stream)

@@ -1,6 +1,6 @@
 ﻿using MineLib.Network.Classic.Enums;
+using MineLib.Network.Data;
 using MineLib.Network.IO;
-using MineLib.Network.Modern.Data;
 
 namespace MineLib.Network.Classic.Packets.Client
 {
@@ -13,28 +13,24 @@ namespace MineLib.Network.Classic.Packets.Client
         public byte ID { get { return 0x05; } }
         public short Size { get { return 9; } }
 
-        public IPacketWithSize ReadPacket(IMinecraftDataReader stream)
+        public IPacketWithSize ReadPacket(IMinecraftDataReader reader)
         {
-            Coordinates.X = stream.ReadShort();
-            Coordinates.Y = stream.ReadShort();
-            Coordinates.Z = stream.ReadShort();
-            Mode = (SetBlockMode) stream.ReadByte();
-            BlockType = stream.ReadByte();
+            Coordinates = Position.FromReaderShort(reader);
+            Mode = (SetBlockMode) reader.ReadByte();
+            BlockType = reader.ReadByte();
 
             return this;
         }
 
-        IPacket IPacket.ReadPacket(IMinecraftDataReader stream)
+        IPacket IPacket.ReadPacket(IMinecraftDataReader reader)
         {
-            return ReadPacket(stream);
+            return ReadPacket(reader);
         }
 
         public IPacket WritePacket(IMinecraftStream stream)
         {
             stream.WriteByte(ID);
-            stream.WriteShort((short)Coordinates.X);
-            stream.WriteShort((short)Coordinates.Y);
-            stream.WriteShort((short)Coordinates.Z);
+            Coordinates.ToStreamShort(stream);
             stream.WriteByte((byte) Mode);
             stream.WriteByte(BlockType);
             stream.Purge();

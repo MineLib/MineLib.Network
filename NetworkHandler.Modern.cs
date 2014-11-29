@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
-using System.Security.Cryptography;
-using System.Text;
 using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
-using MineLib.Network.Cryptography;
 using MineLib.Network.IO;
+using MineLib.Network.Modern;
 using MineLib.Network.Modern.Packets;
 using MineLib.Network.Modern.Packets.Client.Login;
 using MineLib.Network.Modern.Packets.Server.Login;
@@ -190,36 +187,17 @@ namespace MineLib.Network
         /// <param name="packet">EncryptionRequestPacket</param>
         private void ModernEnableEncryption(IPacket packet)
         {
-            // From libMC.NET
-            var request = (EncryptionRequestPacket) packet;
+            var request = (EncryptionRequestPacket)packet;
 
-            var hashlist = new List<byte>();
-            hashlist.AddRange(Encoding.ASCII.GetBytes(request.ServerId));
-            hashlist.AddRange(request.SharedKey);
-            hashlist.AddRange(request.PublicKey);
-
-            var hashData = hashlist.ToArray();
-
-            var hash = JavaHelper.JavaHexDigest(hashData);
+            var hash = Asn1.GetServerIDHash(request.PublicKey, request.SharedKey, request.ServerId);
 
             if (!Yggdrasil.ClientAuth(_minecraft.AccessToken, _minecraft.SelectedProfile, hash))
-                throw new Exception("Auth failure");
+                throw new Exception("Yggdrasil error: Not authenticated.");
 
-            // -- You pass it the key data and ask it to parse, and it will 
-            // -- Extract the server's public key, then parse that into RSA for us.
-            var keyParser = new AsnKeyParser(request.PublicKey);
-            var deKey = keyParser.ParseRSAPublicKey();
+            var rsaParameter = Asn1.GetRsaParameters(request.PublicKey);
 
-            // -- Now we create an encrypter, and encrypt the token sent to us by the server
-            // -- as well as our newly made shared key (Which can then only be decrypted with the server's private key)
-            // -- and we send it to the server.
-            var cryptoService = new RSACryptoServiceProvider();
-            cryptoService.ImportParameters(deKey);
-
-            var encryptedSecret = cryptoService.Encrypt(request.SharedKey, false);
-            var encryptedVerify = cryptoService.Encrypt(request.VerificationToken, false);
-
-            _stream.InitializeEncryption(request.SharedKey);
+            var encryptedSecret = Asn1.EncryptData(rsaParameter, request.SharedKey);
+            var encryptedVerify = Asn1.EncryptData(rsaParameter, request.VerificationToken);
 
             BeginSendPacket(new EncryptionResponsePacket
             {
@@ -227,7 +205,7 @@ namespace MineLib.Network
                 VerificationToken = encryptedVerify
             }, null, null);
 
-            _stream.EncryptionEnabled = true;
+            _stream.InitializeEncryption(request.SharedKey);
         }
 
         /// <summary>

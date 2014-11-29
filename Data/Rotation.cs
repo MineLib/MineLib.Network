@@ -1,15 +1,16 @@
 ﻿using System;
+using MineLib.Network.IO;
 
-namespace MineLib.Network.Modern.Data
+namespace MineLib.Network.Data
 {
     /// <summary>
     /// Represents mostly head location of an entity
     /// </summary>
     public struct Rotation : IEquatable<Rotation>
     {
-        public float Pitch;
-        public float Yaw;
-        public float Roll;
+        public readonly float Pitch;
+        public readonly float Yaw;
+        public readonly float Roll;
 
         public Rotation(float pitch, float yaw, float roll)
         {
@@ -24,6 +25,29 @@ namespace MineLib.Network.Modern.Data
             Yaw = v.Yaw;
             Roll = v.Roll;
         }
+
+
+        #region Network
+
+        public Rotation FromReaderFloat(IMinecraftDataReader reader)
+        {
+            return new Rotation(
+                reader.ReadFloat(), 
+                reader.ReadFloat(), 
+                reader.ReadFloat()
+            );
+        }
+
+
+        public void ToStreamFloat(IMinecraftStream stream)
+        {
+            stream.WriteFloat(Pitch);
+            stream.WriteFloat(Yaw);
+            stream.WriteFloat(Roll);
+        }
+
+        #endregion
+
 
         /// <summary>
         /// Converts this Rotation to a string.

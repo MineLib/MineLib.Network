@@ -5,13 +5,13 @@ using System;
 using System.Collections.Generic;
 using MineLib.Network.IO;
 
-namespace MineLib.Network.Modern.Data
+namespace MineLib.Network.Data.Structs
 {
     // TODO: Uses more memory than class
     public struct ItemStack  : ICloneable, IEquatable<ItemStack>
     {
-        public short ID;
-        public sbyte Count;
+        public readonly short ID;
+        public  sbyte Count;
         public short Damage; // Level
         public byte[] NBTData;
 
@@ -90,9 +90,7 @@ namespace MineLib.Network.Modern.Data
 
         public static ItemStack FromReader(IMinecraftDataReader reader)
         {
-            var itemStack = new ItemStack();
-
-            itemStack.ID = reader.ReadShort();
+            var itemStack = new ItemStack(reader.ReadShort()); // -- ID
 
             if (itemStack.ID == -1 || itemStack.Count == -1)
                 return EmptyStack;
@@ -170,15 +168,16 @@ namespace MineLib.Network.Modern.Data
         
         public bool Equals(ItemStack other)
         {
-            return ID == other.ID && Damage == other.Damage && Count == other.Count && Equals(NBTData, other.NBTData);
+            return ID.Equals(other.ID) && Damage.Equals(other.Damage) && Count.Equals(other.Count) && Equals(NBTData, other.NBTData);
             //return ID == other.ID && Damage == other.Damage && Count == other.Count && Slot == other.Slot && Equals(NBTData, other.NBTData);
         }
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (obj.GetType() != typeof(ItemStack)) return false;
-            return Equals((ItemStack)obj);
+            if (obj.GetType() != typeof(ItemStack))
+                return false;
+
+            return Equals((ItemStack) obj);
         }
 
         public override int GetHashCode()
@@ -224,9 +223,7 @@ namespace MineLib.Network.Modern.Data
             var count = reader.ReadShort();
             for (int i = 0; i < count; i++)
             {
-                var slot = new ItemStack();
-
-                slot.ID = reader.ReadShort();
+                var slot = new ItemStack(reader.ReadShort()); // -- ID
 
                 if (slot.ID == -1 || slot.Count == -1)
                 {
@@ -278,12 +275,12 @@ namespace MineLib.Network.Modern.Data
 
         public static bool operator ==(ItemStackList left, ItemStackList right)
         {
-            return left.Equals(right);
+            return left == right;
         }
 
         public static bool operator !=(ItemStackList left, ItemStackList right)
         {
-            return !left.Equals(right);
+            return left != right;
         }
 
         #endregion
@@ -293,12 +290,9 @@ namespace MineLib.Network.Modern.Data
             if (other.Count != Count)
                 return false;
 
-            for (byte i = 0; i < (byte)Count; i++)
-            {
-                if (other[i] != this[i])
-                    return false;
-            }
-
+            for (int i = 0; i < Count; i++)
+                if (other[i] != this[i]) return false;
+            
             return true;
         }
 

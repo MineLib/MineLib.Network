@@ -1,39 +1,38 @@
 ﻿using MineLib.Network.IO;
 
-namespace MineLib.Network.Modern.Data.EntityMetadataEntries
+namespace MineLib.Network.Data.EntityMetadata
 {
     /// <summary>
     /// Rotation Metadata
     /// </summary>
-    public class MetadataRotation : MetadataEntry
+    public class EntityMetadataRotation : EntityMetadataEntry
     {
         public override byte Identifier { get { return 7; } }
         public override string FriendlyName { get { return "rotation"; } }
 
         public Rotation Rotation;
 
-        public MetadataRotation()
+        public EntityMetadataRotation()
         {
             Rotation = new Rotation(0,0,0);
         }
 
-        public MetadataRotation(float pitch, float yaw, int roll)
+        public EntityMetadataRotation(float pitch, float yaw, float roll)
         {
-            Rotation.Pitch = pitch;
-            Rotation.Yaw = yaw;
-            Rotation.Roll = roll;
+            Rotation = new Rotation(pitch, yaw, roll);
         }
 
-        public MetadataRotation(Rotation rotation)
+        public EntityMetadataRotation(Rotation rotation)
         {
             Rotation = rotation;
         }
 
         public override void FromReader(IMinecraftDataReader reader)
         {
-            Rotation.Pitch = reader.ReadFloat();
-            Rotation.Yaw = reader.ReadFloat();
-            Rotation.Roll = reader.ReadFloat();
+            Rotation = new Rotation(
+                reader.ReadFloat(), 
+                reader.ReadFloat(), 
+                reader.ReadFloat());
         }
 
         public override void ToStream(IMinecraftStream stream, byte index)

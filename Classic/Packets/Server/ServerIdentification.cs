@@ -13,19 +13,19 @@ namespace MineLib.Network.Classic.Packets.Server
         public byte ID { get { return 0x00; } }
         public short Size { get { return 131; } }
 
-        public IPacketWithSize ReadPacket(IMinecraftDataReader stream)
+        public IPacketWithSize ReadPacket(IMinecraftDataReader reader)
         {
-            ProtocolVersion = stream.ReadByte();
-            ServerName = stream.ReadString();
-            ServerMOTD = stream.ReadString();
-            UserType = (UserType) stream.ReadByte();
+            ProtocolVersion = reader.ReadByte();
+            ServerName = reader.ReadString();
+            ServerMOTD = reader.ReadString();
+            UserType = (UserType) reader.ReadByte();
 
             return this;
         }
 
-        IPacket IPacket.ReadPacket(IMinecraftDataReader stream)
+        IPacket IPacket.ReadPacket(IMinecraftDataReader reader)
         {
-            return ReadPacket(stream);
+            return ReadPacket(reader);
         }
 
         public IPacket WritePacket(IMinecraftStream stream)

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using MineLib.Network.IO;
 
-namespace MineLib.Network.Modern.Data
+namespace MineLib.Network.Data.Structs
 {
     public struct Record
     {
@@ -36,11 +36,11 @@ namespace MineLib.Network.Modern.Data
 
             var count = reader.ReadVarInt();
 
-            for (var i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
                 var record = new Record();
 
-                short coordinates = reader.ReadShort();
+                var coordinates = reader.ReadShort();
                 var y = coordinates & 0xFF;
                 var z = (coordinates >> 8) & 0xf; 
                 var x = (coordinates >> 12) & 0xf;

@@ -1,5 +1,6 @@
+using MineLib.Network.Data;
+using MineLib.Network.Data.Structs;
 using MineLib.Network.IO;
-using MineLib.Network.Modern.Data;
 using MineLib.Network.Modern.Enums;
 
 namespace MineLib.Network.Modern.Packets.Server
@@ -13,7 +14,7 @@ namespace MineLib.Network.Modern.Packets.Server
         public sbyte Pitch;
         public sbyte HeadPitch;
         public short VelocityX, VelocityY, VelocityZ;
-        public EntityMetadata EntityMetadata;
+        public EntityMetadataList EntityMetadata;
 
         public byte ID { get { return 0x0F; } }
 
@@ -28,7 +29,7 @@ namespace MineLib.Network.Modern.Packets.Server
             VelocityX = reader.ReadShort();
             VelocityY = reader.ReadShort();
             VelocityZ = reader.ReadShort();
-            EntityMetadata = EntityMetadata.FromReader(reader);
+            EntityMetadata = EntityMetadataList.FromReader(reader);
 
             return this;
         }

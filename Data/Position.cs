@@ -1,16 +1,16 @@
 ﻿using System;
 using MineLib.Network.IO;
 
-namespace MineLib.Network.Modern.Data
+namespace MineLib.Network.Data
 {
     /// <summary>
     /// Represents the location of an object in 3D space (int).
     /// </summary>
     public struct Position : IEquatable<Position>
     {
-        public int X;
-        public int Y;
-        public int Z;
+        public readonly int X;
+        public readonly int Y;
+        public readonly int Z;
 
         public Position(int value)
         {
@@ -34,11 +34,11 @@ namespace MineLib.Network.Modern.Data
         public static Position FromLong(long value)
         {
             return new Position
-            {
-                X = (int) (value >> 38),
-                Y = (int) (value >> 26) & 0xFFF,
-                Z = (int) value << 38 >> 38
-            };
+            (
+                (int)(value >> 38),
+                (int)(value >> 26) & 0xFFF,
+                (int)value << 38 >> 38
+            );
         }
 
         public long ToLong()
@@ -48,24 +48,54 @@ namespace MineLib.Network.Modern.Data
 
         #region Network
 
-        public static Position FromReaderInt(IMinecraftDataReader reader)
-        {
-            return new Position
-            {
-                X = reader.ReadInt(),
-                Y = reader.ReadInt(),
-                Z = reader.ReadInt()
-            };
-        }
-
         public static Position FromReaderVarInt(IMinecraftDataReader reader)
         {
             return new Position
-            {
-                X = reader.ReadVarInt(),
-                Y = reader.ReadVarInt(),
-                Z = reader.ReadVarInt()
-            };
+            (
+                reader.ReadVarInt(),
+                reader.ReadVarInt(),
+                reader.ReadVarInt()
+            );
+        }
+
+        public static Position FromReaderSByte(IMinecraftDataReader reader)
+        {
+            return new Position
+            (
+                reader.ReadSByte(),
+                reader.ReadSByte(),
+                reader.ReadSByte()
+            );
+        }
+
+        public static Position FromReaderByte(IMinecraftDataReader reader)
+        {
+            return new Position
+            (
+                reader.ReadByte(),
+                reader.ReadByte(),
+                reader.ReadByte()
+            );
+        }
+
+        public static Position FromReaderShort(IMinecraftDataReader reader)
+        {
+            return new Position
+            (
+                reader.ReadShort(),
+                reader.ReadShort(),
+                reader.ReadShort()
+            );
+        }
+
+        public static Position FromReaderInt(IMinecraftDataReader reader)
+        {
+            return new Position
+            (
+                reader.ReadInt(),
+                reader.ReadInt(),
+                reader.ReadInt()
+            );
         }
 
         public static Position FromReaderLong(IMinecraftDataReader reader)
@@ -74,18 +104,39 @@ namespace MineLib.Network.Modern.Data
         }
 
 
-        public void ToStreamInt(IMinecraftStream stream)
-        {
-            stream.WriteInt(X);
-            stream.WriteInt(Y);
-            stream.WriteInt(Z);
-        }
-
         public void ToStreamVarInt(IMinecraftStream stream)
         {
             stream.WriteVarInt(X);
             stream.WriteVarInt(Y);
             stream.WriteVarInt(Z);
+        }
+
+        public void ToStreamSByte(IMinecraftStream stream)
+        {
+            stream.WriteSByte((sbyte) X);
+            stream.WriteSByte((sbyte) Y);
+            stream.WriteSByte((sbyte) Z);
+        }
+
+        public void ToStreamByte(IMinecraftStream stream)
+        {
+            stream.WriteByte((byte) X);
+            stream.WriteByte((byte) Y);
+            stream.WriteByte((byte) Z);
+        }
+
+        public void ToStreamShort(IMinecraftStream stream)
+        {
+            stream.WriteShort((short)X);
+            stream.WriteShort((short) Y);
+            stream.WriteShort((short) Z);
+        }
+
+        public void ToStreamInt(IMinecraftStream stream)
+        {
+            stream.WriteInt(X);
+            stream.WriteInt(Y);
+            stream.WriteInt(Z);
         }
 
         public void ToStreamLong(IMinecraftStream stream)
