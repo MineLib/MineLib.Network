@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Newtonsoft.Json;
 
@@ -18,22 +19,36 @@ namespace MineLib.Network
         UnsupportedMediaType
     }
 
-    public static partial class Yggdrasil
-    {
-        /// <summary>
-        ///     Authenticates a user using his password.
-        /// </summary>
-        /// <param name="username">Login</param>
-        /// <param name="password">Password</param>
-        /// <returns></returns>
-        public static YggdrasilAnswer Login(string username, string password)
+	internal class CertificateValidation : ICertificatePolicy
+	{
+		public bool CheckValidationResult(ServicePoint srvPoint, X509Certificate certificate, WebRequest request, int certificateProblem)
+		{
+			// Don't care about any certificate issues, always accept.
+			// More information can be found on:
+			//    - http://www.mono-project.com/UsingTrustedRootsRespectfully
+			//    - http://www.mono-project.com/FAQ:_Security
+
+			return true;
+		}
+	}
+
+	public static partial class Yggdrasil
+	{
+
+		/// <summary>
+		///     Authenticates a user using his password.
+		/// </summary>
+		/// <param name="username">Login</param>
+		/// <param name="password">Password</param>
+		/// <returns></returns>
+		public static YggdrasilAnswer Login(string username, string password)
         {
-            try
+			try
             {
                 if (Type.GetType("Mono.Runtime") != null) // -- Running on Mono
-                    ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+					ServicePointManager.CertificatePolicy = new CertificateValidation();
 
-                var request = (HttpWebRequest) WebRequest.Create(new Uri("https://authserver.mojang.com/authenticate"));
+				var request = (HttpWebRequest) WebRequest.Create(new Uri("https://authserver.mojang.com/authenticate"));
                 request.ContentType = "application/json";
                 request.Method = "POST";
 
@@ -71,9 +86,9 @@ namespace MineLib.Network
             try
             {
                 if (Type.GetType("Mono.Runtime") != null) // -- Running on Mono
-                    ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+					ServicePointManager.CertificatePolicy = new CertificateValidation();
 
-                var request = (HttpWebRequest)WebRequest.Create(new Uri("https://authserver.mojang.com/refresh"));
+				var request = (HttpWebRequest)WebRequest.Create(new Uri("https://authserver.mojang.com/refresh"));
                 request.ContentType = "application/json";
                 request.Method = "POST";
 
@@ -109,9 +124,9 @@ namespace MineLib.Network
             try
             {
                 if (Type.GetType("Mono.Runtime") != null) // -- Running on Mono
-                    ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+					ServicePointManager.CertificatePolicy = new CertificateValidation();
 
-                var request = (HttpWebRequest)WebRequest.Create(new Uri("https://authserver.mojang.com/validate"));
+				var request = (HttpWebRequest)WebRequest.Create(new Uri("https://authserver.mojang.com/validate"));
                 request.ContentType = "application/json";
                 request.Method = "POST";
 
@@ -140,9 +155,9 @@ namespace MineLib.Network
             try
             {
                 if (Type.GetType("Mono.Runtime") != null) // -- Running on Mono
-                    ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+					ServicePointManager.CertificatePolicy = new CertificateValidation();
 
-                var request = (HttpWebRequest)WebRequest.Create(new Uri("https://authserver.mojang.com/signout"));
+				var request = (HttpWebRequest)WebRequest.Create(new Uri("https://authserver.mojang.com/signout"));
                 request.ContentType = "application/json";
                 request.Method = "POST";
 
@@ -176,9 +191,9 @@ namespace MineLib.Network
             try
             {
                 if (Type.GetType("Mono.Runtime") != null) // -- Running on Mono
-                    ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+					ServicePointManager.CertificatePolicy = new CertificateValidation();
 
-                var request = (HttpWebRequest)WebRequest.Create(new Uri("https://authserver.mojang.com/signout"));
+				var request = (HttpWebRequest)WebRequest.Create(new Uri("https://authserver.mojang.com/signout"));
                 request.ContentType = "application/json";
                 request.Method = "POST";
 
@@ -213,9 +228,9 @@ namespace MineLib.Network
             try
             {
                 if (Type.GetType("Mono.Runtime") != null) // -- Running on Mono
-                    ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+					ServicePointManager.CertificatePolicy = new CertificateValidation();
 
-                var request = (HttpWebRequest)WebRequest.Create(new Uri("https://sessionserver.mojang.com/session/minecraft/join"));
+				var request = (HttpWebRequest)WebRequest.Create(new Uri("https://sessionserver.mojang.com/session/minecraft/join"));
                 request.ContentType = "application/json";
                 request.Method = "POST";
 
@@ -279,5 +294,5 @@ namespace MineLib.Network
             }
 
         }
-    }
+	}
 }
