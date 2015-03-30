@@ -37,14 +37,13 @@ namespace MineLib.Network
             PacketsReceived = new List<IPacket>();
             PacketsSended = new List<IPacket>();
 
-			if (Type.GetType("Mono.Runtime") != null) // -- Running on Mono
-				ServicePointManager.CertificatePolicy = new CertificateValidation();
-		}
+	    ServicePointManager.CertificatePolicy = new CertificateValidation();
+	}
 
-		/// <summary>
-		/// Start NetworkHandler.
-		/// </summary>
-		public void Start(bool debugPackets = true)
+	/// <summary>
+	/// Start NetworkHandler.
+	/// </summary>
+	public void Start(bool debugPackets = true)
         {
             DebugPackets = debugPackets;
 
