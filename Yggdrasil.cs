@@ -45,9 +45,6 @@ namespace MineLib.Network
         {
 			try
             {
-                if (Type.GetType("Mono.Runtime") != null) // -- Running on Mono
-					ServicePointManager.CertificatePolicy = new CertificateValidation();
-
 				var request = (HttpWebRequest) WebRequest.Create(new Uri("https://authserver.mojang.com/authenticate"));
                 request.ContentType = "application/json";
                 request.Method = "POST";
@@ -85,9 +82,6 @@ namespace MineLib.Network
         {
             try
             {
-                if (Type.GetType("Mono.Runtime") != null) // -- Running on Mono
-					ServicePointManager.CertificatePolicy = new CertificateValidation();
-
 				var request = (HttpWebRequest)WebRequest.Create(new Uri("https://authserver.mojang.com/refresh"));
                 request.ContentType = "application/json";
                 request.Method = "POST";
@@ -123,9 +117,6 @@ namespace MineLib.Network
         {
             try
             {
-                if (Type.GetType("Mono.Runtime") != null) // -- Running on Mono
-					ServicePointManager.CertificatePolicy = new CertificateValidation();
-
 				var request = (HttpWebRequest)WebRequest.Create(new Uri("https://authserver.mojang.com/validate"));
                 request.ContentType = "application/json";
                 request.Method = "POST";
@@ -154,9 +145,6 @@ namespace MineLib.Network
         {
             try
             {
-                if (Type.GetType("Mono.Runtime") != null) // -- Running on Mono
-					ServicePointManager.CertificatePolicy = new CertificateValidation();
-
 				var request = (HttpWebRequest)WebRequest.Create(new Uri("https://authserver.mojang.com/signout"));
                 request.ContentType = "application/json";
                 request.Method = "POST";
@@ -190,9 +178,6 @@ namespace MineLib.Network
         {
             try
             {
-                if (Type.GetType("Mono.Runtime") != null) // -- Running on Mono
-					ServicePointManager.CertificatePolicy = new CertificateValidation();
-
 				var request = (HttpWebRequest)WebRequest.Create(new Uri("https://authserver.mojang.com/signout"));
                 request.ContentType = "application/json";
                 request.Method = "POST";
@@ -227,9 +212,6 @@ namespace MineLib.Network
         {
             try
             {
-                if (Type.GetType("Mono.Runtime") != null) // -- Running on Mono
-					ServicePointManager.CertificatePolicy = new CertificateValidation();
-
 				var request = (HttpWebRequest)WebRequest.Create(new Uri("https://sessionserver.mojang.com/session/minecraft/join"));
                 request.ContentType = "application/json";
                 request.Method = "POST";

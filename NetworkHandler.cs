@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Sockets;
 using MineLib.Network.IO;
 
@@ -35,12 +36,15 @@ namespace MineLib.Network
 
             PacketsReceived = new List<IPacket>();
             PacketsSended = new List<IPacket>();
-        }
 
-        /// <summary>
-        /// Start NetworkHandler.
-        /// </summary>
-        public void Start(bool debugPackets = true)
+			if (Type.GetType("Mono.Runtime") != null) // -- Running on Mono
+				ServicePointManager.CertificatePolicy = new CertificateValidation();
+		}
+
+		/// <summary>
+		/// Start NetworkHandler.
+		/// </summary>
+		public void Start(bool debugPackets = true)
         {
             DebugPackets = debugPackets;
 
